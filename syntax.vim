@@ -44,7 +44,7 @@ highlight def link notesWindowsPath Directory
 " XXX, TODO and DONE markers.
 syntax match notesTodo /\<TODO\>/
 syntax match notesXXX /\<XXX\>/
-syntax match notesDoneItem /^\(\s*\).*\<DONE\>.*\(\n\1\s.*\)*/
+syntax match notesDoneItem /^\(\s*\).*\<DONE\>.*\(\n\1\s.*\)*/ contains=@notesInline
 syntax match notesDoneMarker /\<DONE\>/ containedin=notesDoneItem
 highlight link notesTodo WarningMsg
 highlight link notesXXX WarningMsg
@@ -64,6 +64,12 @@ highlight def link notesTitle ModeMsg
 " Short sentences ending in a colon are considered headings.
 syntax match notesShortHeading /^\s*\zs\u.\{2,60}:\ze\(\s\|$\)/ contains=@notesInline
 highlight def link notesShortHeading Title
+
+" Atx style headings are also supported.
+syntax match notesAtxHeading /^#\+.*/ contains=notesAtxMarker,@notesInline
+highlight def link notesAtxHeading Title
+syntax match notesAtxMarker /^#\+/ contained
+highlight def link notesAtxMarker Comment
 
 " E-mail style block quotes are highlighted as comments.
 syntax match notesBlockQuote /\(^\s*>.*\n\)\+/ contains=@notesInline
