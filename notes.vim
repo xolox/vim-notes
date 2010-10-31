@@ -31,6 +31,7 @@ augroup PluginNotes
   " NB: "nested" is used here so that any SwapExists automatic command applies
   " to your notes (which is IMHO better than always showing the E325 prompt).
   au BufReadCmd note:* nested call xolox#notes#edit()
+  au SwapExists * call xolox#notes#swaphack()
 augroup END
 
 " Resolve the path to the directory with notes. Because Vim matches filename

@@ -98,13 +98,20 @@ function! xolox#notes#search(bang, pattern, excluded) " {{{1
       call add(args, fnameescape(fname))
     endif
   endfor
+  let s:swaphack_enabled = 1
   try
     let ei_save = &eventignore
-    set eventignore=all
+    set eventignore=syntax,bufread
     execute 'vimgrep' . a:bang join(args)
   finally
     let &eventignore = ei_save
   endtry
+  if a:bang == ''
+    " If :vimgrep opens the first matching file while ei=all the file will be
+    " opened without applying a file type or syntax. Here's a workaround:
+    doautocmd filetypedetect BufRead
+  endif
+  unlet s:swaphack_enabled
   silent cwindow
   if &buftype == 'quickfix'
     let w:quickfix_title = 'Notes matching ' . a:pattern
@@ -116,6 +123,15 @@ function! xolox#notes#search(bang, pattern, excluded) " {{{1
     execute 'match IncSearch' pattern
   endif
   call xolox#timer#stop('%s: Searched notes in %s.', s:script, starttime)
+endfunction
+
+function! xolox#notes#swaphack() " {{{1
+  if exists('s:swaphack_enabled')
+    call xolox#message("SWAPHACK ENABLED")
+    let v:swapchoice = 'o'
+  else
+    call xolox#message("SWAPHACK DISABLED")
+  endif
 endfunction
 
 function! xolox#notes#related(bang) " {{{1
@@ -133,7 +149,6 @@ function! xolox#notes#related(bang) " {{{1
     endif
   endif
   let pattern = '/' . escape(pattern, '/') . '/'
-  " call confirm(pattern)
   call xolox#notes#search(a:bang, pattern, excluded)
   if &buftype == 'quickfix'
     let w:quickfix_title = 'Notes related to ' . fnamemodify(filename, ':~')
