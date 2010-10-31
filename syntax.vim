@@ -14,20 +14,14 @@ endif
 " Check for spelling errors in all text.
 syntax spell toplevel
 
+" Inline styles. {{{1
+
 " Cluster of elements which never contain a newline character.
 syntax cluster notesInline contains=@Spell,notesName,notesTextURL,notesFullURL,notesEmailAddr,notesUnixPath,notesWindowsPath
 
-" The first line contains the note's title.
-syntax match notesTitle /^.*\%1l.*$/ contains=@notesInline
-highlight def link notesTitle ModeMsg
-
-" The names of all notes are rendered as hyper links.
+" The names of other notes are rendered as hyperlinks.
 call xolox#notes#highlight_names('notesName')
 highlight def link notesName Underlined
-
-" Highlight short sentences ending in a colon as headings.
-syntax match notesShortHeading /^\s*\zs\u.\{2,60}:\ze\(\s\|$\)/ contains=@notesInline
-highlight def link notesShortHeading Title
 
 " Highlight list bullets and numbers.
 syntax match notesListBullet /^\s*\zs•/
@@ -47,9 +41,38 @@ highlight def link notesEmailAddr Underlined
 highlight def link notesUnixPath Directory
 highlight def link notesWindowsPath Directory
 
-" Highlight e-mail style block quotes.
+" XXX, TODO and DONE markers.
+syntax match notesTodo /\<TODO\>/
+syntax match notesDoneItem /^\(\s*\).*\<DONE\>.*\(\n\1\s.*\)*/
+syntax match notesDoneMarker /\<DONE\>/ containedin=notesDoneItem
+" syntax region notesDoneItem matchgroup=notesDoneMarker start=/^\z(\s*\).*\<DONE\>/ matchgroup=NONE end=/\n/ contains=@Spell,notesName,notesTextURL,notesURL,notesEmailAddr
+syntax match notesXXX /\<XXX\>/
+highlight link notesTodo WarningMsg
+highlight link notesXXX WarningMsg
+highlight link notesDoneMarker Question
+highlight link notesDoneItem Comment
+
+" Highlight Vim command names in :this notation.
+syntax match notesVimCmd /:\w\+\>/
+highlight def link notesVimCmd Special
+
+" Block level elements. {{{1
+
+" The first line of each note contains the title.
+syntax match notesTitle /^.*\%1l.*$/ contains=@notesInline
+highlight def link notesTitle ModeMsg
+
+" Short sentences ending in a colon are considered headings.
+syntax match notesShortHeading /^\s*\zs\u.\{2,60}:\ze\(\s\|$\)/ contains=@notesInline
+highlight def link notesShortHeading Title
+
+" E-mail style block quotes are highlighted as comments.
 syntax match notesBlockQuote /\(^\s*>.*\n\)\+/ contains=@notesInline
 highlight def link notesBlockQuote Comment
+
+" Horizontal rulers.
+syntax match notesRule /\(^\s\+\)\zs\*\s\*\s\*$/
+highlight link notesRule Comment
 
 " Highlight embedded blocks of source code, log file messages, basically
 " anything Vim can highlight.
@@ -62,6 +85,8 @@ call xolox#notes#highlight_sources('notesCodeStart', 'notesCodeEnd')
 " Hide mode line at end of file.
 syntax match notesModeLine /\_^vim:.*\_s*\%$/
 highlight def link notesModeLine LineNr
+
+" }}}
 
 " Set the currently loaded syntax mode.
 let b:current_syntax = 'notes'

@@ -20,6 +20,10 @@ let b:undo_ftplugin = 'set matchpairs<'
 setlocal autoindent
 let b:undo_ftplugin .= ' autoindent<'
 
+" Remap gf to jump to notes by their names.
+nmap <buffer> gf :call xolox#notes#goto_note()<CR>
+let b:undo_ftplugin .= ' | execute "nunmap <buffer> gf"'
+
 " Automatically change double-dash to em-dash as it is typed.
 imap <buffer> -- —
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> --"'
