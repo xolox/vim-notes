@@ -11,10 +11,10 @@ let s:script = expand('<sfile>:p:~')
 function! xolox#notes#new(bang) " {{{1
   execute 'enew' . a:bang
   setlocal filetype=notes
-  let directory = fnamemodify(g:notes_location, ':h')
-  call setline(1, ['Enter a name for your note here', '', 'To save this note you can use the :SaveNote command. It will generate a filename based on the title in the first line of this note and will save the resulting file in the directory ' . directory . '.'])
+  call setline(1, ['Enter a name for your note here', '', 'To save this note you can use the :SaveNote command. It will generate a filename based on the title in the first line of this note and will save the resulting file in the directory ' . g:notes_directory . '.'])
   3
   normal gqq
+  setlocal nomodified
 endfunction
 
 function! xolox#notes#edit() " {{{1
@@ -89,6 +89,57 @@ function! xolox#notes#save(bang) " {{{1
   call xolox#notes#add_to_cache(filename, title)
 endfunction
 
+function! xolox#notes#search(bang, pattern, excluded) " {{{1
+  let starttime = xolox#timer#start()
+  silent cclose
+  let args = [fnameescape(a:pattern)]
+  for fname in xolox#notes#get_fnames()
+    if index(a:excluded, fname) == -1
+      call add(args, fnameescape(fname))
+    endif
+  endfor
+  try
+    let ei_save = &eventignore
+    set eventignore=all
+    execute 'vimgrep' . a:bang join(args)
+  finally
+    let &eventignore = ei_save
+  endtry
+  silent cwindow
+  if &buftype == 'quickfix'
+    let w:quickfix_title = 'Notes matching ' . a:pattern
+    let pattern = a:pattern
+    if pattern =~ '^/.*/$'
+      let pattern = substitute(pattern[1 : len(pattern) - 2], '\\/', '/', 'g')
+    endif
+    let pattern = '/\c' . escape(pattern, '/') . '/'
+    execute 'match IncSearch' pattern
+  endif
+  call xolox#timer#stop('%s: Searched notes in %s.', s:script, starttime)
+endfunction
+
+function! xolox#notes#related(bang) " {{{1
+  let excluded = []
+  if xolox#path#equals(g:notes_directory, expand('%:h'))
+    let filename = xolox#notes#title_to_fname(getline(1))
+    let pattern = xolox#escape#pattern(getline(1))
+    call add(excluded, filename)
+  else
+    let filename = xolox#path#absolute(expand('%'))
+    let pattern = xolox#escape#pattern(filename)
+    if filename[0 : len($HOME)-1] == $HOME
+      let relative = xolox#path#relative(filename, xolox#path#absolute($HOME))
+      let pattern = '\(' . pattern . '\|\~/' . relative . '\)'
+    endif
+  endif
+  let pattern = '/' . escape(pattern, '/') . '/'
+  " call confirm(pattern)
+  call xolox#notes#search(a:bang, pattern, excluded)
+  if &buftype == 'quickfix'
+    let w:quickfix_title = 'Notes related to ' . fnamemodify(filename, ':~')
+  endif
+endfunction
+
 " Miscellaneous functions. {{{1
 
 " Getters for filenames and titles of existing notes. {{{2
@@ -97,7 +148,7 @@ function! xolox#notes#get_fnames() " {{{3
   " Get a list with the filenames of all existing notes.
   if !s:have_cached_names
     let starttime = xolox#timer#start()
-    let pattern = printf(g:notes_location, '*')
+    let pattern = xolox#path#merge(g:notes_directory, '*')
     let listing = glob(xolox#path#absolute(pattern))
     call extend(s:cached_fnames, split(listing, '\n'))
     let s:have_cached_names = 1
@@ -160,7 +211,7 @@ function! xolox#notes#title_to_fname(title) " {{{3
   " Return the absolute filename of a note given its title.
   let filename = xolox#path#encode(a:title)
   if filename != ''
-    let pathname = printf(g:notes_location, filename)
+    let pathname = xolox#path#merge(g:notes_directory, filename)
     return xolox#path#absolute(pathname)
   endif
   return ''

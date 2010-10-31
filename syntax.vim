@@ -43,14 +43,13 @@ highlight def link notesWindowsPath Directory
 
 " XXX, TODO and DONE markers.
 syntax match notesTodo /\<TODO\>/
+syntax match notesXXX /\<XXX\>/
 syntax match notesDoneItem /^\(\s*\).*\<DONE\>.*\(\n\1\s.*\)*/
 syntax match notesDoneMarker /\<DONE\>/ containedin=notesDoneItem
-" syntax region notesDoneItem matchgroup=notesDoneMarker start=/^\z(\s*\).*\<DONE\>/ matchgroup=NONE end=/\n/ contains=@Spell,notesName,notesTextURL,notesURL,notesEmailAddr
-syntax match notesXXX /\<XXX\>/
 highlight link notesTodo WarningMsg
 highlight link notesXXX WarningMsg
-highlight link notesDoneMarker Question
 highlight link notesDoneItem Comment
+highlight link notesDoneMarker Question
 
 " Highlight Vim command names in :this notation.
 syntax match notesVimCmd /:\w\+\>/
