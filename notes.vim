@@ -1,6 +1,6 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: October 31, 2010
+" Last Change: November 1, 2010
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
 " Version: 0.6
@@ -19,10 +19,29 @@ if !exists('g:notes_directory')
   endif
 endif
 
+" Define the default location for the optional keyword database.
+if !exists('g:notes_database')
+  if xolox#is_windows()
+    let g:notes_database = '~/vimfiles/etc/notes.sqlite3'
+  else
+    let g:notes_database = '~/.vim/etc/notes.sqlite3'
+  endif
+endif
+
+" Define the default location for the keyword scanner script.
+if !exists('g:notes_scanner')
+  if xolox#is_windows()
+    let g:notes_scanner = '~/vimfiles/etc/notes.py'
+  else
+    let g:notes_scanner = '~/.vim/etc/notes.py'
+  endif
+endif
+
 " Define user commands to create notes.
 command! -bar -bang NewNote call xolox#notes#new(<q-bang>)
 command! -bar -bang SaveNote call xolox#notes#save(<q-bang>)
-command! -bar -bang -nargs=1 SearchNotes call xolox#notes#search(<q-bang>, <q-args>, [])
+command! -bar -bang DeleteNote call xolox#notes#delete(<q-bang>)
+command! -bar -bang -nargs=1 SearchNotes call xolox#notes#search(<q-bang>, <q-args>)
 command! -bar -bang RelatedNotes call xolox#notes#related(<q-bang>)
 
 " Install an automatic command to edit notes using filenames like "note:todo".

@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: October 31, 2010
+" Last Change: November 1, 2010
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -86,18 +86,27 @@ function! xolox#notes#save(bang) " {{{1
   " Write the buffer to the selected location.
   silent execute 'saveas' . a:bang fnameescape(filename)
   " Add the note to the internal cache.
-  call xolox#notes#add_to_cache(filename, title)
+  call xolox#notes#cache_add(filename, title)
 endfunction
 
-function! xolox#notes#search(bang, pattern, excluded) " {{{1
+function! xolox#notes#delete(bang) " {{{1
+  let filename = expand('%:p')
+  if filereadable(filename) && delete(filename)
+    call xolox#warning("%s: Failed to delete %s!", s:script, filename)
+    return
+  endif
+  call xolox#notes#cache_del(filename)
+  execute 'bdelete' . a:bang
+endfunction
+
+function! xolox#notes#search(bang, pattern) " {{{1
   let starttime = xolox#timer#start()
   silent cclose
-  let args = [fnameescape(a:pattern)]
-  for fname in xolox#notes#get_fnames()
-    if index(a:excluded, fname) == -1
-      call add(args, fnameescape(fname))
-    endif
-  endfor
+  let args = [a:pattern]
+  if !xolox#notes#scanner([a:pattern], args)
+    call extend(args, xolox#notes#get_fnames())
+  endif
+  call map(args, 'fnameescape(v:val)')
   let s:swaphack_enabled = 1
   try
     let ei_save = &eventignore
@@ -125,6 +134,24 @@ function! xolox#notes#search(bang, pattern, excluded) " {{{1
   call xolox#timer#stop('%s: Searched notes in %s.', s:script, starttime)
 endfunction
 
+function! xolox#notes#scanner(keywords, matches)
+  let scanner = xolox#path#absolute(g:notes_scanner)
+  if executable(scanner)
+    let arguments = [scanner, g:notes_database, g:notes_directory]
+    call extend(arguments, a:keywords)
+    call map(arguments, 'shellescape(v:val)')
+    let output = system(join(['python'] + arguments))
+    if !v:shell_error
+      let directory = xolox#path#absolute(g:notes_directory)
+      for filename in split(output, '\n')
+        call add(a:matches, xolox#path#merge(directory, filename))
+      endfor
+      call confirm(join(a:matches, "\n"))
+      return 1
+    endif
+  endif
+endfunction
+
 function! xolox#notes#swaphack() " {{{1
   if exists('s:swaphack_enabled')
     call xolox#message("SWAPHACK ENABLED")
@@ -135,11 +162,9 @@ function! xolox#notes#swaphack() " {{{1
 endfunction
 
 function! xolox#notes#related(bang) " {{{1
-  let excluded = []
   if xolox#path#equals(g:notes_directory, expand('%:h'))
     let filename = xolox#notes#title_to_fname(getline(1))
     let pattern = xolox#escape#pattern(getline(1))
-    call add(excluded, filename)
   else
     let filename = xolox#path#absolute(expand('%'))
     let pattern = xolox#escape#pattern(filename)
@@ -149,7 +174,7 @@ function! xolox#notes#related(bang) " {{{1
     endif
   endif
   let pattern = '/' . escape(pattern, '/') . '/'
-  call xolox#notes#search(a:bang, pattern, excluded)
+  call xolox#notes#search(a:bang, pattern)
   if &buftype == 'quickfix'
     let w:quickfix_title = 'Notes related to ' . fnamemodify(filename, ':~')
   endif
@@ -232,7 +257,7 @@ function! xolox#notes#title_to_fname(title) " {{{3
   return ''
 endfunction
 
-function! xolox#notes#add_to_cache(filename, title) " {{{3
+function! xolox#notes#cache_add(filename, title) " {{{3
   " Add filename and title of newly created note to cache.
   let filename = xolox#path#absolute(a:filename)
   if index(s:cached_fnames, filename) == -1
@@ -241,7 +266,21 @@ function! xolox#notes#add_to_cache(filename, title) " {{{3
       call add(s:cached_titles, a:title)
     endif
     if !empty(s:cached_pairs)
-      call add(s:cached_pairs, [filename, a:title])
+      let s:cached_pairs[filename] = a:title
+    endif
+  endif
+endfunction
+
+function! xolox#notes#cache_del(filename) " {{{3
+  let filename = xolox#path#absolute(a:filename)
+  let index = index(s:cached_fnames, filename)
+  if index >= 0
+    call remove(s:cached_fnames, index)
+    if !empty(s:cached_titles)
+      call remove(s:cached_titles, index)
+    endif
+    if !empty(s:cached_pairs)
+      call remove(s:cached_pairs, filename)
     endif
   endif
 endfunction
