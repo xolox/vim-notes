@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 1, 2010
+" Last Change: November 5, 2010
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -101,30 +101,47 @@ endfunction
 
 function! xolox#notes#search(bang, pattern) " {{{1
   let starttime = xolox#timer#start()
+  let bufnr_save = bufnr('%')
   silent cclose
-  let args = [a:pattern]
-  if !xolox#notes#scanner([a:pattern], args)
-    call extend(args, xolox#notes#get_fnames())
+  let grep_args = []
+  if a:pattern =~ '^/.\+/$'
+    " Search for the given regular expression pattern.
+    let pattern = a:pattern
+    call extend(grep_args, xolox#notes#get_fnames())
+    let qf_title = 'Notes matching the pattern ' . pattern
+  else
+    " Search for one or more keywords.
+    let words = split(a:pattern)
+    let qwords = map(copy(words), '"`" . v:val . "''"')
+    let qf_title = printf('Notes containing the word%s %s', len(qwords) == 1 ? '' : 's',
+          \ len(qwords) > 1 ? (join(qwords[0:-2], ', ') . ' and ' . qwords[-1]) : qwords[0])
+    if !xolox#notes#run_scanner(words, grep_args)
+      call extend(grep_args, xolox#notes#get_fnames())
+    endif
+    " Convert the keywords to a Vim regex that matches all keywords.
+    " TODO This is needed to populate Vim's quick-fix list but it disregards the stemming performed by the Python script!
+    let pattern = '/' . escape(join(words, '\|'), '/') . '/'
   endif
-  call map(args, 'fnameescape(v:val)')
+  call map(grep_args, 'fnameescape(v:val)')
+  call insert(grep_args, pattern)
   let s:swaphack_enabled = 1
   try
     let ei_save = &eventignore
     set eventignore=syntax,bufread
-    execute 'vimgrep' . a:bang join(args)
+    execute 'vimgrep' . a:bang join(grep_args)
   finally
     let &eventignore = ei_save
   endtry
-  if a:bang == ''
-    " If :vimgrep opens the first matching file while ei=all the file will be
-    " opened without applying a file type or syntax. Here's a workaround:
+  if a:bang == '' && bufnr('%') != bufnr_save
+    " If :vimgrep opens the first matching file while &eventignore is still
+    " set the file will be opened without activating a file type plug-in or
+    " syntax script. Here's a workaround:
     doautocmd filetypedetect BufRead
   endif
   unlet s:swaphack_enabled
   silent cwindow
   if &buftype == 'quickfix'
-    let w:quickfix_title = 'Notes matching ' . a:pattern
-    let pattern = a:pattern
+    let w:quickfix_title = qf_title
     if pattern =~ '^/.*/$'
       let pattern = substitute(pattern[1 : len(pattern) - 2], '\\/', '/', 'g')
     endif
@@ -134,7 +151,7 @@ function! xolox#notes#search(bang, pattern) " {{{1
   call xolox#timer#stop('%s: Searched notes in %s.', s:script, starttime)
 endfunction
 
-function! xolox#notes#scanner(keywords, matches)
+function! xolox#notes#run_scanner(keywords, matches)
   let scanner = xolox#path#absolute(g:notes_scanner)
   if executable(scanner)
     let arguments = [scanner, g:notes_database, g:notes_directory]
@@ -146,7 +163,6 @@ function! xolox#notes#scanner(keywords, matches)
       for filename in split(output, '\n')
         call add(a:matches, xolox#path#merge(directory, filename))
       endfor
-      call confirm(join(a:matches, "\n"))
       return 1
     endif
   endif

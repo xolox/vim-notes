@@ -1,48 +1,54 @@
 #!/usr/bin/env python
-# vim: set fileencoding=utf-8 :
 
+# The character encoding of the command line arguments passed to this script
+# and the text files read by this script (needed for accurate tokenization).
+CHARACTER_ENCODING = 'UTF-8'
+
+# Load the required standard library modules.
 import re
 import os
 import sys
 import fnmatch
 import sqlite3
 
-# Load my custom English/Dutch stemmer module based on the Snowball stemmer algorithm.
+# Optionally load the Lancaster stemmer from the NLTK module. To install this
+# module on Debian/Ubuntu use the command `sudo apt-get install python-nltk'.
 try:
-  from stemmer import stem
+  import nltk
+  stemmer = nltk.stem.LancasterStemmer()
+  def stem(word): return stemmer.stem(word)
 except ImportError:
-  def stem(language, word): return word
+  def stem(word): return word
 
 # Parse the command line arguments.
 script_name = os.path.split(sys.argv[0])[1]
-script_args = sys.argv[1:]
-if len(script_args) < 2:
+if len(sys.argv) < 3:
   sys.stderr.write("%s: Invalid arguments!\n" % script_name)
   sys.exit(1)
-DATABASE_FILE = os.path.expanduser(script_args[0])
-NOTES_DIRECTORY = os.path.expanduser(script_args[1])
-keywords = ' '.join(script_args[2:])
+database_file = os.path.expanduser(sys.argv[1])
+notes_directory = os.path.expanduser(sys.argv[2])
+keywords = ' '.join(sys.argv[3:]).decode(CHARACTER_ENCODING)
 
-# Initialize the SQLite database connection handle.
-FIRST_USE = not os.path.exists(DATABASE_FILE)
-connection = sqlite3.connect(DATABASE_FILE)
+# Open the SQLite database (creating it if it didn't already exist).
+first_use = not os.path.exists(database_file)
+connection = sqlite3.connect(database_file)
+connection.text_factory = str
 
 # Initialize the database schema?
-if FIRST_USE:
+if first_use:
   connection.execute('create table if not exists files (file_id integer primary key, filename text, last_modified integer)')
   connection.execute('create table if not exists keywords (keyword_id integer primary key, value text)')
   connection.execute('create table if not exists occurrences (file_id integer, keyword_id integer, primary key (file_id, keyword_id))')
 
-# Update keywords for changed notes.
+# Function to scan a single text file for keywords.
+
 UNSAVED_CHANGES = False
 CACHED_KEYWORDS = {}
-NUM_SCANNED_NOTES = 0
 
 def scan_note(note):
-  global UNSAVED_CHANGES, NUM_SCANNED_NOTES
-  sys.stderr.write("%s: Scanning note %i: %s\n" % (script_name, NUM_SCANNED_NOTES + 1, note['filename']))
+  global UNSAVED_CHANGES
   with open(note['pathname']) as handle:
-    encoded_name = sqlite3.Binary(note['filename'])
+    encoded_name = note['filename']
     result = connection.execute('select file_id from files where filename = ?', (encoded_name,)).fetchone()
     if result:
       file_id = result[0]
@@ -51,46 +57,38 @@ def scan_note(note):
     else:
       connection.execute('insert into files (filename, last_modified) values (?, ?)', (encoded_name, note['last_modified']))
       file_id = connection.execute('select last_insert_rowid()').fetchone()[0]
-    for root, keyword in tokenize(handle.read().decode('UTF-8')):
-      keyword_id = find_keyword(root)
+    for root in tokenize(handle.read().decode(CHARACTER_ENCODING)):
+      if root in CACHED_KEYWORDS:
+        keyword_id = CACHED_KEYWORDS[root]
+      else:
+        encoded_root = root
+        record = connection.execute('select keyword_id from keywords where value = ?', (encoded_root,)).fetchone()
+        if not record:
+          connection.execute('insert into keywords (value) values (?)', (encoded_root,))
+          record = connection.execute('select last_insert_rowid()').fetchone()
+        keyword_id = record[0]
+        CACHED_KEYWORDS[root] = keyword_id
       connection.execute('insert into occurrences (file_id, keyword_id) values (?, ?)', (file_id, keyword_id))
     UNSAVED_CHANGES = True
-    NUM_SCANNED_NOTES += 1
+
+# Function to tokenize text strings into words.
 
 def tokenize(text):
-  """
-  """
-  words = {}
+  words = set()
   for word in re.findall(r'\w+', text.lower(), re.UNICODE):
     word = word.strip()
     if word != '' and not word.isspace():
-      word = word.encode('UTF-8')
-      root = stem('dutch', word)
-      if root == word:
-        root = stem('english', word)
-      words[root] = word
-  return words.iteritems()
+      words.add(stem(word))
+  return words
 
-def find_keyword(keyword):
-  if keyword in CACHED_KEYWORDS:
-    return CACHED_KEYWORDS[keyword]
-  else:
-    encoded_keyword = sqlite3.Binary(keyword)
-    record = connection.execute('select keyword_id from keywords where value = ?', (encoded_keyword,)).fetchone()
-    if not record:
-      connection.execute('insert into keywords (value) values (?)', (encoded_keyword,))
-      record = connection.execute('select last_insert_rowid()').fetchone()
-    keyword_id = record[0]
-    CACHED_KEYWORDS[keyword] = keyword_id
-    return keyword_id
+# Scan the filenames and last modified times of all notes on the disk.
 
-# Scan filenames and last modified times of notes on disk.
 notes_on_disk = {}
-for filename in os.listdir(NOTES_DIRECTORY):
+for filename in os.listdir(notes_directory):
   if not fnmatch.fnmatch(filename, '.*.sw?'): # (Vim swap files are ignored)
-    pathname = os.path.join(NOTES_DIRECTORY, filename)
+    pathname = os.path.join(notes_directory, filename)
     notes_on_disk[filename] = { 'filename': filename, 'pathname': pathname, 'last_modified': os.path.getmtime(pathname) }
-if FIRST_USE:
+if first_use:
   for note in notes_on_disk.itervalues():
     scan_note(note)
 else:
@@ -107,18 +105,21 @@ else:
         updated_notes.append(note)
   created_notes = notes_on_disk.values()
   for file_id, filename in deleted_notes:
-    sys.stderr.write("Deleting %s\n" % filename)
     connection.execute('delete from files where file_id = ?', (file_id,))
     connection.execute('delete from occurrences where file_id = ?', (file_id,))
     UNSAVED_CHANGES = True
   for note in sorted(created_notes + updated_notes, key=lambda x: x['filename']):
     scan_note(note)
 
+# Commit unsaved changes to SQLite database?
+
 if UNSAVED_CHANGES:
-  sys.stderr.write("%s: Committing changes to %s\n" % (script_name, DATABASE_FILE))
   connection.commit()
 
-if keywords != '' and not keywords.isspace():
+# Query the database for the given keyword(s) and print the filenames of the
+# files that contain all keywords.
+
+if len(keywords) > 0 and not keywords.isspace():
   query = """
     select filename from files where file_id in (
       select file_id from occurrences where keyword_id in (
@@ -126,21 +127,15 @@ if keywords != '' and not keywords.isspace():
       )
     ) """
   global_matches = set()
-  for root, keyword in tokenize(keywords):
-    encoded_keyword = sqlite3.Binary(root)
+  for root in tokenize(keywords):
     keyword_matches = set()
-    for result in connection.execute(query, (encoded_keyword,)):
+    for result in connection.execute(query, ('%' + root + '%',)):
       filename = str(result[0])
       keyword_matches.add(filename)
     if len(global_matches) == 0:
       global_matches = keyword_matches
     else:
       global_matches &= keyword_matches
-  if len(global_matches) == 0:
-    sys.stderr.write("%s: No matches found!\n" % script_name)
-  else:
-    print '\n'.join(sorted(global_matches, key=str.lower))
-elif not UNSAVED_CHANGES:
-  sys.stderr.write("%s: Nothing to do!\n" % script_name)
+  print '\n'.join(global_matches)
 
 connection.close()
