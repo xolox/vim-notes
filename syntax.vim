@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: October 31, 2010
+" Last Change: November 5, 2010
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -33,8 +33,8 @@ highlight def link notesListNumber Comment
 syntax match notesTextURL @\<www\.\(\S*\w\)\+[/?#]\?@
 syntax match notesFullURL @\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+[/?#]\?@
 syntax match notesEmailAddr /\<\w[^@ \t\r]*\w@\w[^@ \t\r]\+\w\>/
-syntax match notesUnixPath @[/~]\S\+\(/\|[^[:punct:]]\)@ contains=notesName | " <- UNIX style pathnames
-syntax match notesWindowsPath @\<[A-Za-z]:\S\+\([\\/]\|[^[:punct:]]\)@ contains=notesName | " <- Windows style pathnames
+syntax match notesUnixPath /\w\@<![\/~]\S\+\(\/\|[^[:punct:]]\)/ contains=notesName | " <- UNIX style pathnames
+syntax match notesWindowsPath /\w\@<![A-Za-z]:\S\+\([\\\/]\|[^[:punct:]]\)/ contains=notesName | " <- Windows style pathnames
 highlight def link notesTextURL Underlined
 highlight def link notesFullURL Underlined
 highlight def link notesEmailAddr Underlined
