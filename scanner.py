@@ -127,12 +127,12 @@ if keywords != '' and not keywords.isspace():
       )
     ) """
   global_matches = set()
-  for keyword in tokenize(keywords):
+  for i, keyword in enumerate(tokenize(keywords)):
     current_matches = set()
     for result in connection.execute(query, ('%' + keyword + '%',)):
       filename = str(result[0])
       current_matches.add(filename)
-    if len(global_matches) == 0:
+    if i == 0:
       global_matches = current_matches
     else:
       global_matches &= current_matches
