@@ -41,12 +41,12 @@ function! xolox#notes#rename() " {{{1
   endif
 endfunction
 
-function! xolox#notes#edit() " {{{1
+function! xolox#notes#edit(fname) " {{{1
   " Edit an existing note using a command such as :edit note:keyword.
   let starttime = xolox#timer#start()
   let notes = {}
   let filename = ''
-  let arguments = string#trim(matchstr(expand('<afile>'), 'note:\zs.*'))
+  let arguments = string#trim(matchstr(a:fname, 'note:\zs.*'))
   for [fname, title] in items(xolox#notes#get_fnames_and_titles())
     " Prefer case insensitive but exact matches.
     if title ==? arguments
@@ -57,7 +57,7 @@ function! xolox#notes#edit() " {{{1
       let notes[title] = fname
     endif
   endfor
-  if empty(filename)
+  if filename == ''
     if len(notes) == 1
       " Only matched one file using substring or regex match?
       let filename = values(notes)[0]
@@ -78,7 +78,7 @@ function! xolox#notes#edit() " {{{1
     endif
   endif
   if empty(filename)
-    echoerr "No matching notes!"
+    call xolox#warning("No matching notes!")
   else
     execute 'edit' . (v:cmdbang ? '!' : '') v:cmdarg fnameescape(filename)
     setlocal filetype=notes
@@ -91,7 +91,7 @@ function! xolox#notes#save(bang) " {{{1
   let title = getline(1)
   let filename = xolox#notes#title_to_fname(title)
   if empty(filename)
-    echoerr printf("%s: Invalid note title %s!", s:script, title)
+    call xolox#warning("%s: Invalid note title %s!", s:script, title)
     return
   endif
   " Validate notes directory, create it if necessary.
@@ -100,12 +100,12 @@ function! xolox#notes#save(bang) " {{{1
     try
       call mkdir(directory, 'p')
     catch
-      echoerr printf("%s: Failed to create notes directory at %s!", s:script, directory)
+      call xolox#warning("%s: Failed to create notes directory at %s!", s:script, directory)
       return
     endtry
   endif
   if filewritable(directory) != 2
-    echoerr printf("%s: The notes directory %s isn't writable!", s:script, directory)
+    call xolox#warning("%s: The notes directory %s isn't writable!", s:script, directory)
     return
   endif
   " Write the buffer to the selected location.

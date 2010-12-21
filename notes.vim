@@ -57,7 +57,7 @@ augroup PluginNotes
   autocmd!
   " NB: "nested" is used here so that SwapExists automatic commands apply
   " to notes (which is IMHO better than always showing the E325 prompt).
-  au BufReadCmd note:* nested call xolox#notes#edit()
+  au BufReadCmd note:* nested call xolox#notes#edit(expand('<afile>'))
   au SwapExists * call xolox#notes#swaphack()
 augroup END
 
