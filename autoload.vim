@@ -46,7 +46,7 @@ function! xolox#notes#edit(fname) " {{{1
   let starttime = xolox#timer#start()
   let notes = {}
   let filename = ''
-  let arguments = string#trim(matchstr(a:fname, 'note:\zs.*'))
+  let arguments = xolox#trim(matchstr(a:fname, 'note:\zs.*'))
   for [fname, title] in items(xolox#notes#get_fnames_and_titles())
     " Prefer case insensitive but exact matches.
     if title ==? arguments
