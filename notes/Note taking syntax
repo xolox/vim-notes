@@ -45,8 +45,8 @@ Numbered lists are also supported:
 
 If you type three ‘{’ characters followed by the name of a Vim file type, all
 text until the three closing ‘}’ characters will be highlighted using the
-indicated file type. Here are some examples:
+indicated file type. Here are some examples of the Fibonacci sequence:
 
-{{{lua function fib(n) return n < 2 and n or fib(n - 1) + fib(n - 2) end }}}
-{{{vim function fib(n) | return n < 2 ? n : fib(n - 1) + fib(n - 2) | endfunction }}}
-{{{python def fib(n): return n < 2 and n or fib(n - 1) + fib(n - 2) }}}
+Lua:        {{{lua function fib(n) return n < 2 and n or fib(n - 1) + fib(n - 2) end }}}
+Vim script: {{{vim function fib(n) | return n < 2 ? n : fib(n - 1) + fib(n - 2) | endfunction }}}
+Python:     {{{python def fib(n): return n < 2 and n or fib(n - 1) + fib(n - 2) }}}

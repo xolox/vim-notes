@@ -98,7 +98,7 @@ syntax match notesTitle /^.*\%1l.*$/ contains=@notesInline
 highlight def link notesTitle ModeMsg
 
 " Short sentences ending in a colon are considered headings. {{{2
-syntax match notesShortHeading /^\s*\zs\u.\{2,50}:\ze\(\s\|$\)/ contains=@notesInline
+syntax match notesShortHeading /^\s*\zs\u.\{1,50}\w:\ze\(\s\|$\)/ contains=@notesInline
 highlight def link notesShortHeading Title
 
 " Atx style headings are also supported. {{{2
