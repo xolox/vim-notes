@@ -1,0 +1,45 @@
+Note taking commands
+
+You can use the following commands to manage your notes:
+
+# :NewNote starts editing a new note
+
+This command creates a new buffer in the current window, sets the appropriate
+file type and syntax and reads in the new note template. This fails when
+changes have been made to the current buffer, unless you use :NewNote! which
+discards any changes.
+
+# :DeleteNote deletes the current note
+
+The :DeleteNote command deletes the current note, destroys the buffer and
+removes the note from the internal cache of filenames and note titles. This
+fails when changes have been made to the current buffer, unless you use
+:DeleteNote! which discards any changes.
+
+# :SearchNotes searches your notes
+
+This command wraps :vimgrep and enables you to search through your notes using
+a regular expression pattern or keywords. To search for a pattern you pass a
+single argument that starts & ends with a slash:
+
+  :SearchNotes /TODO\|FIXME\|XXX/
+
+To search for one or more keywords you can just omit the slashes, this matches
+notes containing all of the given keywords:
+
+  :SearchNotes syntax highlighting
+
+After collecting a fair amount of notes (say >= 5 MB) you will probably start
+to get annoyed at how long it takes Vim to search through all of your notes. To
+make searching more scalable the notes plug-in includes a Python script which
+uses a full text index of your notes stored in an SQLite database.
+
+The first time the Python script is run it will need to build the complete
+index which can take a few minutes, but after the index has been initialized
+updates and searches should be more or less instantaneous.
+
+# :RelatedNotes finds related notes
+
+This command makes it easy to find all notes related to the current file: If
+you are currently editing a note then a search for the note’s title is done,
+otherwise this searches for the absolute path of the current file.

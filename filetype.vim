@@ -1,10 +1,7 @@
-﻿" Vim file type plug-in
+" Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: October 31, 2010
+" Last Change: November 6, 2010
 " URL: http://peterodding.com/code/vim/notes/
-
-" Note: This file is encoded in UTF-8 including a byte order mark so
-" that Vim loads the script using the right encoding transparently.
 
 if exists('b:did_ftplugin')
   finish
@@ -12,35 +9,52 @@ else
   let b:did_ftplugin = 1
 endif
 
-" Disable highlighting of matching pairs.
+" Remember the original title of the current note.
+call xolox#notes#remember_title()
+
+" Disable highlighting of matching pairs. {{{1
 setlocal matchpairs=
 let b:undo_ftplugin = 'set matchpairs<'
 
-" Copy indent from previous line.
+" Copy indent from previous line. {{{1
 setlocal autoindent
 let b:undo_ftplugin .= ' autoindent<'
 
-" Remap gf to jump to notes by their names.
-nmap <buffer> gf :call xolox#notes#goto_note()<CR>
-let b:undo_ftplugin .= ' | execute "nunmap <buffer> gf"'
+" Automatic formatting for bulleted lists. {{{1
+let &l:comments = ': • ,:> '
+let &l:commentstring = '> %s'
+setlocal formatoptions=tcron
+let b:undo_ftplugin .= ' commentstring< comments< formatoptions<'
 
-" Automatically change double-dash to em-dash as it is typed.
+" Automatic text folding based on headings. {{{1
+setlocal foldmethod=expr
+setlocal foldexpr=xolox#notes#foldexpr()
+setlocal foldtext=xolox#notes#foldtext()
+let b:undo_ftplugin .= ' foldmethod< foldexpr< foldtext<'
+
+" Remap "gf" to jump to notes by their names. {{{1
+nmap <buffer> gf :call xolox#notes#goto_note('edit')<CR>
+let b:undo_ftplugin .= ' | execute "nunmap <buffer> gf"'
+nmap <buffer> <C-w>gf :call xolox#notes#goto_note('split')<CR>
+let b:undo_ftplugin .= ' | execute "nunmap <buffer> <C-w>gf"'
+
+" Change double-dash to em-dash as it is typed. {{{1
 imap <buffer> -- —
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> --"'
 
-" Automatically change plain quotes to curly quotes as they're typed?
+" Change plain quotes to curly quotes as they're typed. {{{1
 imap <buffer> <expr> ' xolox#notes#insert_quote(1)
 imap <buffer> <expr> " xolox#notes#insert_quote(2)
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> ''"'
 let b:undo_ftplugin .= ' | execute ''iunmap <buffer> "'''
 
-" Change ASCII style arrows to Unicode arrows.
+" Change ASCII style arrows to Unicode arrows. {{{1
 imap <buffer> -> →
 imap <buffer> <- ←
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> ->"'
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> <-"'
 
-" Insert list leaders automatically.
+" Convert ASCII list bullets to Unicode bullets. {{{1
 imap <buffer> <expr> - xolox#notes#insert_bullet('-')
 imap <buffer> <expr> + xolox#notes#insert_bullet('+')
 imap <buffer> <expr> * xolox#notes#insert_bullet('*')
@@ -48,4 +62,8 @@ let b:undo_ftplugin .= ' | execute "iunmap <buffer> -"'
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> +"'
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> *"'
 
-" vim: ts=2 sw=2 et bomb
+" Automatically (re)name buffers containing notes. {{{1
+autocmd! CursorMoved,CursorMovedI <buffer> call xolox#notes#rename()
+let b:undo_ftplugin .= ' | execute "autocmd! CursorMoved,CursorMovedI <buffer> "'
+
+" vim: ts=2 sw=2 et

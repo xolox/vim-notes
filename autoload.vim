@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 5, 2010
+" Last Change: December 21, 2010
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -9,15 +9,40 @@
 let s:script = expand('<sfile>:p:~')
 
 function! xolox#notes#new(bang) " {{{1
-  execute 'enew' . a:bang
+  " Create a new note using the :NewNote command.
+  if !s:is_empty_buffer()
+    execute 'enew' . a:bang
+  endif
   setlocal filetype=notes
-  call setline(1, ['Enter a name for your note here', '', 'To save this note you can use the :SaveNote command. It will generate a filename based on the title in the first line of this note and will save the resulting file in the directory ' . g:notes_directory . '.'])
-  3
-  normal gqq
+  execute 'read' fnameescape(xolox#path#merge(g:notes_shadowdir, 'New note'))
+  1delete
   setlocal nomodified
+  doautocmd BufReadPost
+endfunction
+
+function! xolox#notes#rename() " {{{1
+  " Automatically set the name of the current note based on the title.
+  if line('.') > 1 && xolox#notes#title_changed()
+    let oldname = expand('%:p')
+    let title = getline(1)
+    let newname = xolox#notes#title_to_fname(title)
+    if !xolox#path#equals(newname, oldname)
+      call xolox#notes#cache_del(oldname)
+      execute 'silent file' fnameescape(newname)
+      " Delete empty, useless buffer created by :file?
+      if oldname != ''
+        execute 'silent bwipeout' fnameescape(oldname)
+      endif
+      call xolox#notes#cache_add(newname, title)
+      " Redraw tab line with new filename.
+      let &stal = &stal
+    endif
+    call xolox#notes#remember_title()
+  endif
 endfunction
 
 function! xolox#notes#edit() " {{{1
+  " Edit an existing note using a command such as :edit note:keyword.
   let starttime = xolox#timer#start()
   let notes = {}
   let filename = ''
@@ -152,17 +177,14 @@ function! xolox#notes#search(bang, pattern) " {{{1
 endfunction
 
 function! xolox#notes#run_scanner(keywords, matches)
-  let scanner = xolox#path#absolute(g:notes_scanner)
-  if executable(scanner)
-    let arguments = [scanner, g:notes_database, g:notes_directory]
+  let scanner = xolox#path#absolute(g:notes_indexscript)
+  if executable('python') && filereadable(scanner)
+    let arguments = [scanner, g:notes_indexfile, g:notes_directory, g:notes_shadowdir]
     call extend(arguments, a:keywords)
     call map(arguments, 'shellescape(v:val)')
     let output = system(join(['python'] + arguments))
     if !v:shell_error
-      let directory = xolox#path#absolute(g:notes_directory)
-      for filename in split(output, '\n')
-        call add(a:matches, xolox#path#merge(directory, filename))
-      endfor
+      call extend(a:matches, split(output, '\n'))
       return 1
     endif
   endif
@@ -170,10 +192,7 @@ endfunction
 
 function! xolox#notes#swaphack() " {{{1
   if exists('s:swaphack_enabled')
-    call xolox#message("SWAPHACK ENABLED")
     let v:swapchoice = 'o'
-  else
-    call xolox#message("SWAPHACK DISABLED")
   endif
 endfunction
 
@@ -198,15 +217,22 @@ endfunction
 
 " Miscellaneous functions. {{{1
 
+function! s:is_empty_buffer()
+  " Check if the buffer is an empty, unchanged buffer which can be reused.
+  return !&modified && expand('%') == '' && line('$') <= 1 && getline(1) == ''
+endfunction
+
 " Getters for filenames and titles of existing notes. {{{2
 
 function! xolox#notes#get_fnames() " {{{3
   " Get a list with the filenames of all existing notes.
   if !s:have_cached_names
     let starttime = xolox#timer#start()
-    let pattern = xolox#path#merge(g:notes_directory, '*')
-    let listing = glob(xolox#path#absolute(pattern))
-    call extend(s:cached_fnames, split(listing, '\n'))
+    for directory in [g:notes_shadowdir, g:notes_directory]
+      let pattern = xolox#path#merge(directory, '*')
+      let listing = glob(xolox#path#absolute(pattern))
+      call extend(s:cached_fnames, split(listing, '\n'))
+    endfor
     let s:have_cached_names = 1
     call xolox#timer#stop('%s: Cached note filenames in %s.', s:script, starttime)
   endif
@@ -410,11 +436,49 @@ function! s:normalize_ws(s)
   return xolox#trim(substitute(a:s, '\_s\+', '', 'g'))
 endfunction
 
-function! xolox#notes#goto_note() " {{{3
+function! xolox#notes#goto_note(command) " {{{3
   let notes = xolox#notes#find_at_cursor()
   if !empty(notes)
-    execute 'edit' fnameescape(notes[0])
+    execute a:command fnameescape(notes[0])
+    doautocmd BufReadPost
+  else
+    " TODO Error message?
   endif
+endfunction
+
+function! xolox#notes#remember_title() " {{{3
+  let b:note_title = getline(1)
+endfunction
+
+function! xolox#notes#title_changed() " {{{3
+  return &modified && !(exists('b:note_title') && b:note_title == getline(1))
+endfunction
+
+function! xolox#notes#foldexpr() " {{{3
+  let lastlevel = foldlevel(v:lnum - 1)
+  let nextlevel = s:foldlevel(v:lnum)
+  if lastlevel <= 0 && nextlevel >= 1
+    return '>' . nextlevel
+  elseif nextlevel >= 1
+    if lastlevel > nextlevel
+      return '<' . nextlevel
+    else
+      return '>' . nextlevel
+    endif
+  endif
+  return '='
+endfunction
+
+function! s:foldlevel(lnum)
+  return match(getline(a:lnum), '^#\+\zs')
+endfunction
+
+function! xolox#notes#foldtext() " {{{3
+  let line = getline(v:foldstart)
+  if line == ''
+    let line = getline(v:foldstart + 1)
+  endif
+  return substitute(line, '#', '-', 'g') . ' '
 endfunction
 
 " vim: ts=2 sw=2 et bomb

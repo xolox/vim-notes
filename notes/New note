@@ -1,0 +1,13 @@
+New note
+
+To get started enter a title for your note above. Once your text cursor leaves
+the first line the name of the buffer will be set to match your note’s title.
+You can then save this note using Vim’s built in :write and :update commands.
+
+                                    * * *
+
+The notes plug-in comes with self hosting documentation. To jump to these notes
+position your text on the highlighted name and press ‘gf’ in normal mode:
+
+ • Note taking syntax
+ • Note taking commands

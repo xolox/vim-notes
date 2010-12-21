@@ -22,12 +22,13 @@ except ImportError:
 
 # Parse the command line arguments.
 script_name = os.path.split(sys.argv[0])[1]
-if len(sys.argv) < 3:
-  sys.stderr.write("%s: Invalid arguments!\n" % script_name)
+if len(sys.argv) < 4:
+  sys.stderr.write("%s: Not enough arguments!\n" % script_name)
   sys.exit(1)
 database_file = os.path.expanduser(sys.argv[1])
-notes_directory = os.path.expanduser(sys.argv[2])
-keywords = ' '.join(sys.argv[3:]).decode(CHARACTER_ENCODING)
+user_directory = os.path.expanduser(sys.argv[2])
+shadow_directory = os.path.expanduser(sys.argv[3])
+keywords = ' '.join(sys.argv[4:]).decode(CHARACTER_ENCODING)
 
 # Open the SQLite database (creating it if it didn't already exist).
 first_use = not os.path.exists(database_file)
@@ -47,24 +48,22 @@ CACHED_KEYWORDS = {}
 
 def scan_note(note):
   global UNSAVED_CHANGES
-  with open(note['pathname']) as handle:
-    encoded_name = note['filename']
-    result = connection.execute('select file_id from files where filename = ?', (encoded_name,)).fetchone()
+  with open(note['filename']) as handle:
+    result = connection.execute('select file_id from files where filename = ?', (note['filename'],)).fetchone()
     if result:
       file_id = result[0]
       connection.execute('delete from occurrences where file_id = ?', (file_id,))
       connection.execute('update files set last_modified = ? where file_id = ?', (note['last_modified'], file_id))
     else:
-      connection.execute('insert into files (filename, last_modified) values (?, ?)', (encoded_name, note['last_modified']))
+      connection.execute('insert into files (filename, last_modified) values (?, ?)', (note['filename'], note['last_modified']))
       file_id = connection.execute('select last_insert_rowid()').fetchone()[0]
     for root in tokenize(handle.read().decode(CHARACTER_ENCODING)):
       if root in CACHED_KEYWORDS:
         keyword_id = CACHED_KEYWORDS[root]
       else:
-        encoded_root = root
-        record = connection.execute('select keyword_id from keywords where value = ?', (encoded_root,)).fetchone()
+        record = connection.execute('select keyword_id from keywords where value = ?', (root,)).fetchone()
         if not record:
-          connection.execute('insert into keywords (value) values (?)', (encoded_root,))
+          connection.execute('insert into keywords (value) values (?)', (root,))
           record = connection.execute('select last_insert_rowid()').fetchone()
         keyword_id = record[0]
         CACHED_KEYWORDS[root] = keyword_id
@@ -84,10 +83,11 @@ def tokenize(text):
 # Scan the filenames and last modified times of all notes on the disk.
 
 notes_on_disk = {}
-for filename in os.listdir(notes_directory):
-  if not fnmatch.fnmatch(filename, '.*.sw?'): # (Vim swap files are ignored)
-    pathname = os.path.join(notes_directory, filename)
-    notes_on_disk[filename] = { 'filename': filename, 'pathname': pathname, 'last_modified': os.path.getmtime(pathname) }
+for directory in user_directory, shadow_directory:
+  for filename in os.listdir(directory):
+    if not fnmatch.fnmatch(filename, '.*.sw?'): # (Vim swap files are ignored)
+      filename = os.path.join(directory, filename)
+      notes_on_disk[filename] = dict(filename=filename, last_modified=os.path.getmtime(filename))
 if first_use:
   for note in notes_on_disk.itervalues():
     scan_note(note)
@@ -120,6 +120,7 @@ if UNSAVED_CHANGES:
 # files that contain all keywords.
 
 if len(keywords) > 0 and not keywords.isspace():
+  # TODO Use SQL support for set intersection?!
   query = """
     select filename from files where file_id in (
       select file_id from occurrences where keyword_id in (
