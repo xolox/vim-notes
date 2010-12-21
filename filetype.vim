@@ -20,6 +20,10 @@ let b:undo_ftplugin = 'set matchpairs<'
 setlocal autoindent
 let b:undo_ftplugin .= ' autoindent<'
 
+" Set &tabstop and &shiftwidth options for bulleted lists. {{{1
+setlocal tabstop=3 shiftwidth=3 expandtab
+let b:undo_ftplugin .= ' tabstop< shiftwidth< expandtab<'
+
 " Automatic formatting for bulleted lists. {{{1
 let &l:comments = ': • ,:> '
 let &l:commentstring = '> %s'
