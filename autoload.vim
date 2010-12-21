@@ -14,7 +14,7 @@ function! xolox#notes#new(bang) " {{{1
     execute 'enew' . a:bang
   endif
   setlocal filetype=notes
-  execute 'read' fnameescape(xolox#path#merge(g:notes_shadowdir, 'New note'))
+  execute 'silent read' fnameescape(xolox#path#merge(g:notes_shadowdir, 'New note'))
   1delete
   setlocal nomodified
   doautocmd BufReadPost
