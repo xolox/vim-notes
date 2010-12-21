@@ -346,6 +346,14 @@ function! xolox#notes#insert_bullet(c) " {{{3
   return getline('.')[0 : max([0, col('.') - 2])] =~ '^\s*$' ? '•' : a:c
 endfunction
 
+function! xolox#notes#indent_list(command, line1, line2) " {{{3
+  execute a:line1 . ',' . a:line2 . 'normal' a:command
+  if getline('.') =~ '•$'
+    call setline('.', getline('.') . ' ')
+  endif
+  normal $
+endfunction
+
 function! xolox#notes#highlight_names(group) " {{{3
   let starttime = xolox#timer#start()
   let titles = filter(xolox#notes#get_titles(), '!empty(v:val)')

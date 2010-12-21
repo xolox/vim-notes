@@ -3,7 +3,7 @@
 " Last Change: December 21, 2010
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
-" Version: 0.7
+" Version: 0.7.1
 
 " Don't source the plug-in when its already been loaded or &compatible is set.
 if &cp || exists('g:loaded_notes')

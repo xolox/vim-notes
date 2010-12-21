@@ -60,6 +60,18 @@ let b:undo_ftplugin .= ' | execute "iunmap <buffer> -"'
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> +"'
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> *"'
 
+" Indent list items using <Tab>. {{{1
+
+imap <buffer> <silent> <Tab> <C-o>:call xolox#notes#indent_list('>>', line('.'), line('.'))<CR>
+smap <buffer> <silent> <Tab> <C-o>:<C-u>call xolox#notes#indent_list('>>', line("'<"), line("'>"))<CR><C-o>gv
+let b:undo_ftplugin .= ' | execute "iunmap <buffer> <Tab>"'
+let b:undo_ftplugin .= ' | execute "sunmap <buffer> <Tab>"'
+
+imap <buffer> <silent> <S-Tab> <C-o>:call xolox#notes#indent_list('<<', line('.'), line('.'))<CR>
+smap <buffer> <silent> <S-Tab> <C-o>:<C-u>call xolox#notes#indent_list('<<', line("'<"), line("'>"))<CR><C-o>gv
+let b:undo_ftplugin .= ' | execute "iunmap <buffer> <S-Tab>"'
+let b:undo_ftplugin .= ' | execute "sunmap <buffer> <S-Tab>"'
+
 " Automatically (re)name buffers containing notes. {{{1
 autocmd! CursorMoved,CursorMovedI <buffer> call xolox#notes#rename()
 let b:undo_ftplugin .= ' | execute "autocmd! CursorMoved,CursorMovedI <buffer> "'
