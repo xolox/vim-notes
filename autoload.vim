@@ -406,10 +406,10 @@ function! s:syntax_include(filetype)
   return grouplistname
 endfunction
 
-function! xolox#notes#find_at_cursor() " {{{3
-  let matches = []
+function! xolox#notes#cfile(interactive, fname) " {{{3
+  " TODO Use inputlist() when more than one note matches?!
   let notes = copy(xolox#notes#get_fnames_and_titles())
-  let pattern = xolox#escape#pattern(expand('<cword>'))
+  let pattern = xolox#escape#pattern(a:fname)
   call filter(notes, 'v:val =~ pattern')
   if !empty(notes)
     let filtered_notes = items(notes)
@@ -417,33 +417,19 @@ function! xolox#notes#find_at_cursor() " {{{3
     for range in range(3)
       let line1 = lnum - range
       let line2 = lnum + range
-      call xolox#debug("%s: Scanning range %i-%i..", s:script, line1, line2)
       let text = s:normalize_ws(join(getline(line1, line2), "\n"))
       for [fname, title] in filtered_notes
         if text =~? xolox#escape#pattern(s:normalize_ws(title))
-          call add(matches, fname)
+          return fname
         endif
       endfor
-      if !empty(matches)
-        break
-      endif
     endfor
   endif
-  return matches
+  return ''
 endfunction
 
 function! s:normalize_ws(s)
   return xolox#trim(substitute(a:s, '\_s\+', '', 'g'))
-endfunction
-
-function! xolox#notes#goto_note(command) " {{{3
-  let notes = xolox#notes#find_at_cursor()
-  if !empty(notes)
-    execute a:command fnameescape(notes[0])
-    doautocmd BufReadPost
-  else
-    " TODO Error message?
-  endif
 endfunction
 
 function! xolox#notes#remember_title() " {{{3

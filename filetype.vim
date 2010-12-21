@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 6, 2010
+" Last Change: December 21, 2010
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -32,11 +32,9 @@ setlocal foldexpr=xolox#notes#foldexpr()
 setlocal foldtext=xolox#notes#foldtext()
 let b:undo_ftplugin .= ' foldmethod< foldexpr< foldtext<'
 
-" Remap "gf" to jump to notes by their names. {{{1
-nmap <buffer> gf :call xolox#notes#goto_note('edit')<CR>
-let b:undo_ftplugin .= ' | execute "nunmap <buffer> gf"'
-nmap <buffer> <C-w>gf :call xolox#notes#goto_note('split')<CR>
-let b:undo_ftplugin .= ' | execute "nunmap <buffer> <C-w>gf"'
+" Change <cfile> to jump to notes by name. {{{1
+setlocal includeexpr=xolox#notes#cfile(1,v:fname)
+let b:undo_ftplugin .= ' includeexpr<'
 
 " Change double-dash to em-dash as it is typed. {{{1
 imap <buffer> -- —
