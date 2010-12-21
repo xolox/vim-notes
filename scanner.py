@@ -1,41 +1,49 @@
 #!/usr/bin/env python
 
+# Copyright 2010 Peter Odding <peter@peterodding.com>
+# This program is licensed under the MIT license.
+
+# This Python script can be used by the notes.vim plug-in to perform fast
+# keyword searches in the user's notes. It has two advantages over just using
+# Vim's internal :vimgrep command to search all of the user's notes:
+#
+#  * Very large notes don't slow searching down so much;
+#  * Hundreds of notes can be searched in less than a second.
+#
+# For more information see http://peterodding.com/code/vim/notes/
+
 # The character encoding of the command line arguments passed to this script
-# and the text files read by this script (needed for accurate tokenization).
+# and the text files read by this script (needed for accurate word splitting).
 CHARACTER_ENCODING = 'UTF-8'
 
 # Load the required standard library modules.
-import re
-import os
-import sys
-import fnmatch
-import sqlite3
+import fnmatch, os, re, sqlite3, sys
 
-def mungepath(p):
-  return os.path.abspath(os.path.expanduser(p))
+# Parse command line arguments. {{{1
 
-# Parse the command line arguments.
 script_name = os.path.split(sys.argv[0])[1]
 if len(sys.argv) < 4:
   sys.stderr.write("%s: Not enough arguments!\n" % script_name)
   sys.exit(1)
+def mungepath(p): return os.path.abspath(os.path.expanduser(p))
 database_file = mungepath(sys.argv[1])
 user_directory = mungepath(sys.argv[2])
 shadow_directory = mungepath(sys.argv[3])
 keywords = ' '.join(sys.argv[4:]).decode(CHARACTER_ENCODING)
 
-# Open the SQLite database (creating it if it didn't already exist).
+# Create or open SQLite database. {{{1
+
 first_use = not os.path.exists(database_file)
 connection = sqlite3.connect(database_file)
 connection.text_factory = str
 
-# Initialize the database schema?
+# Initialize database schema?
 if first_use:
   connection.execute('create table if not exists files (file_id integer primary key, filename text, last_modified integer)')
   connection.execute('create table if not exists keywords (keyword_id integer primary key, value text)')
   connection.execute('create table if not exists occurrences (file_id integer, keyword_id integer, primary key (file_id, keyword_id))')
 
-# Function to scan a single text file for keywords.
+# Function to scan text files for keywords. {{{1
 
 UNSAVED_CHANGES = False
 CACHED_KEYWORDS = {}
@@ -64,7 +72,7 @@ def scan_note(note):
       connection.execute('insert into occurrences (file_id, keyword_id) values (?, ?)', (file_id, keyword_id))
     UNSAVED_CHANGES = True
 
-# Function to tokenize text strings into words.
+# Function to tokenize text strings into words. {{{1
 
 def tokenize(text):
   words = set()
@@ -74,7 +82,7 @@ def tokenize(text):
       words.add(word)
   return words
 
-# Scan the filenames and last modified times of all notes on the disk.
+# Find filenames & last modified times of existing notes. {{{1
 
 notes_on_disk = {}
 for directory in user_directory, shadow_directory:
@@ -106,15 +114,12 @@ else:
     scan_note(note)
 
 # Commit unsaved changes to SQLite database?
-
 if UNSAVED_CHANGES:
   connection.commit()
 
-# Query the database for the given keyword(s) and print the filenames of the
-# files that contain all keywords.
+# Query database for given keyword(s), print matching files. {{{1
 
-if len(keywords) > 0 and not keywords.isspace():
-  # TODO Use SQL support for set intersection?!
+if keywords != '' and not keywords.isspace():
   query = """
     select filename from files where file_id in (
       select file_id from occurrences where keyword_id in (
@@ -134,3 +139,5 @@ if len(keywords) > 0 and not keywords.isspace():
   print '\n'.join(sorted(global_matches))
 
 connection.close()
+
+# vim: ts=2 sw=2 et
