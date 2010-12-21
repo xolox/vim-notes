@@ -1,6 +1,6 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 6, 2010
+" Last Change: December 21, 2010
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
 " Version: 0.7
@@ -13,36 +13,36 @@ endif
 " Define the default location where the user's notes are saved?
 if !exists('g:notes_directory')
   if xolox#is_windows()
-    let g:notes_directory = '~/vimfiles/etc/notes/user'
+    let g:notes_directory = '~/vimfiles/misc/notes/user'
   else
-    let g:notes_directory = '~/.vim/etc/notes/user'
+    let g:notes_directory = '~/.vim/misc/notes/user'
   endif
 endif
 
 " Define the default location of the shadow directory with predefined notes?
 if !exists('g:notes_shadowdir')
   if xolox#is_windows()
-    let g:notes_shadowdir = '~/vimfiles/etc/notes/shadow'
+    let g:notes_shadowdir = '~/vimfiles/misc/notes/shadow'
   else
-    let g:notes_shadowdir = '~/.vim/etc/notes/shadow'
+    let g:notes_shadowdir = '~/.vim/misc/notes/shadow'
   endif
 endif
 
 " Define the default location for the full text index.
 if !exists('g:notes_indexfile')
   if xolox#is_windows()
-    let g:notes_indexfile = '~/vimfiles/etc/notes/index.sqlite3'
+    let g:notes_indexfile = '~/vimfiles/misc/notes/index.sqlite3'
   else
-    let g:notes_indexfile = '~/.vim/etc/notes/index.sqlite3'
+    let g:notes_indexfile = '~/.vim/misc/notes/index.sqlite3'
   endif
 endif
 
 " Define the default location for the keyword scanner script.
 if !exists('g:notes_indexscript')
   if xolox#is_windows()
-    let g:notes_indexscript = '~/vimfiles/etc/notes/scanner.py'
+    let g:notes_indexscript = '~/vimfiles/misc/notes/scanner.py'
   else
-    let g:notes_indexscript = '~/.vim/etc/notes/scanner.py'
+    let g:notes_indexscript = '~/.vim/misc/notes/scanner.py'
   endif
 endif
 
