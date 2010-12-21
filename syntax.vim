@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 18, 2010
+" Last Change: December 21, 2010
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -19,6 +19,9 @@ syntax spell toplevel
 " Cluster of elements which never contain a newline character.
 syntax cluster notesInline contains=notesName
 
+" Default highlighting style for notes syntax markers.
+highlight def link notesHiddenMarker Ignore
+
 " Highlight note names as hyperlinks. {{{2
 call xolox#notes#highlight_names('notesName')
 syntax cluster notesInline add=notesName
@@ -30,21 +33,39 @@ highlight def link notesListBullet Comment
 syntax match notesListNumber /^\s*\zs\d\+[[:punct:]]\?\ze\s/
 highlight def link notesListNumber Comment
 
-" Highlight emphasized text. {{{2
-syntax match notesItalic /\<_\w[^_]*\w_\>/
+" Highlight text emphasized in italic font. {{{2
+if has('conceal')
+  syntax region notesItalic matchgroup=notesItalicMarker start=/\<_[A-Za-z]\@=/ end=/\n\|\<_\>/ contains=@Spell concealends
+  highlight link notesItalicMarker notesHiddenMarker 
+else
+  syntax match notesItalic /\<_\w[^_]*\w_\>/
+endif
 syntax cluster notesInline add=notesItalic
 highlight notesItalic gui=italic
-syntax match notesBold /\*\w[^*]*\w\*/
+
+" Highlight text emphasized in bold font. {{{2
+if has('conceal')
+  syntax region notesBold matchgroup=notesBoldMarker start=/\*\w\@=/ end=/\w\@<=\*/ contains=@Spell concealends
+  highlight link notesBoldMarker notesHiddenMarker 
+else
+  syntax match notesBold /\*\w[^*]*\w\*/
+endif
 syntax cluster notesInline add=notesBold
 highlight notesBold gui=bold
 
-" Highlight domain names, URL's, e-mail addresses and filenames. {{{2
+" Highlight domain names, URLs, e-mail addresses and filenames. {{{2
 syntax match notesTextURL @\<www\.\(\S*\w\)\+[/?#]\?@
 syntax cluster notesInline add=notesTextURL
 highlight def link notesTextURL Underlined
-syntax match notesFullURL @\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+[/?#]\?@
+if has('conceal')
+  syntax region notesFullURL matchgroup=notesURLScheme start=@\<\(mailto:\|javascript:\|\w\{3,}://\)@ end=/\(\s\|$\)\@=/ concealends
+  highlight def link notesURLScheme notesFullURL
+else
+  syntax match notesFullURL @\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+[/?#]\?@
+endif
 syntax cluster notesInline add=notesFullURL
 highlight def link notesFullURL Underlined
+
 syntax match notesEmailAddr /\<\w[^@ \t\r]*\w@\w[^@ \t\r]\+\w\>/
 syntax cluster notesInline add=notesEmailAddr
 highlight def link notesEmailAddr Underlined

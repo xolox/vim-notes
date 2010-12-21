@@ -14,8 +14,8 @@ illustrates why the “starts with uppercase” rule is needed):
 # Inline formatting
 
 Text styles:
- • _italic_
- • *bold*
+ • _italic text_
+ • *bold text*
 
 Hyper links and such:
  • Hyper links: http://www.vim.org/, sftp://server/file

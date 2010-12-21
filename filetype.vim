@@ -36,6 +36,12 @@ setlocal foldexpr=xolox#notes#foldexpr()
 setlocal foldtext=xolox#notes#foldtext()
 let b:undo_ftplugin .= ' foldmethod< foldexpr< foldtext<'
 
+" Enable concealing of notes syntax markers? {{{1
+if has('conceal')
+  setlocal conceallevel=3
+  let b:undo_ftplugin .= ' conceallevel<'
+endif
+
 " Change <cfile> to jump to notes by name. {{{1
 setlocal includeexpr=xolox#notes#cfile(1,v:fname)
 let b:undo_ftplugin .= ' includeexpr<'

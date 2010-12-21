@@ -387,8 +387,8 @@ function! xolox#notes#highlight_sources(sg, eg) " {{{3
   for ft in keys(filetypes)
     let group = 'notesSnippet' . toupper(ft)
     let include = s:syntax_include(ft)
-    let command = 'syntax region %s matchgroup=%s start="{{{%s" matchgroup=%s end="}}}" keepend contains=%s'
-    execute printf(command, group, a:sg, ft, a:eg, include)
+    let command = 'syntax region %s matchgroup=%s start="{{{%s" matchgroup=%s end="}}}" keepend contains=%s%s'
+    execute printf(command, group, a:sg, ft, a:eg, include, has('conceal') ? ' concealends' : '')
   endfor
   call xolox#timer#stop("%s: Highlighted embedded sources in %s.", s:script, starttime)
 endfunction
