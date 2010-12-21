@@ -41,12 +41,16 @@ function! xolox#notes#rename() " {{{1
   endif
 endfunction
 
-function! xolox#notes#edit(fname) " {{{1
+function! xolox#notes#edit(bang, fname) " {{{1
   " Edit an existing note using a command such as :edit note:keyword.
   let starttime = xolox#timer#start()
   let notes = {}
   let filename = ''
   let arguments = xolox#trim(matchstr(a:fname, 'note:\zs.*'))
+  if arguments == ''
+    call xolox#notes#new(a:bang)
+    return
+  endif
   for [fname, title] in items(xolox#notes#get_fnames_and_titles())
     " Prefer case insensitive but exact matches.
     if title ==? arguments

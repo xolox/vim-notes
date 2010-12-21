@@ -3,7 +3,7 @@
 " Last Change: December 21, 2010
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
-" Version: 0.7.1
+" Version: 0.7.2
 
 " Don't source the plug-in when its already been loaded or &compatible is set.
 if &cp || exists('g:loaded_notes')
@@ -57,7 +57,7 @@ augroup PluginNotes
   autocmd!
   " NB: "nested" is used here so that SwapExists automatic commands apply
   " to notes (which is IMHO better than always showing the E325 prompt).
-  au BufReadCmd note:* nested call xolox#notes#edit(expand('<afile>'))
+  au BufReadCmd note:* nested call xolox#notes#edit(v:cmdbang ? '!' : '', expand('<afile>'))
   au SwapExists * call xolox#notes#swaphack()
 augroup END
 
