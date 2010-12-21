@@ -11,23 +11,17 @@ import sys
 import fnmatch
 import sqlite3
 
-# Optionally load the Lancaster stemmer from the NLTK module. To install this
-# module on Debian/Ubuntu use the command `sudo apt-get install python-nltk'.
-try:
-  import nltk
-  stemmer = nltk.stem.LancasterStemmer()
-  def stem(word): return stemmer.stem(word)
-except ImportError:
-  def stem(word): return word
+def mungepath(p):
+  return os.path.abspath(os.path.expanduser(p))
 
 # Parse the command line arguments.
 script_name = os.path.split(sys.argv[0])[1]
 if len(sys.argv) < 4:
   sys.stderr.write("%s: Not enough arguments!\n" % script_name)
   sys.exit(1)
-database_file = os.path.expanduser(sys.argv[1])
-user_directory = os.path.expanduser(sys.argv[2])
-shadow_directory = os.path.expanduser(sys.argv[3])
+database_file = mungepath(sys.argv[1])
+user_directory = mungepath(sys.argv[2])
+shadow_directory = mungepath(sys.argv[3])
 keywords = ' '.join(sys.argv[4:]).decode(CHARACTER_ENCODING)
 
 # Open the SQLite database (creating it if it didn't already exist).
@@ -57,16 +51,16 @@ def scan_note(note):
     else:
       connection.execute('insert into files (filename, last_modified) values (?, ?)', (note['filename'], note['last_modified']))
       file_id = connection.execute('select last_insert_rowid()').fetchone()[0]
-    for root in tokenize(handle.read().decode(CHARACTER_ENCODING)):
-      if root in CACHED_KEYWORDS:
-        keyword_id = CACHED_KEYWORDS[root]
+    for keyword in tokenize(handle.read().decode(CHARACTER_ENCODING)):
+      if keyword in CACHED_KEYWORDS:
+        keyword_id = CACHED_KEYWORDS[keyword]
       else:
-        record = connection.execute('select keyword_id from keywords where value = ?', (root,)).fetchone()
+        record = connection.execute('select keyword_id from keywords where value = ?', (keyword,)).fetchone()
         if not record:
-          connection.execute('insert into keywords (value) values (?)', (root,))
+          connection.execute('insert into keywords (value) values (?)', (keyword,))
           record = connection.execute('select last_insert_rowid()').fetchone()
         keyword_id = record[0]
-        CACHED_KEYWORDS[root] = keyword_id
+        CACHED_KEYWORDS[keyword] = keyword_id
       connection.execute('insert into occurrences (file_id, keyword_id) values (?, ?)', (file_id, keyword_id))
     UNSAVED_CHANGES = True
 
@@ -77,7 +71,7 @@ def tokenize(text):
   for word in re.findall(r'\w+', text.lower(), re.UNICODE):
     word = word.strip()
     if word != '' and not word.isspace():
-      words.add(stem(word))
+      words.add(word)
   return words
 
 # Scan the filenames and last modified times of all notes on the disk.
@@ -128,15 +122,15 @@ if len(keywords) > 0 and not keywords.isspace():
       )
     ) """
   global_matches = set()
-  for root in tokenize(keywords):
-    keyword_matches = set()
-    for result in connection.execute(query, ('%' + root + '%',)):
+  for keyword in tokenize(keywords):
+    current_matches = set()
+    for result in connection.execute(query, ('%' + keyword + '%',)):
       filename = str(result[0])
-      keyword_matches.add(filename)
+      current_matches.add(filename)
     if len(global_matches) == 0:
-      global_matches = keyword_matches
+      global_matches = current_matches
     else:
-      global_matches &= keyword_matches
-  print '\n'.join(global_matches)
+      global_matches &= current_matches
+  print '\n'.join(sorted(global_matches))
 
 connection.close()

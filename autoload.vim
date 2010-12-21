@@ -144,7 +144,6 @@ function! xolox#notes#search(bang, pattern) " {{{1
       call extend(grep_args, xolox#notes#get_fnames())
     endif
     " Convert the keywords to a Vim regex that matches all keywords.
-    " TODO This is needed to populate Vim's quick-fix list but it disregards the stemming performed by the Python script!
     let pattern = '/' . escape(join(words, '\|'), '/') . '/'
   endif
   call map(grep_args, 'fnameescape(v:val)')
@@ -330,9 +329,9 @@ endfunction
 " Functions called by the file type plug-in and syntax script. {{{2
 
 function! xolox#notes#insert_quote(style) " {{{3
-  " If I pass the below string constants as arguments from the file type
+  " XXX When I pass the below string constants as arguments from the file type
   " plug-in the resulting strings contain mojibake (UTF-8 interpreted as
-  " latin1?) even if both scripts contain a UTF-8 BOM. Bug in Vim?!
+  " latin1?) even if both scripts contain a UTF-8 BOM! Maybe a bug in Vim?!
   if a:style == 1
     let open_quote = '‘'
     let close_quote = '’'
