@@ -12,6 +12,10 @@ The `notes.vim` plug-in for the [Vim text editor](http://www.vim.org/) makes it 
  * **Writing aids:** The included file type plug-in contains mappings for automatic curly quotes, arrows and list bullets
  * **Embedded file types:** The included syntax script supports embedded highlighting using blocks marked with `{{{type … }}}` which allows you to embed highlighted code and configuration snippets in your notes
 
+Here's a screen shot of the syntax mode using the [slate](http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim) color scheme:
+
+![Syntax mode screen shot](http://peterodding.com/code/vim/notes/syntax.png)
+
 ## Install & usage
 
 Unzip the most recent [ZIP archive](http://peterodding.com/code/vim/downloads/notes) file inside your Vim profile directory (usually this is `~/.vim` on UNIX and `%USERPROFILE%\vimfiles` on Windows), restart Vim and execute the command `:helptags ~/.vim/doc` (use `:helptags ~\vimfiles\doc` instead on Windows). To get started execute `:NewNote`.
