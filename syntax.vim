@@ -58,7 +58,7 @@ syntax match notesTextURL @\<www\.\(\S*\w\)\+[/?#]\?@
 syntax cluster notesInline add=notesTextURL
 highlight def link notesTextURL Underlined
 if has('conceal')
-  syntax region notesFullURL matchgroup=notesURLScheme start=@\<\(mailto:\|javascript:\|\w\{3,}://\)@ end=/\(\s\|$\)\@=/ concealends
+  syntax region notesFullURL matchgroup=notesURLScheme start=@\<\(mailto:\|javascript:\|\w\{3,}://\)@ end=/\([[:punct:]]\s\|\s\|$\)\@=/ concealends
   highlight def link notesURLScheme notesFullURL
 else
   syntax match notesFullURL @\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+[/?#]\?@
