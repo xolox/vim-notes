@@ -1,9 +1,9 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 21, 2010
+" Last Change: December 22, 2010
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
-" Version: 0.7.3
+" Version: 0.7.4
 
 " Don't source the plug-in when its already been loaded or &compatible is set.
 if &cp || exists('g:loaded_notes')
