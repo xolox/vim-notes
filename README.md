@@ -14,11 +14,11 @@ The `notes.vim` plug-in for the [Vim text editor](http://www.vim.org/) makes it 
 
 ## Install & usage
 
-Unzip the most recent ZIP archive file inside your Vim profile directory (usually this is `~/.vim` on UNIX and `%USERPROFILE%\vimfiles` on Windows), restart Vim and execute the command `:helptags ~/.vim/doc` (use `:helptags ~\vimfiles\doc` instead on Windows). To get started execute `:NewNote`.
+Unzip the most recent [ZIP archive](http://peterodding.com/code/vim/downloads/notes) file inside your Vim profile directory (usually this is `~/.vim` on UNIX and `%USERPROFILE%\vimfiles` on Windows), restart Vim and execute the command `:helptags ~/.vim/doc` (use `:helptags ~\vimfiles\doc` instead on Windows). To get started execute `:NewNote`.
 
 ## Contact
 
-If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/notes/> and <http://github.com/xolox/vim-notes>.
+If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/notes/> and <http://github.com/xolox/vim-notes>. If you like the script please vote for it on [Vim Online](http://www.vim.org/scripts/script.php?script_id=3375).
 
 ## License
 

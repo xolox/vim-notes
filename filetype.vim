@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 21, 2010
+" Last Change: December 22, 2010
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -43,7 +43,7 @@ if has('conceal')
 endif
 
 " Change <cfile> to jump to notes by name. {{{1
-setlocal includeexpr=xolox#notes#cfile(1,v:fname)
+setlocal includeexpr=xolox#notes#include_expr(v:fname)
 let b:undo_ftplugin .= ' includeexpr<'
 
 " Change double-dash to em-dash as it is typed. {{{1

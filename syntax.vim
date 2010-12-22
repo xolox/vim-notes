@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 21, 2010
+" Last Change: December 22, 2010
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -132,4 +132,4 @@ highlight def link notesModeLine LineNr
 " Set the currently loaded syntax mode.
 let b:current_syntax = 'notes'
 
-" vim: ts=2 sw=2 et bomb
+" vim: ts=2 sw=2 et bomb fdl=1

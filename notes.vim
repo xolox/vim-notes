@@ -3,7 +3,10 @@
 " Last Change: December 22, 2010
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
-" Version: 0.7.4
+" Version: 0.7.5
+
+" Support for automatic update using the GLVS plug-in.
+" GetLatestVimScripts: 3375 1 :AutoInstall: session.zip
 
 " Don't source the plug-in when its already been loaded or &compatible is set.
 if &cp || exists('g:loaded_notes')

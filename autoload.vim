@@ -381,13 +381,7 @@ function! xolox#notes#insert_quote(style) " {{{3
   " XXX When I pass the below string constants as arguments from the file type
   " plug-in the resulting strings contain mojibake (UTF-8 interpreted as
   " latin1?) even if both scripts contain a UTF-8 BOM! Maybe a bug in Vim?!
-  if a:style == 1
-    let open_quote = '‘'
-    let close_quote = '’'
-  else
-    let open_quote = '“'
-    let close_quote = '”'
-  endif
+  let [open_quote, close_quote] = a:style == 1 ? ['‘', '’'] : ['“', '”']
   return getline('.')[col('.')-2] =~ '\S$' ? close_quote : open_quote
 endfunction
 
@@ -406,7 +400,7 @@ function! xolox#notes#indent_list(command, line1, line2) " {{{3
 endfunction
 
 function! xolox#notes#highlight_names(group) " {{{3
-  " Syntax highlight the names of all of the user's notes.
+  " Highlight the names of all notes as {group}.
   let starttime = xolox#timer#start()
   let titles = filter(xolox#notes#get_titles(), '!empty(v:val)')
   call map(titles, 's:words_to_pattern(v:val)')
@@ -467,7 +461,7 @@ function! s:syntax_include(filetype)
   return grouplistname
 endfunction
 
-function! xolox#notes#cfile(interactive, fname) " {{{3
+function! xolox#notes#include_expr(fname) " {{{3
   " Translate string {fname} to absolute filename of note.
   " TODO Use inputlist() when more than one note matches?!
   let notes = copy(xolox#notes#get_fnames_and_titles())
