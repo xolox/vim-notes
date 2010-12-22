@@ -35,7 +35,7 @@ highlight def link notesListNumber Comment
 
 " Highlight text emphasized in italic font. {{{2
 if has('conceal')
-  syntax region notesItalic matchgroup=notesItalicMarker start=/\<_[A-Za-z]\@=/ end=/\n\|\<_\>/ contains=@Spell concealends
+  syntax region notesItalic matchgroup=notesItalicMarker start=/\<_[A-Za-z]\@=/ end=/_\>\|\n/ contains=@Spell concealends
   highlight link notesItalicMarker notesHiddenMarker 
 else
   syntax match notesItalic /\<_\w[^_]*\w_\>/
