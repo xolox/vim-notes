@@ -6,8 +6,8 @@ The `notes.vim` plug-in for the [Vim text editor](http://www.vim.org/) makes it 
  * **Saving notes:** Just use Vim's [:write](http://vimdoc.sourceforge.net/htmldoc/editing.html#:write) and [:update](http://vimdoc.sourceforge.net/htmldoc/editing.html#:update) commands, you don't need to provide a filename because it will already have been set based on the title (first line) of your note (you also don't need to worry about special characters, they'll be escaped)
  * **Deleting notes:** The `:DeleteNote` command enables you to delete the current or given note
  * **Searching notes:** `:SearchNotes keyword …` searches for keywords and `:SearchNotes /pattern/` searches for regular expressions
-  * **Back-references:** The `:RelatedNotes` command find all notes referencing the current file
-  * A [Python](http://python.org/) script is included that accelerates keyword searches using an [SQLite](http://sqlite.org/) database
+   * **Back-references:** The `:RelatedNotes` command find all notes referencing the current file
+   * A [Python](http://python.org/) script is included that accelerates keyword searches using an [SQLite](http://sqlite.org/) database
  * **Navigating between notes:** The included file type plug-in redefines [gf](http://vimdoc.sourceforge.net/htmldoc/editing.html#gf) to jump between notes and the syntax script highlights note names as hyper links
  * **Writing aids:** The included file type plug-in contains mappings for automatic curly quotes, arrows and list bullets
  * **Embedded file types:** The included syntax script supports embedded highlighting using blocks marked with `{{{type … }}}` which allows you to embed highlighted code and configuration snippets in your notes
