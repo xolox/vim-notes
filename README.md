@@ -18,7 +18,7 @@ Here's a screen shot of the syntax mode using the [slate](http://code.google.com
 
 ## Install & usage
 
-Unzip the most recent [ZIP archive](http://peterodding.com/code/vim/downloads/notes) file inside your Vim profile directory (usually this is `~/.vim` on UNIX and `%USERPROFILE%\vimfiles` on Windows), restart Vim and execute the command `:helptags ~/.vim/doc` (use `:helptags ~\vimfiles\doc` instead on Windows). To get started execute `:NewNote`.
+Unzip the most recent [ZIP archive](http://peterodding.com/code/vim/downloads/notes) file inside your Vim profile directory (usually this is `~/.vim` on UNIX and `%USERPROFILE%\vimfiles` on Windows), restart Vim and execute the command `:helptags ~/.vim/doc` (use `:helptags ~\vimfiles\doc` instead on Windows). To get started execute `:NewNote` or `:edit note:`.
 
 ## Contact
 

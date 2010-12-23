@@ -1,6 +1,13 @@
 Note taking commands
 
-You can use the following commands to manage your notes:
+To edit existing notes you can use Vim commands such as :edit, :split and
+:tabedit with a filename that starts with ‘note:’ followed by (part of) the
+title of one of your notes, e.g.:
+   {{{vim
+   :edit note:todo
+   }}}
+When you don’t follow ‘note:’ with anything, the :NewNote command will be
+executed. The following commands can be used to manage your notes:
 
 # :NewNote starts editing a new note
 
