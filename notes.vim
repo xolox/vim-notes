@@ -3,7 +3,7 @@
 " Last Change: December 23, 2010
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
-" Version: 0.7.7
+" Version: 0.7.8
 
 " Support for automatic update using the GLVS plug-in.
 " GetLatestVimScripts: 3375 1 :AutoInstall: session.zip
@@ -13,40 +13,27 @@ if &cp || exists('g:loaded_notes')
   finish
 endif
 
+" Make sure the default paths below are compatible with Pathogen.
+let s:plugindir = expand('<sfile>:p:h') . '/../misc/notes'
+
 " Define the default location where the user's notes are saved?
 if !exists('g:notes_directory')
-  if xolox#is_windows()
-    let g:notes_directory = '~/vimfiles/misc/notes/user'
-  else
-    let g:notes_directory = '~/.vim/misc/notes/user'
-  endif
+  let g:notes_directory = s:plugindir . '/user'
 endif
 
 " Define the default location of the shadow directory with predefined notes?
 if !exists('g:notes_shadowdir')
-  if xolox#is_windows()
-    let g:notes_shadowdir = '~/vimfiles/misc/notes/shadow'
-  else
-    let g:notes_shadowdir = '~/.vim/misc/notes/shadow'
-  endif
+  let g:notes_shadowdir = s:plugindir . '/shadow'
 endif
 
 " Define the default location for the full text index.
 if !exists('g:notes_indexfile')
-  if xolox#is_windows()
-    let g:notes_indexfile = '~/vimfiles/misc/notes/index.sqlite3'
-  else
-    let g:notes_indexfile = '~/.vim/misc/notes/index.sqlite3'
-  endif
+  let g:notes_indexfile = s:plugindir . '/index.sqlite3'
 endif
 
 " Define the default location for the keyword scanner script.
 if !exists('g:notes_indexscript')
-  if xolox#is_windows()
-    let g:notes_indexscript = '~/vimfiles/misc/notes/scanner.py'
-  else
-    let g:notes_indexscript = '~/.vim/misc/notes/scanner.py'
-  endif
+  let g:notes_indexscript = s:plugindir . '/scanner.py'
 endif
 
 " User commands to create, delete and search notes.
