@@ -9,9 +9,6 @@ else
   let b:did_ftplugin = 1
 endif
 
-" Remember the original title of the current note.
-call xolox#notes#remember_title()
-
 " Disable highlighting of matching pairs. {{{1
 setlocal matchpairs=
 let b:undo_ftplugin = 'set matchpairs<'

@@ -21,34 +21,40 @@ function! xolox#notes#new(bang) " {{{1
 endfunction
 
 function! xolox#notes#rename() " {{{1
-  " Set the filename of notes based on their title.
-  if line('.') > 1 && xolox#notes#title_changed()
-    let oldname = expand('%:p')
-    let title = getline(1)
-    let newname = xolox#notes#title_to_fname(title)
-    if !xolox#path#equals(newname, oldname)
-      call xolox#notes#cache_del(oldname)
-      execute 'silent file' fnameescape(newname)
-      " Delete empty, useless buffer created by :file?
-      if oldname != ''
-        execute 'silent bwipeout' fnameescape(oldname)
+  " When the current note's title is changed, automatically rename the buffer.
+  if &filetype == 'notes' && &modified && line('.') > 1
+    let oldpath = expand('%:p')
+    let newpath = xolox#notes#title_to_fname(getline(1))
+    if newpath != '' && !xolox#path#equals(oldpath, newpath)
+      if oldpath != '' && !exists('b:notes_oldfname')
+        let b:notes_oldfname = oldpath
       endif
-      call xolox#notes#cache_add(newname, title)
+      execute 'silent file' fnameescape(newpath)
       " Redraw tab line with new filename.
       let &stal = &stal
     endif
-    call xolox#notes#remember_title()
   endif
 endfunction
 
-function! xolox#notes#edit(bang, fname) " {{{1
-  " Edit an existing note using a command such as :edit note:keyword.
+function! xolox#notes#cleanup() " {{{1
+  " Once the user has saved the note under a new name, remove the old file.
+  if exists('b:notes_oldfname')
+    if filereadable(b:notes_oldfname)
+      call delete(b:notes_oldfname)
+    endif
+    unlet b:notes_oldfname
+  endif
+endfunction
+
+function! xolox#notes#shortcut() " {{{1
+  " Edit existing notes using commands such as :edit note:keyword.
   let starttime = xolox#timer#start()
   let notes = {}
+  let bang = v:cmdbang ? '!' : ''
   let filename = ''
-  let arguments = xolox#trim(matchstr(a:fname, 'note:\zs.*'))
+  let arguments = xolox#trim(matchstr(expand('<afile>'), 'note:\zs.*'))
   if arguments == ''
-    call xolox#notes#new(a:bang)
+    call xolox#notes#new(bang)
     return
   endif
   for [fname, title] in items(xolox#notes#get_fnames_and_titles())
@@ -84,7 +90,7 @@ function! xolox#notes#edit(bang, fname) " {{{1
   if empty(filename)
     call xolox#warning("No matching notes!")
   else
-    execute 'edit' . (v:cmdbang ? '!' : '') v:cmdarg fnameescape(filename)
+    execute 'edit' . bang v:cmdarg fnameescape(filename)
     setlocal filetype=notes
     call xolox#timer#stop('%s: Opened note in %s.', s:script, starttime)
   endif
@@ -487,16 +493,6 @@ endfunction
 function! s:normalize_ws(s)
   " Enable string comparison that ignores differences in whitespace.
   return xolox#trim(substitute(a:s, '\_s\+', '', 'g'))
-endfunction
-
-function! xolox#notes#remember_title() " {{{3
-  " Remember the title of the current note to detect renaming.
-  let b:note_title = getline(1)
-endfunction
-
-function! xolox#notes#title_changed() " {{{3
-  " Check whether the title of the current note has been modified.
-  return &modified && !(exists('b:note_title') && b:note_title == getline(1))
 endfunction
 
 function! xolox#notes#foldexpr() " {{{3

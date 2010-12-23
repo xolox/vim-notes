@@ -1,9 +1,9 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 22, 2010
+" Last Change: December 23, 2010
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
-" Version: 0.7.6
+" Version: 0.7.7
 
 " Support for automatic update using the GLVS plug-in.
 " GetLatestVimScripts: 3375 1 :AutoInstall: session.zip
@@ -49,36 +49,36 @@ if !exists('g:notes_indexscript')
   endif
 endif
 
-" Define user commands to create notes.
+" User commands to create, delete and search notes.
 command! -bar -bang NewNote call xolox#notes#new(<q-bang>)
 command! -bar -bang DeleteNote call xolox#notes#delete(<q-bang>)
 command! -bar -bang -nargs=1 SearchNotes call xolox#notes#search(<q-bang>, <q-args>)
 command! -bar -bang RelatedNotes call xolox#notes#related(<q-bang>)
 
-" Install an automatic command to edit notes using filenames like "note:todo".
+" Automatic commands to enable the :edit note:… shortcut and load the notes file type.
+
+function! s:DefAutoCmd(events, directory, command)
+  " Resolve the path to the directory with notes; Vim matches filename
+  " patterns in automatic commands after resolving filenames, which means
+  " the automatic commands will also apply when symbolic links are used.
+  let directory = xolox#path#absolute(a:directory)
+  let pattern = xolox#path#merge(fnameescape(directory), '*')
+  execute 'autocmd' a:events pattern a:command
+endfunction
+
 augroup PluginNotes
   autocmd!
   " NB: "nested" is used here so that SwapExists automatic commands apply
   " to notes (which is IMHO better than always showing the E325 prompt).
-  au BufReadCmd note:* nested call xolox#notes#edit(v:cmdbang ? '!' : '', expand('<afile>'))
+  au BufReadCmd note:* nested call xolox#notes#shortcut()
   au SwapExists * call xolox#notes#swaphack()
+  call s:DefAutoCmd('BufWritePost', g:notes_directory, 'call xolox#notes#cleanup()')
 augroup END
 
-" Install automatic commands that recognize the notes file type.
-
-function! s:NewAutoCmd(directory)
-  " Resolve the path to the directory with notes. Because Vim matches filename
-  " patterns in automatic commands after resolving the filename, this makes sure
-  " the automatic command below always applies, even in case of symbolic links.
-  let directory = xolox#path#absolute(a:directory)
-  let pattern = xolox#path#merge(fnameescape(directory), '*')
-  augroup filetypedetect
-    exe 'au BufNewFile,BufRead,BufWritePost' pattern 'if &bt == "" | setl ft=notes | endif'
-  augroup END
-endfunction
-
-call s:NewAutoCmd(g:notes_directory)
-call s:NewAutoCmd(g:notes_shadowdir)
+augroup filetypedetect
+  call s:DefAutoCmd('BufNewFile,BufRead,BufWritePost', g:notes_directory, 'if &bt == "" | setl ft=notes | endif')
+  call s:DefAutoCmd('BufNewFile,BufRead,BufWritePost', g:notes_shadowdir, 'if &bt == "" | setl ft=notes | endif')
+augroup END
 
 " Make sure the plug-in is only loaded once.
 let g:loaded_notes = 1
