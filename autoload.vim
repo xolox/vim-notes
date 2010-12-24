@@ -410,13 +410,14 @@ function! xolox#notes#indent_list(command, line1, line2) " {{{3
   normal $
 endfunction
 
-function! xolox#notes#highlight_names(group) " {{{3
-  " Highlight the names of all notes as {group}.
+function! xolox#notes#highlight_names() " {{{3
+  " Highlight the names of all notes as "notesName" (linked to "Underlined").
   let starttime = xolox#timer#start()
   let titles = filter(xolox#notes#get_titles(), '!empty(v:val)')
   call map(titles, 's:words_to_pattern(v:val)')
   call sort(titles, 's:sort_longest_to_shortest')
-  execute 'syntax match' a:group '/\c\%>2l\%(' . escape(join(titles, '\|'), '/') . '\)/'
+  syntax clear notesName
+  execute 'syntax match notesName /\c\%>2l\%(' . escape(join(titles, '\|'), '/') . '\)/'
   call xolox#timer#stop("%s: Highlighted note names in %s.", s:script, starttime)
 endfunction
 

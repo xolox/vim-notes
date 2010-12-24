@@ -23,7 +23,7 @@ syntax cluster notesInline contains=notesName
 highlight def link notesHiddenMarker Ignore
 
 " Highlight note names as hyperlinks. {{{2
-call xolox#notes#highlight_names('notesName')
+call xolox#notes#highlight_names()
 syntax cluster notesInline add=notesName
 highlight def link notesName Underlined
 

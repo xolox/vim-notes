@@ -3,7 +3,7 @@
 " Last Change: December 24, 2010
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
-" Version: 0.7.10
+" Version: 0.7.11
 
 " Support for automatic update using the GLVS plug-in.
 " GetLatestVimScripts: 3375 1 :AutoInstall: session.zip
@@ -59,6 +59,7 @@ augroup PluginNotes
   " to notes (which is IMHO better than always showing the E325 prompt).
   au BufReadCmd note:* nested call xolox#notes#shortcut()
   au SwapExists * call xolox#notes#swaphack()
+  au WinEnter * if &ft == 'notes' | call xolox#notes#highlight_names() | endif
   call s:DefAutoCmd('BufWritePost', g:notes_directory, 'call xolox#notes#cleanup()')
 augroup END
 
