@@ -383,6 +383,13 @@ function! xolox#notes#cache_del(filename) " {{{3
   endif
 endfunction
 
+function! xolox#notes#unload_from_cache() " {{{3
+  let bufname = expand('<afile>:p')
+  if !filereadable(bufname)
+    call xolox#notes#cache_del(bufname)
+  endif
+endfunction
+
 " Functions called by the file type plug-in and syntax script. {{{2
 
 function! xolox#notes#insert_quote(style) " {{{3
