@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 22, 2010
+" Last Change: December 24, 2010
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -24,12 +24,17 @@ function! xolox#notes#rename() " {{{1
   " When the current note's title is changed, automatically rename the buffer.
   if &filetype == 'notes' && &modified && line('.') > 1
     let oldpath = expand('%:p')
-    let newpath = xolox#notes#title_to_fname(getline(1))
+    let title = getline(1)
+    let newpath = xolox#notes#title_to_fname(title)
     if newpath != '' && !xolox#path#equals(oldpath, newpath)
-      if oldpath != '' && !exists('b:notes_oldfname')
-        let b:notes_oldfname = oldpath
+      if oldpath != ''
+        call xolox#notes#cache_del(oldpath)
+        if !exists('b:notes_oldfname')
+          let b:notes_oldfname = oldpath
+        endif
       endif
       execute 'silent file' fnameescape(newpath)
+      call xolox#notes#cache_add(newpath, title)
       " Redraw tab line with new filename.
       let &stal = &stal
     endif
