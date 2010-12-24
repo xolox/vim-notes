@@ -62,6 +62,7 @@ syntax cluster notesInline add=notesRealURL
 highlight def link notesRealURL Underlined
 if has('conceal')
   syntax match notesUrlScheme @\(mailto:\|javascript:\|\w\{3,}://\)@ contained containedin=notesRealURL conceal
+  highlight def link notesUrlScheme notesRealURL
 endif
 syntax match notesEmailAddr /\<\w[^@ \t\r]*\w@\w[^@ \t\r]\+\w\>/
 syntax cluster notesInline add=notesEmailAddr
