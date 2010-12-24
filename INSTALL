@@ -1,3 +1,0 @@
-Note to GitHub users: This git repository doesn't include all of the autoload
-scripts required by the Vim plug-in. To install the plug-in including its
-dependencies please see the ZIP archive linked to in README.md.
