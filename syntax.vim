@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 22, 2010
+" Last Change: December 24, 2010
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -54,18 +54,15 @@ syntax cluster notesInline add=notesBold
 highlight notesBold gui=bold
 
 " Highlight domain names, URLs, e-mail addresses and filenames. {{{2
-syntax match notesTextURL @\<www\.\(\S*\w\)\+[/?#]\?@
+syntax match notesTextURL @\<www\.\(\S*\w\)\+/\?@
 syntax cluster notesInline add=notesTextURL
 highlight def link notesTextURL Underlined
+syntax match notesRealURL @\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?@
+syntax cluster notesInline add=notesRealURL
+highlight def link notesRealURL Underlined
 if has('conceal')
-  syntax region notesFullURL matchgroup=notesURLScheme start=@\<\(mailto:\|javascript:\|\w\{3,}://\)@ end=/\([[:punct:]]\s\|\s\|$\)\@=/ concealends
-  highlight def link notesURLScheme notesFullURL
-else
-  syntax match notesFullURL @\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+[/?#]\?@
+  syntax match notesUrlScheme @\(mailto:\|javascript:\|\w\{3,}://\)@ contained containedin=notesRealURL conceal
 endif
-syntax cluster notesInline add=notesFullURL
-highlight def link notesFullURL Underlined
-
 syntax match notesEmailAddr /\<\w[^@ \t\r]*\w@\w[^@ \t\r]\+\w\>/
 syntax cluster notesInline add=notesEmailAddr
 highlight def link notesEmailAddr Underlined

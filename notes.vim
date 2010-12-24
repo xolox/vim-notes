@@ -1,9 +1,9 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 23, 2010
+" Last Change: December 24, 2010
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
-" Version: 0.7.8
+" Version: 0.7.9
 
 " Support for automatic update using the GLVS plug-in.
 " GetLatestVimScripts: 3375 1 :AutoInstall: session.zip
