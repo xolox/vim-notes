@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 24, 2010
+" Last Change: December 25, 2010
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -414,9 +414,9 @@ function! xolox#notes#indent_list(command, line1, line2) " {{{3
   normal $
 endfunction
 
-function! xolox#notes#highlight_names() " {{{3
+function! xolox#notes#highlight_names(force) " {{{3
   " Highlight the names of all notes as "notesName" (linked to "Underlined").
-  if !(exists('b:notes_names_last_highlighted') && b:notes_names_last_highlighted > s:cache_mtime)
+  if a:force || !(exists('b:notes_names_last_highlighted') && b:notes_names_last_highlighted > s:cache_mtime)
     let starttime = xolox#timer#start()
     let titles = filter(xolox#notes#get_titles(), '!empty(v:val)')
     call map(titles, 's:words_to_pattern(v:val)')
