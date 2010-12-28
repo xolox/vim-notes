@@ -3,7 +3,7 @@
 " Last Change: December 28, 2010
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
-" Version: 0.7.19
+" Version: 0.7.20
 
 " Support for automatic update using the GLVS plug-in.
 " GetLatestVimScripts: 3375 1 :AutoInstall: session.zip
@@ -66,8 +66,8 @@ augroup PluginNotes
 augroup END
 
 augroup filetypedetect
-  call s:DefAutoCmd('BufNewFile,BufRead,BufWritePost', g:notes_directory, 'if &bt == "" | setl ft=notes | endif')
-  call s:DefAutoCmd('BufNewFile,BufRead,BufWritePost', g:notes_shadowdir, 'if &bt == "" | setl ft=notes | endif')
+  call s:DefAutoCmd('BufNewFile,BufRead', g:notes_directory, 'if &bt == "" | setl ft=notes | endif')
+  call s:DefAutoCmd('BufNewFile,BufRead', g:notes_shadowdir, 'if &bt == "" | setl ft=notes | endif')
 augroup END
 
 " Make sure the plug-in is only loaded once.
