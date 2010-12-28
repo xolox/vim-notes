@@ -70,6 +70,8 @@ highlight def link notesEmailAddr Underlined
 syntax match notesUnixPath /\w\@<![\/~]\S\+\(\/\|[^ [:punct:]]\)/ contains=notesName | " <- UNIX style pathnames
 syntax cluster notesInline add=notesUnixPath
 highlight def link notesUnixPath Directory
+syntax match notesPathLnum /:\d\+/ contained containedin=notesUnixPath
+highlight def link notesPathLnum Comment
 syntax match notesWindowsPath /\w\@<![A-Za-z]:\S\+\([\\/]\|[^ [:punct:]]\)/ contains=notesName | " <- Windows style pathnames
 syntax cluster notesInline add=notesWindowsPath
 highlight def link notesWindowsPath Directory
