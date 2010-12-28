@@ -79,10 +79,10 @@ syntax match notesTodo /\<TODO\>/
 syntax match notesXXX /\<XXX\>/
 syntax match notesDoneItem /^\(\s\+\).*\<DONE\>.*\(\n\1\s.*\)*/ contains=@notesInline
 syntax match notesDoneMarker /\<DONE\>/ containedin=notesDoneItem
-highlight link notesTodo WarningMsg
-highlight link notesXXX WarningMsg
-highlight link notesDoneItem Comment
-highlight link notesDoneMarker Question
+highlight def link notesTodo WarningMsg
+highlight def link notesXXX WarningMsg
+highlight def link notesDoneItem Comment
+highlight def link notesDoneMarker Question
 
 " Highlight Vim command names in :this notation. {{{2
 syntax match notesVimCmd /:\w\+\(!\|\>\)/ contains=ALLBUT,@Spell
@@ -111,14 +111,14 @@ highlight def link notesBlockQuote Comment
 
 " Horizontal rulers. {{{2
 syntax match notesRule /\(^\s\+\)\zs\*\s\*\s\*$/
-highlight link notesRule Comment
+highlight def link notesRule Comment
 
 " Highlight embedded blocks of source code, log file messages, basically anything Vim can highlight. {{{2
 " NB: I've escaped these markers so that Vim doesn't interpret them when editing this file…
 syntax match notesCodeStart /{{[{]\w*/
 syntax match notesCodeEnd /}}[}]/
-highlight link notesCodeStart Ignore
-highlight link notesCodeEnd Ignore
+highlight def link notesCodeStart Ignore
+highlight def link notesCodeEnd Ignore
 call xolox#notes#highlight_sources('notesCodeStart', 'notesCodeEnd')
 
 " Hide mode line at end of file. {{{2
