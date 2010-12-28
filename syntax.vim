@@ -76,13 +76,15 @@ syntax match notesWindowsPath /\w\@<![A-Za-z]:\S\+\([\\/]\|[^ [:punct:]]\)/ cont
 syntax cluster notesInline add=notesWindowsPath
 highlight def link notesWindowsPath Directory
 
-" Highlight TODO, DONE and XXX markers. {{{2
+" Highlight TODO, DONE, FIXME and XXX markers. {{{2
 syntax match notesTodo /\<TODO\>/
 syntax match notesXXX /\<XXX\>/
+syntax match notesFixMe /\<FIXME\>/
 syntax match notesDoneItem /^\(\s\+\).*\<DONE\>.*\(\n\1\s.*\)*/ contains=@notesInline
 syntax match notesDoneMarker /\<DONE\>/ containedin=notesDoneItem
 highlight def link notesTodo WarningMsg
 highlight def link notesXXX WarningMsg
+highlight def link notesFixMe WarningMsg
 highlight def link notesDoneItem Comment
 highlight def link notesDoneMarker Question
 
