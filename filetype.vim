@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 22, 2010
+" Last Change: January 7, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -78,9 +78,5 @@ imap <buffer> <silent> <S-Tab> <C-o>:call xolox#notes#indent_list('<<', line('.'
 smap <buffer> <silent> <S-Tab> <C-o>:<C-u>call xolox#notes#indent_list('<<', line("'<"), line("'>"))<CR><C-o>gv
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> <S-Tab>"'
 let b:undo_ftplugin .= ' | execute "sunmap <buffer> <S-Tab>"'
-
-" Automatically (re)name buffers containing notes. {{{1
-autocmd! CursorMoved,CursorMovedI <buffer> call xolox#notes#rename()
-let b:undo_ftplugin .= ' | execute "autocmd! CursorMoved,CursorMovedI <buffer> "'
 
 " vim: ts=2 sw=2 et

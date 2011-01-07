@@ -1,8 +1,8 @@
 New note
 
-To get started enter a title for your note above. Once your text cursor leaves
-the first line the name of the buffer will be set to match your note’s title.
-You can then save this note using Vim’s built in :write and :update commands.
+To get started enter a title for your note above. When you’re ready to save
+your note just use Vim’s :write or :update commands, a filename will be picked
+automatically based on the title.
 
                                     * * *
 

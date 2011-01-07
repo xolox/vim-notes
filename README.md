@@ -3,8 +3,8 @@
 The `notes.vim` plug-in for the [Vim text editor] [vim] makes it easy to manage your notes in Vim:
 
  * **Starting a new note:** Execute the `:Note` command to create a new buffer and load the appropriate file type and syntax
+ * **Saving notes:** Just use Vim's [:write] [write] and [:update] [update] commands, you don't need to provide a filename because it will be set based on the title (first line) of your note (you also don't need to worry about special characters, they'll be escaped)
  * **Editing existing notes:** Execute `:Note keyword` to edit a note containing `keyword` in its title (if no notes are found a new one is created with `anything` as its title)
- * **Saving notes:** Just use Vim's [:write] [write] and [:update] [update] commands, you don't need to provide a filename because it will already have been set based on the title (first line) of your note (you also don't need to worry about special characters, they'll be escaped)
  * **Deleting notes:** The `:DeleteNote` command enables you to delete the current or given note
  * **Searching notes:** `:SearchNotes keyword …` searches for keywords and `:SearchNotes /pattern/` searches for regular expressions
    * **Back-references:** The `:RelatedNotes` command find all notes referencing the current file
@@ -28,7 +28,7 @@ If you have questions, bug reports, suggestions, etc. the author can be contacte
 ## License
 
 This software is licensed under the [MIT license] [mit].  
-© 2010 Peter Odding &lt;<peter@peterodding.com>&gt;.
+© 2011 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
 [vim]: http://www.vim.org/
 [write]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:write
@@ -39,4 +39,4 @@ This software is licensed under the [MIT license] [mit].
 [slate]: http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
 [download]: http://peterodding.com/code/vim/downloads/notes
 [vim_online]: http://www.vim.org/scripts/script.php?script_id=3375
-mit: http://en.wikipedia.org/wiki/MIT_License
+[mit]: http://en.wikipedia.org/wiki/MIT_License

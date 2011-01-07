@@ -73,34 +73,22 @@ function! xolox#notes#select(filter) " {{{1
   return ''
 endfunction
 
-function! xolox#notes#rename() " {{{1
-  " When the current note's title is changed, automatically rename the buffer.
-  if &filetype == 'notes' && &modified && line('.') > 1
-    let oldpath = expand('%:p')
+function! xolox#notes#save() abort " {{{1
+  " When the current note's title is changed, automatically rename the file.
+  if &filetype == 'notes'
     let title = getline(1)
+    let oldpath = expand('%:p')
     let newpath = xolox#notes#title_to_fname(title)
-    if newpath != '' && !xolox#path#equals(oldpath, newpath)
-      if oldpath != ''
-        call xolox#notes#cache_del(oldpath)
-        if !exists('b:notes_oldfname')
-          let b:notes_oldfname = oldpath
-        endif
-      endif
-      execute 'silent file' fnameescape(newpath)
-      call xolox#notes#cache_add(newpath, title)
-      " Redraw tab line with new filename.
-      let &stal = &stal
+    if newpath == ''
+      echoerr "Invalid note title"
     endif
-  endif
-endfunction
-
-function! xolox#notes#cleanup() " {{{1
-  " Once the user has saved the note under a new name, remove the old file.
-  if exists('b:notes_oldfname')
-    if filereadable(b:notes_oldfname)
-      call delete(b:notes_oldfname)
+    let bang = v:cmdbang ? '!' : ''
+    execute 'saveas' bang fnameescape(newpath)
+    if !xolox#path#equals(oldpath, newpath)
+      call delete(oldpath)
     endif
-    unlet b:notes_oldfname
+    call xolox#notes#cache_del(oldpath)
+    call xolox#notes#cache_add(newpath, title)
   endif
 endfunction
 
