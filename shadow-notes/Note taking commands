@@ -6,15 +6,17 @@ title of one of your notes, e.g.:
    {{{vim
    :edit note:todo
    }}}
-When you don’t follow ‘note:’ with anything, the :NewNote command will be
-executed. The following commands can be used to manage your notes:
+When you don’t follow ‘note:’ with anything a new note is created.
+The following commands can be used to manage your notes:
 
-# :NewNote starts editing a new note
+# :Note starts new notes and edits existing ones
 
-This command creates a new buffer in the current window, sets the appropriate
-file type and syntax and reads in the new note template. This fails when
-changes have been made to the current buffer, unless you use :NewNote! which
-discards any changes.
+If you don’t pass any arguments to the :Note command it will start editing a
+new note. If you pass (part of) of the title of one of your existing notes that
+note will be edited. If no notes match the given argument then a new note is
+created with its title set to the text you passed to :Note. This command will
+fail when changes have been made to the current buffer, unless you use :Note!
+which discards any changes.
 
 # :DeleteNote deletes the current note
 

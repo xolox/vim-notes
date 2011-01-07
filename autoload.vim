@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 28, 2010
+" Last Change: January 7, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -8,20 +8,69 @@
 
 let s:script = expand('<sfile>:p:~')
 
-function! xolox#notes#new(bang, name) " {{{1
-  " Create a new note using the :NewNote command.
-  if !s:is_empty_buffer()
-    execute 'enew' . a:bang
-  endif
-  setlocal filetype=notes
-  execute 'silent read' fnameescape(xolox#path#merge(g:notes_shadowdir, 'New note'))
-  1delete
-  if a:name =~ '\S'
-    call setline(1, xolox#trim(a:name))
+function! xolox#notes#shortcut() " {{{1
+  " The "note:" pseudo protocol is just a shortcut for the :Note command.
+  let name = matchstr(expand('<afile>'), 'note:\zs.*')
+  call xolox#notes#edit(v:cmdbang ? '!' : '', name)
+endfunction
+
+function! xolox#notes#edit(bang, title) abort " {{{1
+  " Edit an existing note or create a new one with the :Note command.
+  let starttime = xolox#timer#start()
+  let title = xolox#trim(a:title)
+  if title != ''
+    let fname = xolox#notes#select(title)
+    if fname != ''
+      execute 'edit' . a:bang fnameescape(fname)
+      setlocal filetype=notes
+      call xolox#timer#stop('%s: Opened note in %s.', s:script, starttime)
+      return
+    endif
   else
+    let title = 'New note'
+  endif
+  let fname = xolox#notes#title_to_fname(title)
+  execute 'edit' . a:bang fnameescape(fname)
+  setlocal filetype=notes
+  if line('$') == 1 && getline(1) == ''
+    let fname = xolox#path#merge(g:notes_shadowdir, 'New note')
+    execute 'silent read' fnameescape(fname)
+    1delete
     setlocal nomodified
   endif
+  if title != 'New note'
+    call setline(1, title)
+  endif
   doautocmd BufReadPost
+  call xolox#timer#stop('%s: Started new note in %s.', s:script, starttime)
+endfunction
+
+function! xolox#notes#select(filter) " {{{1
+  " Interactively select an existing note whose title contains {filter}.
+  let notes = {}
+  let filter = xolox#trim(a:filter)
+  for [fname, title] in items(xolox#notes#get_fnames_and_titles())
+    if title ==? filter
+      return fname
+    elseif title =~? filter
+      let notes[fname] = title
+    endif
+  endfor
+  if len(notes) == 1
+    return keys(notes)[0]
+  elseif !empty(notes)
+    let choices = ['Please select a note:']
+    let values = ['']
+    for fname in sort(keys(notes))
+      call add(choices, ' ' . len(choices) . ') ' . notes[fname])
+      call add(values, fname)
+    endfor
+    let choice = inputlist(choices)
+    if choice > 0 && choice < len(choices)
+      return values[choice]
+    endif
+  endif
+  return ''
 endfunction
 
 function! xolox#notes#rename() " {{{1
@@ -52,56 +101,6 @@ function! xolox#notes#cleanup() " {{{1
       call delete(b:notes_oldfname)
     endif
     unlet b:notes_oldfname
-  endif
-endfunction
-
-function! xolox#notes#shortcut() " {{{1
-  " Edit existing notes using commands such as :edit note:keyword.
-  let starttime = xolox#timer#start()
-  let notes = {}
-  let bang = v:cmdbang ? '!' : ''
-  let filename = ''
-  let arguments = xolox#trim(matchstr(expand('<afile>'), 'note:\zs.*'))
-  if arguments == ''
-    call xolox#notes#new(bang, '')
-    return
-  endif
-  for [fname, title] in items(xolox#notes#get_fnames_and_titles())
-    " Prefer case insensitive but exact matches.
-    if title ==? arguments
-      let filename = fname
-      break
-    elseif title =~? arguments
-      " Also check for substring or regex match.
-      let notes[title] = fname
-    endif
-  endfor
-  if filename == ''
-    if len(notes) == 1
-      " Only matched one file using substring or regex match?
-      let filename = values(notes)[0]
-    elseif !empty(notes)
-      " More than one file matched: ask user which to edit.
-      let choices = ['Please select a note:']
-      let values = ['']
-      for title in sort(keys(notes))
-        call add(choices, ' ' . len(choices) . ') ' . title)
-        call add(values, notes[title])
-      endfor
-      let choice = inputlist(choices)
-      if choice <= 0 || choice >= len(choices)
-        " User did not select a valid note.
-        return
-      endif
-      let filename = values[choice]
-    endif
-  endif
-  if empty(filename)
-    call xolox#warning("No matching notes!")
-  else
-    execute 'edit' . bang v:cmdarg fnameescape(filename)
-    setlocal filetype=notes
-    call xolox#timer#stop('%s: Opened note in %s.', s:script, starttime)
   endif
 endfunction
 

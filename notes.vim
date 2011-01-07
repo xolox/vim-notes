@@ -1,9 +1,9 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 28, 2010
+" Last Change: January 7, 2011
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
-" Version: 0.7.21
+" Version: 0.8
 
 " Support for automatic update using the GLVS plug-in.
 " GetLatestVimScripts: 3375 1 :AutoInstall: session.zip
@@ -37,7 +37,7 @@ if !exists('g:notes_indexscript')
 endif
 
 " User commands to create, delete and search notes.
-command! -bar -bang -nargs=? NewNote call xolox#notes#new(<q-bang>, <q-args>)
+command! -bar -bang -nargs=? Note call xolox#notes#edit(<q-bang>, <q-args>)
 command! -bar -bang DeleteNote call xolox#notes#delete(<q-bang>)
 command! -bar -bang -nargs=1 SearchNotes call xolox#notes#search(<q-bang>, <q-args>)
 command! -bar -bang RelatedNotes call xolox#notes#related(<q-bang>)
