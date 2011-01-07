@@ -73,6 +73,10 @@ function! xolox#notes#select(filter) " {{{1
   return ''
 endfunction
 
+function! xolox#notes#complete(arglead, cmdline, cursorpos) " {{{1
+  return filter(xolox#notes#get_titles(), 'v:val =~ a:arglead')
+endfunction
+
 function! xolox#notes#save() abort " {{{1
   " When the current note's title is changed, automatically rename the file.
   if &filetype == 'notes'
