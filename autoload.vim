@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 25, 2010
+" Last Change: December 28, 2010
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -8,7 +8,7 @@
 
 let s:script = expand('<sfile>:p:~')
 
-function! xolox#notes#new(bang) " {{{1
+function! xolox#notes#new(bang, name) " {{{1
   " Create a new note using the :NewNote command.
   if !s:is_empty_buffer()
     execute 'enew' . a:bang
@@ -16,7 +16,11 @@ function! xolox#notes#new(bang) " {{{1
   setlocal filetype=notes
   execute 'silent read' fnameescape(xolox#path#merge(g:notes_shadowdir, 'New note'))
   1delete
-  setlocal nomodified
+  if a:name =~ '\S'
+    call setline(1, xolox#trim(a:name))
+  else
+    setlocal nomodified
+  endif
   doautocmd BufReadPost
 endfunction
 
@@ -59,7 +63,7 @@ function! xolox#notes#shortcut() " {{{1
   let filename = ''
   let arguments = xolox#trim(matchstr(expand('<afile>'), 'note:\zs.*'))
   if arguments == ''
-    call xolox#notes#new(bang)
+    call xolox#notes#new(bang, '')
     return
   endif
   for [fname, title] in items(xolox#notes#get_fnames_and_titles())
