@@ -259,12 +259,16 @@ endfunction
 function! s:run_scanner(keywords, matches) " {{{2
   " Try to run scanner.py script to find notes matching {keywords}.
   let scanner = xolox#path#absolute(g:notes_indexscript)
-  if !(executable('python') && filereadable(scanner))
+  let python = 'python'
+  if executable('python2')
+    let python = 'python2'
+  endif
+  if !(executable(python) && filereadable(scanner))
     call xolox#debug("%s: The %s script isn't executable.", s:script, scanner)
   else
     let arguments = [scanner, g:notes_indexfile, g:notes_directory, g:notes_shadowdir, a:keywords]
     call map(arguments, 'shellescape(v:val)')
-    let output = xolox#trim(system(join(['python'] + arguments)))
+    let output = xolox#trim(system(join([python] + arguments)))
     if !v:shell_error
       call extend(a:matches, split(output, '\n'))
       return 1

@@ -8,7 +8,7 @@ The `notes.vim` plug-in for the [Vim text editor] [vim] makes it easy to manage 
  * **Deleting notes:** The `:DeleteNote` command enables you to delete the current note
  * **Searching notes:** `:SearchNotes keyword …` searches for keywords and `:SearchNotes /pattern/` searches for regular expressions
    * **Back-references:** The `:RelatedNotes` command find all notes referencing the current file
-   * A [Python] [python] script is included that accelerates keyword searches using an [SQLite] [sqlite] database
+   * A [Python 2] [python] script is included that accelerates keyword searches using an [SQLite] [sqlite] database
  * **Navigating between notes:** The included file type plug-in redefines [gf] [gf] to jump between notes and the syntax script highlights note names as hyper links
  * **Writing aids:** The included file type plug-in contains mappings for automatic curly quotes, arrows and list bullets
  * **Embedded file types:** The included syntax script supports embedded highlighting using blocks marked with `{{{type … }}}` which allows you to embed highlighted code and configuration snippets in your notes
