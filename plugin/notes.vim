@@ -3,7 +3,7 @@
 " Last Change: May 22, 2011
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
-" Version: 0.8.5
+" Version: 0.8.6
 
 " Support for automatic update using the GLVS plug-in.
 " GetLatestVimScripts: 3375 1 :AutoInstall: notes.zip
@@ -50,7 +50,13 @@ function! s:DAC(events, directory, command)
   " also applies to symbolic links pointing to notes (Vim matches filename
   " patterns in automatic commands after resolving filenames).
   let directory = xolox#misc#path#absolute(a:directory)
-  let pattern = xolox#misc#path#merge(fnameescape(directory), '*')
+  " On Windows we have to replace backslashes with forward slashes.
+  if xolox#misc#os#is_win()
+    let directory = substitute(directory, '\\', '/', 'g')
+  endif
+  let pattern = fnameescape(directory) . '/*'
+  " On Windows the pattern won't match if it contains repeating slashes.
+  let pattern = substitute(pattern, '/\+', '/', 'g')
   execute 'autocmd' a:events pattern a:command
 endfunction
 
