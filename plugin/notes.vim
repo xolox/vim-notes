@@ -3,7 +3,7 @@
 " Last Change: May 22, 2011
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
-" Version: 0.8.6
+" Version: 0.8.7
 
 " Support for automatic update using the GLVS plug-in.
 " GetLatestVimScripts: 3375 1 :AutoInstall: notes.zip
@@ -65,6 +65,7 @@ augroup PluginNotes
   " NB: "nested" is used here so that SwapExists automatic commands apply
   " to notes (which is IMHO better than always showing the E325 prompt).
   au BufReadCmd note:* nested call xolox#notes#shortcut()
+  call s:DAC('BufReadCmd', g:notes_shadowdir, 'call xolox#notes#edit_shadow()')
   call s:DAC('BufWriteCmd', g:notes_directory, 'call xolox#notes#save()')
   au SwapExists * call xolox#notes#swaphack()
   au WinEnter * if &ft == 'notes' | call xolox#notes#highlight_names(0) | endif

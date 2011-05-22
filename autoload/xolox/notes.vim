@@ -22,6 +22,9 @@ function! xolox#notes#edit(bang, title) abort " {{{1
     let fname = xolox#notes#select(title)
     if fname != ''
       execute 'edit' . a:bang fnameescape(fname)
+      if !xolox#notes#unicode_enabled() && xolox#misc#path#equals(fnamemodify(fname, ':h'), g:notes_shadowdir)
+        call s:transcode_utf8_latin1()
+      endif
       setlocal filetype=notes
       call xolox#misc#timer#stop('%s: Opened note in %s.', s:script, starttime)
       return
@@ -36,6 +39,9 @@ function! xolox#notes#edit(bang, title) abort " {{{1
     let fname = xolox#misc#path#merge(g:notes_shadowdir, 'New note')
     execute 'silent read' fnameescape(fname)
     1delete
+    if !xolox#notes#unicode_enabled()
+      call s:transcode_utf8_latin1()
+    endif
     setlocal nomodified
   endif
   if title != 'New note'
@@ -43,6 +49,31 @@ function! xolox#notes#edit(bang, title) abort " {{{1
   endif
   doautocmd BufReadPost
   call xolox#misc#timer#stop('%s: Started new note in %s.', s:script, starttime)
+endfunction
+
+function! xolox#notes#edit_shadow() " {{{1
+  " People using latin1 don't like the UTF-8 curly quotes and bullets used in
+  " the predefined notes because there are no equivalent characters in latin1,
+  " resulting in the characters being shown as garbage or a question mark.
+  execute 'edit' fnameescape(expand('<amatch>'))
+  if !xolox#notes#unicode_enabled()
+    call s:transcode_utf8_latin1()
+  endif
+  setlocal filetype=notes
+endfunction
+
+function! xolox#notes#unicode_enabled()
+  return &encoding == 'utf-8'
+endfunction
+
+function! s:transcode_utf8_latin1()
+  let view = winsaveview()
+  silent %s/\%xe2\%x80\%x98/`/eg
+  silent %s/\%xe2\%x80\%x99/'/eg
+  silent %s/\%xe2\%x80[\x9c\x9d]/"/eg
+  silent %s/\%xe2\%x80\%xa2/\*/eg
+  setlocal nomodified
+  call winrestview(view)
 endfunction
 
 function! xolox#notes#select(filter) " {{{1
@@ -425,13 +456,22 @@ function! xolox#notes#insert_quote(style) " {{{3
   " XXX When I pass the below string constants as arguments from the file type
   " plug-in the resulting strings contain mojibake (UTF-8 interpreted as
   " latin1?) even if both scripts contain a UTF-8 BOM! Maybe a bug in Vim?!
-  let [open_quote, close_quote] = a:style == 1 ? ['‘', '’'] : ['“', '”']
+  if xolox#notes#unicode_enabled()
+    let [open_quote, close_quote] = a:style == 1 ? ['‘', '’'] : ['“', '”']
+  else
+    let [open_quote, close_quote] = a:style == 1 ? ['`', "'"] : ['"', '"']
+  endif
   return getline('.')[col('.')-2] =~ '\S$' ? close_quote : open_quote
 endfunction
 
-function! xolox#notes#insert_bullet(c) " {{{3
+function! xolox#notes#insert_bullet(chr) " {{{3
   " Insert a UTF-8 list bullet when the user types "*".
-  return getline('.')[0 : max([0, col('.') - 2])] =~ '^\s*$' ? '•' : a:c
+  if xolox#notes#unicode_enabled()
+    if getline('.')[0 : max([0, col('.') - 2])] =~ '^\s*$'
+      return '•'
+    endif
+  endif
+  return a:chr
 endfunction
 
 function! xolox#notes#indent_list(command, line1, line2) " {{{3
@@ -440,7 +480,7 @@ function! xolox#notes#indent_list(command, line1, line2) " {{{3
     call setline(a:line1, repeat(' ', &tabstop))
   else
     execute a:line1 . ',' . a:line2 . 'normal' a:command
-    if getline('.') =~ '•$'
+    if getline('.') =~ '\(•\|\*\)$'
       call setline('.', getline('.') . ' ')
     endif
   endif

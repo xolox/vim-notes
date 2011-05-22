@@ -7,7 +7,7 @@ notes plug-in.
 
 Lines prefixed with one or more ‘#’ symbols are headings which can be used for
 automatic text folding. There’s also an alternative heading format which isn’t
-folded, it consists of a line shorten than 60 letters that starts with an
+folded, it consists of a line shorter than 60 letters that starts with an
 uppercase letter and ends in a colon (the hard wrapping in this paragraph
 illustrates why the “starts with uppercase” rule is needed):
 
@@ -26,7 +26,7 @@ Hyper links and such:
 
 # Lists
 
-Bulleted lists can be used for to do lists:
+Bulleted lists can be used for to-do lists:
  • DONE Publish my notes.vim plug-in
  • TODO Write an indent script for atx headings
  • XXX This one is really important
@@ -39,7 +39,7 @@ Numbered lists are also supported:
 # Block quotes
 
 > Quotes are written using
-> the convention from e-mail 
+> the convention from e-mail
 
 # Embedded syntax highlighting
 

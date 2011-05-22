@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: March 25, 2011
+" Last Change: May 22, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -28,13 +28,17 @@ syntax cluster notesInline add=notesName
 highlight def link notesName Underlined
 
 " Highlight list bullets and numbers. {{{2
-syntax match notesListBullet /^\s*\zs•/
+syntax match notesListBullet /^\s*\zs\(•\|\*\)/
 highlight def link notesListBullet Comment
 syntax match notesListNumber /^\s*\zs\d\+[[:punct:]]\?\ze\s/
 highlight def link notesListNumber Comment
 
 " Highlight quoted fragments (inside single quotes). {{{2
-syntax match notesQuotedFragment /‘.\{-}’/
+if xolox#notes#unicode_enabled()
+  syntax match notesQuotedFragment /‘.\{-}’/
+else
+  syntax match notesQuotedFragment /`.\{-}'/
+endif
 highlight def link notesQuotedFragment Special
 
 " Highlight text emphasized in italic font. {{{2

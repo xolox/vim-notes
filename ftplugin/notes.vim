@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: January 7, 2011
+" Last Change: May 22, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -22,7 +22,11 @@ setlocal tabstop=3 shiftwidth=3 expandtab
 let b:undo_ftplugin .= ' tabstop< shiftwidth< expandtab<'
 
 " Automatic formatting for bulleted lists. {{{1
-let &l:comments = ': • ,:> '
+if xolox#notes#unicode_enabled()
+  let &l:comments = ': • ,: * ,:> '
+else
+  let &l:comments = ': * ,:> '
+endif
 let &l:commentstring = '> %s'
 setlocal formatoptions=tcron
 let b:undo_ftplugin .= ' commentstring< comments< formatoptions<'
@@ -44,8 +48,10 @@ setlocal includeexpr=xolox#notes#include_expr(v:fname)
 let b:undo_ftplugin .= ' includeexpr<'
 
 " Change double-dash to em-dash as it is typed. {{{1
-imap <buffer> -- —
-let b:undo_ftplugin .= ' | execute "iunmap <buffer> --"'
+if xolox#notes#unicode_enabled()
+  imap <buffer> -- —
+  let b:undo_ftplugin .= ' | execute "iunmap <buffer> --"'
+endif
 
 " Change plain quotes to curly quotes as they're typed. {{{1
 imap <buffer> <expr> ' xolox#notes#insert_quote(1)
@@ -54,10 +60,12 @@ let b:undo_ftplugin .= ' | execute "iunmap <buffer> ''"'
 let b:undo_ftplugin .= ' | execute ''iunmap <buffer> "'''
 
 " Change ASCII style arrows to Unicode arrows. {{{1
-imap <buffer> -> →
-imap <buffer> <- ←
-let b:undo_ftplugin .= ' | execute "iunmap <buffer> ->"'
-let b:undo_ftplugin .= ' | execute "iunmap <buffer> <-"'
+if xolox#notes#unicode_enabled()
+  imap <buffer> -> →
+  imap <buffer> <- ←
+  let b:undo_ftplugin .= ' | execute "iunmap <buffer> ->"'
+  let b:undo_ftplugin .= ' | execute "iunmap <buffer> <-"'
+endif
 
 " Convert ASCII list bullets to Unicode bullets. {{{1
 imap <buffer> <expr> - xolox#notes#insert_bullet('-')
@@ -68,12 +76,10 @@ let b:undo_ftplugin .= ' | execute "iunmap <buffer> +"'
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> *"'
 
 " Indent list items using <Tab>. {{{1
-
 imap <buffer> <silent> <Tab> <C-o>:call xolox#notes#indent_list('>>', line('.'), line('.'))<CR>
 smap <buffer> <silent> <Tab> <C-o>:<C-u>call xolox#notes#indent_list('>>', line("'<"), line("'>"))<CR><C-o>gv
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> <Tab>"'
 let b:undo_ftplugin .= ' | execute "sunmap <buffer> <Tab>"'
-
 imap <buffer> <silent> <S-Tab> <C-o>:call xolox#notes#indent_list('<<', line('.'), line('.'))<CR>
 smap <buffer> <silent> <S-Tab> <C-o>:<C-u>call xolox#notes#indent_list('<<', line("'<"), line("'>"))<CR><C-o>gv
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> <S-Tab>"'
