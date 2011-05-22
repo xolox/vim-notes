@@ -3,7 +3,7 @@
 " Last Change: May 22, 2011
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
-" Version: 0.8.3
+" Version: 0.8.4
 
 " Support for automatic update using the GLVS plug-in.
 " GetLatestVimScripts: 3375 1 :AutoInstall: notes.zip

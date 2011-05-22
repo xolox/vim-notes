@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 2, 2011
+" Last Change: May 22, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -406,9 +406,13 @@ endfunction
 
 function! xolox#notes#indent_list(command, line1, line2) " {{{3
   " Change indent of list items from {line1} to {line2} using {command}.
-  execute a:line1 . ',' . a:line2 . 'normal' a:command
-  if getline('.') =~ '•$'
-    call setline('.', getline('.') . ' ')
+  if a:line1 == a:line2 && getline(a:line1) == ''
+    call setline(a:line1, repeat(' ', &tabstop))
+  else
+    execute a:line1 . ',' . a:line2 . 'normal' a:command
+    if getline('.') =~ '•$'
+      call setline('.', getline('.') . ' ')
+    endif
   endif
   normal $
 endfunction
