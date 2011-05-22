@@ -74,7 +74,37 @@ function! xolox#notes#select(filter) " {{{1
 endfunction
 
 function! xolox#notes#complete(arglead, cmdline, cursorpos) " {{{1
-  return filter(xolox#notes#get_titles(), 'v:val =~ a:arglead')
+  " Vim's support for custom command completion is a real mess, specifically
+  " the completion of multi word command arguments. With or without escaping
+  " of spaces, arglead will only contain the last word in the arguments passed
+  " to :Note, and worse, the completion candidates we return only replace the
+  " last word on the command line.
+  " XXX This isn't a real command line parser; it will break on quoted pipes.
+  let cmdline = split(a:cmdline, '\\\@<!|')
+  let cmdargs = substitute(cmdline[-1], '^\s*\w\+\s\+', '', '')
+  let arguments = split(cmdargs)
+  let titles = xolox#notes#get_titles()
+  if a:arglead != '' && len(arguments) == 1
+    " If we are completing a single argument and we are able to replace it
+    " (the user didn't type <Space><Tab> after the argument) we can select the
+    " completion candidates using a substring match on the first argument
+    " instead of a prefix match (I consider this to be more user friendly).
+    let pattern = xolox#misc#escape#pattern(cmdargs)
+    call filter(titles, "v:val =~ pattern")
+  else
+    " If we are completing more than one argument or the user has typed
+    " <Space><Tab> after the first argument, we must select completion
+    " candidates using a prefix match on all arguments because Vim doesn't
+    " support replacing previous arguments (selecting completion candidates
+    " using a substring match would result in invalid note titles).
+    let pattern = '^' . xolox#misc#escape#pattern(cmdargs)
+    call filter(titles, "v:val =~ pattern")
+    " Remove the given arguments as the prefix of every completion candidate
+    " because Vim refuses to replace previous arguments.
+    let prevargs = '^' . xolox#misc#escape#pattern(cmdargs[0 : len(cmdargs) - len(a:arglead) - 1])
+    call map(titles, 'substitute(v:val, prevargs, "", "")')
+  endif
+  return titles
 endfunction
 
 function! xolox#notes#save() abort " {{{1
