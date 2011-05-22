@@ -1,6 +1,6 @@
 # Easy note taking in Vim
 
-The `notes.vim` plug-in for the [Vim text editor] [vim] makes it easy to manage your notes in Vim:
+The notes.vim plug-in for the [Vim text editor] [vim] makes it easy to manage your notes in Vim:
 
  * **Starting a new note:** Execute the `:Note` command to create a new buffer and load the appropriate file type and syntax
  * **Saving notes:** Just use Vim's [:write] [write] and [:update] [update] commands, you don't need to provide a filename because it will be set based on the title (first line) of your note (you also don't need to worry about special characters, they'll be escaped)
@@ -37,6 +37,6 @@ This software is licensed under the [MIT license] [mit].
 [sqlite]: http://sqlite.org/
 [gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
 [slate]: http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
-[download]: http://peterodding.com/code/vim/downloads/notes
+[download]: http://peterodding.com/code/vim/downloads/notes.zip
 [vim_online]: http://www.vim.org/scripts/script.php?script_id=3375
 [mit]: http://en.wikipedia.org/wiki/MIT_License

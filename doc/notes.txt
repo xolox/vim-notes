@@ -1,0 +1,84 @@
+*notes.txt*  Easy note taking in Vim
+
+The notes.vim plug-in for the Vim text editor makes it easy to manage your
+notes in Vim:
+
+ - Starting a new note: Execute the ':Note' command to create a new buffer and
+   load the appropriate file type and syntax
+
+ - Saving notes: Just use Vim's |:write| and |:update| commands, you don't need to
+   provide a filename because it will be set based on the title (first line)
+   of your note (you also don't need to worry about special characters,
+   they'll be escaped)
+
+ - Editing existing notes: Execute ':Note anything' to edit a note containing
+   'anything' in its title (if no notes are found a new one is created with
+   its title set to 'anything')
+
+ - Deleting notes: The ':DeleteNote' command enables you to delete the current
+   note
+
+ - Searching notes: ':SearchNotes keyword …' searches for keywords and
+   ':SearchNotes /pattern/' searches for regular expressions
+
+ - Back-references: The ':RelatedNotes' command find all notes referencing the
+   current file
+
+ - A Python 2 [1] script is included that accelerates keyword searches using an
+   SQLite [2] database
+
+ - Navigating between notes: The included file type plug-in redefines |gf| to
+   jump between notes and the syntax script highlights note names as hyper
+   links
+
+ - Writing aids: The included file type plug-in contains mappings for automatic
+   curly quotes, arrows and list bullets
+
+ - Embedded file types: The included syntax script supports embedded
+   highlighting using blocks marked with '{{{type … }}}' which allows you to
+   embed highlighted code and configuration snippets in your notes
+
+Here's a screen shot of the syntax mode using the slate [3] color scheme:
+
+    Syntax mode screen shot, see reference [4]
+
+==============================================================================
+                                                           *notes-install-usage*
+Install & usage ~
+
+Unzip the most recent ZIP archive [5] file inside your Vim profile directory
+(usually this is '~/.vim' on UNIX and '%USERPROFILE%\vimfiles' on Windows),
+restart Vim and execute the command ':helptags ~/.vim/doc' (use ':helptags
+~\vimfiles\doc' instead on Windows). To get started execute ':Note' or ':edit
+note:', this will start a new note that contains instructions on how to
+continue from there (and how to use the plug-in in general).
+
+==============================================================================
+                                                                 *notes-contact*
+Contact ~
+
+If you have questions, bug reports, suggestions, etc. the author can be
+contacted at peter@peterodding.com. The latest version is available at
+http://peterodding.com/code/vim/notes/ and http://github.com/xolox/vim-notes.
+If you like the script please vote for it on Vim Online [6].
+
+==============================================================================
+                                                                 *notes-license*
+License ~
+
+This software is licensed under the MIT license [7]. Copyright 2011 Peter
+Odding <peter@peterodding.com>.
+
+==============================================================================
+                                                              *notes-references*
+References ~
+
+[1] http://python.org/
+[2] http://sqlite.org/
+[3] http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
+[4] http://peterodding.com/code/vim/notes/syntax.png
+[5] http://peterodding.com/code/vim/downloads/notes.zip
+[6] http://www.vim.org/scripts/script.php?script_id=3375
+[7] http://en.wikipedia.org/wiki/MIT_License
+
+vim: ft=help

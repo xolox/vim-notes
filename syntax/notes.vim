@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 25, 2010
+" Last Change: March 25, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -33,6 +33,10 @@ highlight def link notesListBullet Comment
 syntax match notesListNumber /^\s*\zs\d\+[[:punct:]]\?\ze\s/
 highlight def link notesListNumber Comment
 
+" Highlight quoted fragments (inside single quotes). {{{2
+syntax match notesQuotedFragment /‘.\{-}’/
+highlight def link notesQuotedFragment Special
+
 " Highlight text emphasized in italic font. {{{2
 if has('conceal')
   syntax region notesItalic matchgroup=notesItalicMarker start=/\<_[A-Za-z]\@=/ end=/_\>\|\n/ contains=@Spell concealends
@@ -54,19 +58,20 @@ syntax cluster notesInline add=notesBold
 highlight notesBold gui=bold
 
 " Highlight domain names, URLs, e-mail addresses and filenames. {{{2
+highlight notesSubtleURL gui=underline guifg=fg
 syntax match notesTextURL @\<www\.\(\S*\w\)\+/\?@
 syntax cluster notesInline add=notesTextURL
-highlight def link notesTextURL Underlined
+highlight def link notesTextURL notesSubtleURL
 syntax match notesRealURL @\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?@
 syntax cluster notesInline add=notesRealURL
-highlight def link notesRealURL Underlined
+highlight def link notesRealURL notesSubtleURL
 if has('conceal')
   syntax match notesUrlScheme @\(mailto:\|javascript:\|\w\{3,}://\)@ contained containedin=notesRealURL conceal
   highlight def link notesUrlScheme notesRealURL
 endif
 syntax match notesEmailAddr /\<\w[^@ \t\r]*\w@\w[^@ \t\r]\+\w\>/
 syntax cluster notesInline add=notesEmailAddr
-highlight def link notesEmailAddr Underlined
+highlight def link notesEmailAddr notesSubtleURL
 syntax match notesUnixPath /\w\@<![\/~]\S\+\(\/\|[^ [:punct:]]\)/ contains=notesName | " <- UNIX style pathnames
 syntax cluster notesInline add=notesUnixPath
 highlight def link notesUnixPath Directory

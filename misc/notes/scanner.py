@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 
-# Copyright 2010 Peter Odding <peter@peterodding.com>
-# This program is licensed under the MIT license.
+"""
+Copyright 2011 Peter Odding <peter@peterodding.com>
+This program is licensed under the MIT license.
 
-# This Python script can be used by the notes.vim plug-in to perform fast
-# keyword searches in the user's notes. It has two advantages over just using
-# Vim's internal :vimgrep command to search all of the user's notes:
-#
-#  * Very large notes don't slow searching down so much;
-#  * Hundreds of notes can be searched in less than a second.
-#
-# For more information see http://peterodding.com/code/vim/notes/
+This Python script can be used by the notes.vim plug-in to perform fast
+keyword searches in the user's notes. It has two advantages over just using
+Vim's internal :vimgrep command to search all of the user's notes:
+
+ * Very large notes don't slow searching down so much;
+ * Hundreds of notes can be searched in less than a second.
+
+For more information see http://peterodding.com/code/vim/notes/
+"""
 
 # The character encoding of the command line arguments passed to this script
 # and the text files read by this script (needed for accurate word splitting).
@@ -25,11 +27,17 @@ script_name = os.path.split(sys.argv[0])[1]
 if len(sys.argv) < 4:
   sys.stderr.write("%s: Not enough arguments!\n" % script_name)
   sys.exit(1)
-def mungepath(p): return os.path.abspath(os.path.expanduser(p))
+
+def mungepath(p):
+  return os.path.abspath(os.path.expanduser(p))
+
+def decodestr(s):
+  return s.decode(CHARACTER_ENCODING, 'ignore')
+
 database_file = mungepath(sys.argv[1])
 user_directory = mungepath(sys.argv[2])
 shadow_directory = mungepath(sys.argv[3])
-keywords = ' '.join(sys.argv[4:]).decode(CHARACTER_ENCODING)
+keywords = decodestr(' '.join(sys.argv[4:]))
 
 # Create or open SQLite database. {{{1
 
@@ -59,7 +67,7 @@ def scan_note(note):
     else:
       connection.execute('insert into files (filename, last_modified) values (?, ?)', (note['filename'], note['last_modified']))
       file_id = connection.execute('select last_insert_rowid()').fetchone()[0]
-    for keyword in tokenize(handle.read().decode(CHARACTER_ENCODING)):
+    for keyword in tokenize(decodestr(handle.read())):
       if keyword in CACHED_KEYWORDS:
         keyword_id = CACHED_KEYWORDS[keyword]
       else:
@@ -87,7 +95,7 @@ def tokenize(text):
 notes_on_disk = {}
 for directory in user_directory, shadow_directory:
   for filename in os.listdir(directory):
-    if not fnmatch.fnmatch(filename, '.*.sw?'): # (Vim swap files are ignored)
+    if filename != '.swp' and not fnmatch.fnmatch(filename, '.*.sw?'): # (Vim swap files are ignored)
       filename = os.path.join(directory, filename)
       notes_on_disk[filename] = dict(filename=filename, last_modified=os.path.getmtime(filename))
 if first_use:
