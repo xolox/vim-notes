@@ -1,3 +1,0 @@
-[submodule "autoload/xolox/misc"]
-	path = autoload/xolox/misc
-	url = https://github.com/xolox/vim-misc.git
