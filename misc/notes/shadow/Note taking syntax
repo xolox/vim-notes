@@ -1,7 +1,9 @@
 Note taking syntax
 
 This note contains examples of the syntax highlighting styles supported by the
-notes plug-in.
+notes plug-in. When your Vim configuration supports concealing of text, the
+markers which enable the syntax highlighting won’t be visible. In this case you
+can make the markers visible by selecting the text.
 
 # Headings
 
@@ -21,8 +23,8 @@ Hyper links and such:
  • Hyper links: http://www.vim.org/, sftp://server/file
  • Domain names: www.python.org
  • E-mail addresses: user@host.ext
- • UNIX filenames: ~/.vim/notes
- • Windows filenames: ~\vimfiles\notes
+ • UNIX filenames: ~/relative/to/home, /absolute/path
+ • Windows filenames: ~\relative\to\home, c:\absolute\path, \\server\share
 
 # Lists
 

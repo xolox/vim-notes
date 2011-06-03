@@ -42,7 +42,7 @@ Here's a screen shot of the syntax mode using the slate [3] color scheme:
 
     Syntax mode screen shot, see reference [4]
 
-==============================================================================
+===============================================================================
                                                            *notes-install-usage*
 Install & usage ~
 
@@ -53,7 +53,7 @@ restart Vim and execute the command ':helptags ~/.vim/doc' (use ':helptags
 note:', this will start a new note that contains instructions on how to
 continue from there (and how to use the plug-in in general).
 
-==============================================================================
+===============================================================================
                                                                  *notes-contact*
 Contact ~
 
@@ -62,14 +62,14 @@ contacted at peter@peterodding.com. The latest version is available at
 http://peterodding.com/code/vim/notes/ and http://github.com/xolox/vim-notes.
 If you like the script please vote for it on Vim Online [6].
 
-==============================================================================
+===============================================================================
                                                                  *notes-license*
 License ~
 
 This software is licensed under the MIT license [7]. Copyright 2011 Peter
 Odding <peter@peterodding.com>.
 
-==============================================================================
+===============================================================================
                                                               *notes-references*
 References ~
 
