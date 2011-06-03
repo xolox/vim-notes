@@ -7,6 +7,7 @@ The notes.vim plug-in for the [Vim text editor] [vim] makes it easy to manage yo
  * **Editing existing notes:** Execute `:Note anything` to edit a note containing `anything` in its title (if no notes are found a new one is created with its title set to `anything`)
  * **Deleting notes:** The `:DeleteNote` command enables you to delete the current note
  * **Searching notes:** `:SearchNotes keyword …` searches for keywords and `:SearchNotes /pattern/` searches for regular expressions
+   * **Smart defaults:** Without an argument `:SearchNotes` searches for the word under the cursor (if the word starts with `@` that character will be included in the search, this means you can easily search for *@tagged* notes)
    * **Back-references:** The `:RelatedNotes` command find all notes referencing the current file
    * A [Python 2] [python] script is included that accelerates keyword searches using an [SQLite] [sqlite] database
  * **Navigating between notes:** The included file type plug-in redefines [gf] [gf] to jump between notes and the syntax script highlights note names as hyper links

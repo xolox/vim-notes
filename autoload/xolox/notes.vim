@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 22, 2011
+" Last Change: June 4, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -169,23 +169,41 @@ function! xolox#notes#delete(bang) " {{{1
 endfunction
 
 function! xolox#notes#search(bang, input) " {{{1
-  " Search all notes for the pattern or keywords {input}.
-  if a:input =~ '^/.\+/$'
-    call s:internal_search(a:bang, a:input, '', '')
+  " Search all notes for the pattern or keywords {input} (current word if none given).
+  let input = a:input
+  if input == ''
+    let input = s:tag_under_cursor()
+    if input == ''
+      call xolox#misc#msg#warn("No string under cursor")
+      return
+    endif
+  endif
+  if input =~ '^/.\+/$'
+    call s:internal_search(a:bang, input, '', '')
     if &buftype == 'quickfix'
-      let w:quickfix_title = 'Notes matching the pattern ' . a:input
+      let w:quickfix_title = 'Notes matching the pattern ' . input
     endif
   else
-    let keywords = split(a:input)
+    let keywords = split(input)
     let all_keywords = s:match_all_keywords(keywords)
     let any_keyword = s:match_any_keyword(keywords)
-    call s:internal_search(a:bang, all_keywords, a:input, any_keyword)
+    call s:internal_search(a:bang, all_keywords, input, any_keyword)
     if &buftype == 'quickfix'
       call map(keywords, '"`" . v:val . "''"')
       let w:quickfix_title = printf('Notes containing the word%s %s', len(keywords) == 1 ? '' : 's',
           \ len(keywords) > 1 ? (join(keywords[0:-2], ', ') . ' and ' . keywords[-1]) : keywords[0])
     endif
   endif
+endfunction
+
+function! s:tag_under_cursor() " {{{2
+  try
+    let isk_save = &isk
+    set iskeyword+=@-@
+    return expand('<cword>')
+  finally
+    let &isk = isk_save
+  endtry
 endfunction
 
 function! s:match_all_keywords(keywords) " {{{2

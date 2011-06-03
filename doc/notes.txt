@@ -21,6 +21,10 @@ notes in Vim:
  - Searching notes: ':SearchNotes keyword …' searches for keywords and
    ':SearchNotes /pattern/' searches for regular expressions
 
+ - Smart defaults: Without an argument ':SearchNotes' searches for the word
+   under the cursor (if the word starts with '@' that character will be
+   included in the search, this means you can easily search for @tagged notes)
+
  - Back-references: The ':RelatedNotes' command find all notes referencing the
    current file
 

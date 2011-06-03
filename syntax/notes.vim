@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 22, 2011
+" Last Change: June 4, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -26,6 +26,10 @@ highlight def link notesHiddenMarker Ignore
 call xolox#notes#highlight_names(1)
 syntax cluster notesInline add=notesName
 highlight def link notesName Underlined
+
+" Highlight @tags as hyperlinks. {{{2
+syntax match notesTagName /\(^\|\s\)\@<=@\w\+/
+highlight def link notesTagName Underlined
 
 " Highlight list bullets and numbers. {{{2
 syntax match notesListBullet /^\s*\zs\(•\|\*\)/
