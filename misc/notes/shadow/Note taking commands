@@ -18,6 +18,14 @@ created with its title set to the text you passed to :Note. This command will
 fail when changes have been made to the current buffer, unless you use :Note!
 which discards any changes.
 
+To start a new note and use the currently selected text as the title for the
+note you can use the :NoteFromSelectedText command. The name of this command
+isn’t very well suited to daily use, however the idea is that users will define
+their own mapping to invoke this command. For example:
+  {{{vim
+  " Map \ns in visual mode to start new note with selected text as title.
+  vmap <Leader>ns :NoteFromSelectedText<CR>
+  }}}
 # :DeleteNote deletes the current note
 
 The :DeleteNote command deletes the current note, destroys the buffer and

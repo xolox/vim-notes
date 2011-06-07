@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 4, 2011
+" Last Change: June 7, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -49,6 +49,25 @@ function! xolox#notes#edit(bang, title) abort " {{{1
   endif
   doautocmd BufReadPost
   call xolox#misc#timer#stop('%s: Started new note in %s.', s:script, starttime)
+endfunction
+
+function! xolox#notes#from_selection(bang) " {{{1
+  " TODO This will always open a new buffer in the current window which I
+  " don't consider very friendly (because the user loses his/her context),
+  " but choosing to always split the window doesn't seem right either...
+  call xolox#notes#edit(a:bang, s:get_visual_selection())
+endfunction
+
+function! s:get_visual_selection()
+  " Why is this not a built-in Vim script function?! See also the question at
+  " http://stackoverflow.com/questions/1533565 but note that none of the code
+  " posted there worked for me so I wrote this function.
+  let [lnum1, col1] = getpos("'<")[1:2]
+  let [lnum2, col2] = getpos("'>")[1:2]
+  let lines = getline(lnum1, lnum2)
+  let lines[-1] = lines[-1][: col2 - 2]
+  let lines[0] = lines[0][col1 - 1:]
+  return join(lines, ' ')
 endfunction
 
 function! xolox#notes#edit_shadow() " {{{1
