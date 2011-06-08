@@ -184,10 +184,22 @@ function! xolox#notes#save() abort " {{{1
     let newpath = xolox#notes#title_to_fname(title)
     if newpath == ''
       echoerr "Invalid note title"
+      return
     endif
     let bang = v:cmdbang ? '!' : ''
     execute 'saveas' bang fnameescape(newpath)
+    " XXX If {oldpath} and {newpath} end up pointing to the same file on disk
+    " yet xolox#misc#path#equals() doesn't catch this, we might end up
+    " deleting the user's one and only note! One way to circumvent this
+    " potential problem is to first delete the old note and then save the new
+    " note. The problem with this approach is that :saveas might fail in which
+    " case we've already deleted the old note...
     if !xolox#misc#path#equals(oldpath, newpath)
+      if !filereadable(newpath)
+        let message = "The notes plug-in tried to rename your note but failed to create %s so won't delete %s or you could lose your note! This should never happen... If you don't mind me borrowing some of your time, please contact me at peter@peterodding.com and include the old and new filename so that I can try to reproduce the issue. Thanks!"
+        call confirm(printf(message, string(newpath), string(oldpath)))
+        return
+      endif
       call delete(oldpath)
     endif
     call xolox#notes#cache_del(oldpath)
