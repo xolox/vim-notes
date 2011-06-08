@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 7, 2011
+" Last Change: June 8, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -123,7 +123,7 @@ function! xolox#notes#select(filter) " {{{1
   return ''
 endfunction
 
-function! xolox#notes#complete(arglead, cmdline, cursorpos) " {{{1
+function! xolox#notes#cmd_complete(arglead, cmdline, cursorpos) " {{{1
   " Vim's support for custom command completion is a real mess, specifically
   " the completion of multi word command arguments. With or without escaping
   " of spaces, arglead will only contain the last word in the arguments passed
@@ -155,6 +155,25 @@ function! xolox#notes#complete(arglead, cmdline, cursorpos) " {{{1
     call map(titles, 'substitute(v:val, prevargs, "", "")')
   endif
   return titles
+endfunction
+
+function! xolox#notes#user_complete(findstart, base) " {{{1
+  if a:findstart
+    let line = getline('.')[0 : col('.') - 2]
+    let words = split(line)
+    if !empty(words)
+      return col('.') - len(words[-1]) - 1
+    else
+      return -1
+    endif
+  else
+    let titles = xolox#notes#get_titles()
+    if !empty(a:base)
+      let pattern = xolox#misc#escape#pattern(a:base)
+      call filter(titles, 'v:val =~ pattern')
+    endif
+    return titles
+  endif
 endfunction
 
 function! xolox#notes#save() abort " {{{1

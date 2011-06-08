@@ -12,7 +12,7 @@ The notes.vim plug-in for the [Vim text editor] [vim] makes it easy to manage yo
    * **Back-references:** The `:RelatedNotes` command find all notes referencing the current file
    * A [Python 2] [python] script is included that accelerates keyword searches using an [SQLite] [sqlite] database
  * **Navigating between notes:** The included file type plug-in redefines [gf] [gf] to jump between notes and the syntax script highlights note names as hyper links
- * **Writing aids:** The included file type plug-in contains mappings for automatic curly quotes, arrows and list bullets
+ * **Writing aids:** The included file type plug-in contains mappings for automatic curly quotes, arrows and list bullets and supports completion of note titles using Control-X Control-U
  * **Embedded file types:** The included syntax script supports embedded highlighting using blocks marked with `{{{type … }}}` which allows you to embed highlighted code and configuration snippets in your notes
 
 Here's a screen shot of the syntax mode using the [slate] [slate] color scheme:

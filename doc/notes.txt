@@ -39,7 +39,8 @@ notes in Vim:
    links
 
  - Writing aids: The included file type plug-in contains mappings for automatic
-   curly quotes, arrows and list bullets
+   curly quotes, arrows and list bullets and supports completion of note
+   titles using Control-X Control-U
 
  - Embedded file types: The included syntax script supports embedded
    highlighting using blocks marked with '{{{type … }}}' which allows you to
