@@ -1,9 +1,9 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 8, 2011
+" Last Change: June 11, 2011
 " URL: http://peterodding.com/code/vim/notes/
 " License: MIT
-" Version: 0.8.11
+" Version: 0.8.12
 
 " Support for automatic update using the GLVS plug-in.
 " GetLatestVimScripts: 3375 1 :AutoInstall: notes.zip
@@ -42,6 +42,7 @@ command! -bar -bang -range NoteFromSelectedText call xolox#notes#from_selection(
 command! -bar -bang DeleteNote call xolox#notes#delete(<q-bang>)
 command! -bar -bang -nargs=? SearchNotes call xolox#notes#search(<q-bang>, <q-args>)
 command! -bar -bang RelatedNotes call xolox#notes#related(<q-bang>)
+command! -bar -bang -nargs=? RecentNotes call xolox#notes#recent(<q-bang>, <q-args>)
 
 " Automatic commands to enable the :edit note:… shortcut and load the notes file type.
 

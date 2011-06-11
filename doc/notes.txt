@@ -34,6 +34,9 @@ notes in Vim:
  - A Python 2 [1] script is included that accelerates keyword searches using an
    SQLite [2] database
 
+ - The ':RecentNotes' command lists your notes by modification date, starting
+   with the most recently edited note
+
  - Navigating between notes: The included file type plug-in redefines |gf| to
    jump between notes and the syntax script highlights note names as hyper
    links

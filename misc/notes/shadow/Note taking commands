@@ -84,3 +84,11 @@ updates and searches should be more or less instantaneous.
 This command makes it easy to find all notes related to the current file: If
 you are currently editing a note then a search for the note’s title is done,
 otherwise this searches for the absolute path of the current file.
+
+# :RecentNotes lists notes by modification date
+
+If you execute the :RecentNotes command it will open a Vim buffer that lists
+all your notes grouped by the day they were edited, starting with your most
+recently edited note. If you pass an argument to :RecentNotes it will filter
+the list of notes by matching the title of each note against the argument which
+is interpreted as a Vim pattern.

@@ -11,6 +11,7 @@ The notes.vim plug-in for the [Vim text editor] [vim] makes it easy to manage yo
    * **Smart defaults:** Without an argument `:SearchNotes` searches for the word under the cursor (if the word starts with `@` that character will be included in the search, this means you can easily search for *@tagged* notes)
    * **Back-references:** The `:RelatedNotes` command find all notes referencing the current file
    * A [Python 2] [python] script is included that accelerates keyword searches using an [SQLite] [sqlite] database
+   * The `:RecentNotes` command lists your notes by modification date, starting with the most recently edited note
  * **Navigating between notes:** The included file type plug-in redefines [gf] [gf] to jump between notes and the syntax script highlights note names as hyper links
  * **Writing aids:** The included file type plug-in contains mappings for automatic curly quotes, arrows and list bullets and supports completion of note titles using Control-X Control-U
  * **Embedded file types:** The included syntax script supports embedded highlighting using blocks marked with `{{{type … }}}` which allows you to embed highlighted code and configuration snippets in your notes

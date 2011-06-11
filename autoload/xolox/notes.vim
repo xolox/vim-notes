@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 8, 2011
+" Last Change: June 11, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -307,6 +307,78 @@ function! xolox#notes#related(bang) " {{{1
       call xolox#misc#msg#warn("%s: No related notes found for %s", s:script, friendly_path)
     endtry
   endif
+endfunction
+
+function! xolox#notes#recent(bang, title_filter) " {{{1
+  let start = xolox#misc#timer#start()
+  let bufname = '[All Notes]'
+  " Open buffer that holds list of notes.
+  if !bufexists(bufname)
+    execute 'hide edit' fnameescape(bufname)
+    setlocal buftype=nofile nospell
+  else
+    execute 'hide buffer' fnameescape(bufname)
+    setlocal noreadonly modifiable
+    silent %delete
+  endif
+  " Filter notes by pattern (argument)?
+  let notes = []
+  let title_filter = '\v' . a:title_filter
+  for [fname, title] in items(xolox#notes#get_fnames_and_titles())
+    if title =~? title_filter
+      call add(notes, [getftime(fname), title])
+    endif
+  endfor
+  " Start note with title and short description.
+  let readme = "You have "
+  if empty(notes)
+    let readme .= "no notes"
+  elseif len(notes) == 1
+    let readme .= "one note"
+  else
+    let readme .= len(notes) . " notes"
+  endif
+  if a:title_filter != ''
+    let quote_format = xolox#notes#unicode_enabled() ? '‘%s’' : "`%s'"
+    let readme .= " matching " . printf(quote_format, a:title_filter)
+  endif
+  if empty(notes)
+    let readme .= "."
+  elseif len(notes) == 1
+    let readme .= ", it's listed below."
+  else
+    let readme .= ". They're listed below grouped by the day they were edited, starting with your most recently edited note."
+  endif
+  call setline(1, ["All notes", "", readme])
+  normal Ggqq
+  " Sort, group and format list of (matching) notes.
+  let last_date = ''
+  let list_item_format = xolox#notes#unicode_enabled() ? ' • %s' : ' * %s'
+  let date_format = '%A, %B %d:'
+  let today = strftime(date_format, localtime())
+  let yesterday = strftime(date_format, localtime() - 60*60*24)
+  call sort(notes)
+  call reverse(notes)
+  let lines = []
+  for [ftime, title] in notes
+    let date = strftime(date_format, ftime)
+    " Add date heading because date changed?
+    if date != last_date
+      call add(lines, '')
+      if date == today
+        call add(lines, "Today:")
+      elseif date == yesterday
+        call add(lines, "Yesterday:")
+      else
+        call add(lines, date)
+      endif
+      let last_date = date
+    endif
+    call add(lines, printf(list_item_format, title))
+  endfor
+  call setline(line('$') + 1, lines)
+  setlocal readonly nomodifiable nomodified filetype=notes
+  call xolox#misc#timer#stop("%s: Created list of notes in %s.", s:script, start)
 endfunction
 
 " Miscellaneous functions. {{{1
