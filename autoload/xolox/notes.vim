@@ -539,12 +539,13 @@ endfunction
 
 function! xolox#notes#fname_to_title(filename) " {{{3
   " Convert absolute note {filename} to title.
-  return xolox#misc#path#decode(fnamemodify(a:filename, ':t'))
+  let filename = substitute(a:filename, g:notes_suffix . '$', '', '')
+  return xolox#misc#path#decode(fnamemodify(filename, ':t'))
 endfunction
 
 function! xolox#notes#title_to_fname(title) " {{{3
   " Convert note {title} to absolute filename.
-  let filename = xolox#misc#path#encode(a:title)
+  let filename = xolox#misc#path#encode(a:title . g:notes_suffix)
   if filename != ''
     let pathname = xolox#misc#path#merge(g:notes_directory, filename)
     return xolox#misc#path#absolute(pathname)

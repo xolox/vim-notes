@@ -36,6 +36,11 @@ if !exists('g:notes_indexscript')
   let g:notes_indexscript = s:plugindir . '/scanner.py'
 endif
 
+" Define the default suffix for note filenames.
+if !exists('g:notes_suffix')
+  let g:notes_suffix = ''
+endif
+
 " User commands to create, delete and search notes.
 command! -bar -bang -nargs=? -complete=customlist,xolox#notes#cmd_complete Note call xolox#notes#edit(<q-bang>, <q-args>)
 command! -bar -bang -range NoteFromSelectedText call xolox#notes#from_selection(<q-bang>)
