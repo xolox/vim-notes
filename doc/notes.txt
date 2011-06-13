@@ -65,6 +65,30 @@ note:', this will start a new note that contains instructions on how to
 continue from there (and how to use the plug-in in general).
 
 ===============================================================================
+                                                                 *notes-options*
+Options ~
+
+These options can be configured in your ~/.vimrc by including a line like this:
+
+    let g:notes_suffix = ".txt"
+
+All of the options are defined in `plugin/notes.vim`, but the ones you will
+most likely want to modify are:
+
+                                               *g:notes_directory*
+    |g:notes_directory|                         string (default <plugin>/user)
+
+      The location where notes are saved.
+
+                                               *g:notes_suffix*
+  |g:notes_suffix|                              string (default blank)
+
+      The suffix to add to all generated filename. The filename is determined
+      based on the note's title, and by default the filename will not have an
+      extension. You can add any suffix or extension to the filenames with this
+      options (e.g. .txt), which will not be reflected in the note's title.
+
+===============================================================================
                                                                  *notes-contact*
 Contact ~
 
