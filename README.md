@@ -1,13 +1,20 @@
 # Miscellaneous auto-load Vim scripts
 
-The git repository at <http://github.com/xolox/vim-misc> contains Vim scripts
-that are used by most of the [Vim plug-ins I've written] [plugins] yet don't
-really belong with any single one. I'm hoping to include this repository as a
-git submodule in my other repositories so that I only have to maintain these
-files in one place.
+The git repository at <http://github.com/xolox/vim-misc> contains Vim scripts that are used by most of the [Vim plug-ins I've written] [plugins] yet don't really belong with any single one. I include this repository as a subdirectory of my plug-in repositories using the following commands:
 
-For lack of a better place: I hereby release these scripts under the MIT
-license, in other words feel free to do with them as you please but don't
-misrepresent this work as your own.
+    $ git remote add -f vim-misc https://github.com/xolox/vim-misc.git
+    $ git merge -s ours --no-commit vim-misc/master
+    $ git read-tree --prefix=autoload/xolox/misc/ -u vim-misc/master
+    $ git commit -m "Merge vim-misc repository as subdirectory"
+
+## Contact
+
+If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/misc> and <http://github.com/xolox/vim-misc>.
+
+## License
+
+This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/MIT_License).  
+© 2011 Peter Odding &lt;<peter@peterodding.com>&gt;.
+
 
 [plugins]: http://peterodding.com/code/vim/
