@@ -7,6 +7,10 @@ The git repository at <http://github.com/xolox/vim-misc> contains Vim scripts th
     $ git read-tree --prefix=autoload/xolox/misc/ -u vim-misc/master
     $ git commit -m "Merge vim-misc repository as subdirectory"
 
+To update a plug-in repository to the latest versions of the miscellaneous auto-load scripts I execute the following command:
+
+    $ git pull -s subtree vim-misc master
+
 ## Contact
 
 If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/misc> and <http://github.com/xolox/vim-misc>.
