@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 11, 2011
+" Last Change: June 14, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -539,14 +539,22 @@ endfunction
 
 function! xolox#notes#fname_to_title(filename) " {{{3
   " Convert absolute note {filename} to title.
-  return xolox#misc#path#decode(fnamemodify(a:filename, ':t'))
+  let fname = a:filename
+  " Strip suffix?
+  if fname[-len(g:notes_suffix):] == g:notes_suffix
+    let fname = fname[0:-len(g:notes_suffix)-1]
+  endif
+  " Strip directory path.
+  let fname = fnamemodify(fname, ':t')
+  " Decode special characters.
+  return xolox#misc#path#decode(fname)
 endfunction
 
 function! xolox#notes#title_to_fname(title) " {{{3
   " Convert note {title} to absolute filename.
   let filename = xolox#misc#path#encode(a:title)
   if filename != ''
-    let pathname = xolox#misc#path#merge(g:notes_directory, filename)
+    let pathname = xolox#misc#path#merge(g:notes_directory, filename . g:notes_suffix)
     return xolox#misc#path#absolute(pathname)
   endif
   return ''

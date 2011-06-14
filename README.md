@@ -26,11 +26,19 @@ Unzip the most recent [ZIP archive] [download] file inside your Vim profile dire
 
 ## Options
 
-Note that if the plug-in works after following the installation instructions above, you probably don't need to change any of the options below. They're available for people who like to customize their directory layout.
+All options have reasonable defaults so if the plug-in works after installation you don't need to change any options. They're available for people who like to customize their directory layout. These options can be configured in your [vimrc] [vimrc] by including a line like this:
+
+    let g:notes_directory = '~/Documents/Notes'
 
 ### The `g:notes_directory` option
 
 All your notes are stored together in one directory. This option defines the path of this directory.
+
+### The `g:notes_suffix` option
+
+The suffix to add to generated filenames. The plug-in generates filenames for your notes based on the title (first line) of each note and by default these filenames don't include an extension like `.txt`. You can use this option to make the plug-in automatically append an extension without having to embed the extension in the note's title, e.g.:
+
+    :let g:notes_suffix = '.txt'
 
 ### The `g:notes_shadowdir` option
 
@@ -130,6 +138,7 @@ This software is licensed under the [MIT license] [mit].
 [gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
 [slate]: http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
 [download]: http://peterodding.com/code/vim/downloads/notes.zip
+[vimrc]: http://vimdoc.sourceforge.net/htmldoc/starting.html#vimrc
 [edit]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:edit
 [split]: http://vimdoc.sourceforge.net/htmldoc/windows.html#:split
 [tabedit]: http://vimdoc.sourceforge.net/htmldoc/tabpage.html#:tabedit
