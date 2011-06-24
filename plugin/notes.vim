@@ -1,17 +1,17 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 17, 2011
+" Last Change: June 24, 2011
 " URL: http://peterodding.com/code/vim/notes/
-" License: MIT
-" Version: 0.9.2
 
 " Support for automatic update using the GLVS plug-in.
 " GetLatestVimScripts: 3375 1 :AutoInstall: notes.zip
 
-" Don't source the plug-in when its already been loaded or &compatible is set.
+" Don't source the plug-in when it's already been loaded or &compatible is set.
 if &cp || exists('g:loaded_notes')
   finish
 endif
+
+let g:notes_version = '0.9.3'
 
 " Make sure the default paths below are compatible with Pathogen.
 let s:plugindir = expand('<sfile>:p:h') . '/../misc/notes'
