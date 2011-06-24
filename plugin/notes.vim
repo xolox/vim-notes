@@ -11,7 +11,7 @@ if &cp || exists('g:loaded_notes')
   finish
 endif
 
-let g:notes_version = '0.9.3'
+let g:notes_version = '0.9.4'
 
 " Make sure the default paths below are compatible with Pathogen.
 let s:plugindir = expand('<sfile>:p:h') . '/../misc/notes'

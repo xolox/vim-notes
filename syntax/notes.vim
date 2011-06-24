@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 4, 2011
+" Last Change: June 24, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -28,7 +28,7 @@ syntax cluster notesInline add=notesName
 highlight def link notesName Underlined
 
 " Highlight @tags as hyperlinks. {{{2
-syntax match notesTagName /\(^\|\s\)\@<=@\w\+/
+syntax match notesTagName /\(^\|\s\)\@<=@\k\+/
 highlight def link notesTagName Underlined
 
 " Highlight list bullets and numbers. {{{2
@@ -47,26 +47,29 @@ highlight def link notesQuotedFragment Special
 
 " Highlight text emphasized in italic font. {{{2
 if has('conceal')
-  syntax region notesItalic matchgroup=notesItalicMarker start=/\<_[A-Za-z]\@=/ end=/_\>\|\n/ contains=@Spell concealends
+  syntax region notesItalic matchgroup=notesItalicMarker start=/\<_\k\@=/ end=/_\>\|\n/ contains=@Spell concealends
   highlight link notesItalicMarker notesHiddenMarker 
 else
-  syntax match notesItalic /\<_\w[^_]*\w_\>/
+  syntax match notesItalic /\<_\k[^_]*\k_\>/
 endif
 syntax cluster notesInline add=notesItalic
 highlight notesItalic gui=italic
 
 " Highlight text emphasized in bold font. {{{2
 if has('conceal')
-  syntax region notesBold matchgroup=notesBoldMarker start=/\*\w\@=/ end=/\w\@<=\*/ contains=@Spell concealends
+  syntax region notesBold matchgroup=notesBoldMarker start=/\*\k\@=/ end=/\k\@<=\*/ contains=@Spell concealends
   highlight link notesBoldMarker notesHiddenMarker 
 else
-  syntax match notesBold /\*\w[^*]*\w\*/
+  syntax match notesBold /\*\k[^*]*\k\*/
 endif
 syntax cluster notesInline add=notesBold
 highlight notesBold gui=bold
 
 " Highlight domain names, URLs, e-mail addresses and filenames. {{{2
+
+" FIXME This setting is lost once the user switches color scheme!
 highlight notesSubtleURL gui=underline guifg=fg
+
 syntax match notesTextURL @\<www\.\(\S*\w\)\+/\?@
 syntax cluster notesInline add=notesTextURL
 highlight def link notesTextURL notesSubtleURL
@@ -80,12 +83,12 @@ endif
 syntax match notesEmailAddr /\<\w[^@ \t\r]*\w@\w[^@ \t\r]\+\w\>/
 syntax cluster notesInline add=notesEmailAddr
 highlight def link notesEmailAddr notesSubtleURL
-syntax match notesUnixPath /\w\@<![\/~]\S\+\(\/\|[^ [:punct:]]\)/ contains=notesName | " <- UNIX style pathnames
+syntax match notesUnixPath /\k\@<![\/~]\S\+\(\/\|[^ [:punct:]]\)/
 syntax cluster notesInline add=notesUnixPath
 highlight def link notesUnixPath Directory
 syntax match notesPathLnum /:\d\+/ contained containedin=notesUnixPath
 highlight def link notesPathLnum Comment
-syntax match notesWindowsPath /\w\@<![A-Za-z]:\S\+\([\\/]\|[^ [:punct:]]\)/ contains=notesName | " <- Windows style pathnames
+syntax match notesWindowsPath /\k\@<![A-Za-z]:\S\+\([\\/]\|[^ [:punct:]]\)/
 syntax cluster notesInline add=notesWindowsPath
 highlight def link notesWindowsPath Directory
 
@@ -113,7 +116,7 @@ syntax match notesTitle /^.*\%1l.*$/ contains=@notesInline
 highlight def link notesTitle ModeMsg
 
 " Short sentences ending in a colon are considered headings. {{{2
-syntax match notesShortHeading /^\s*\zs\u.\{1,50}\w:\ze\(\s\|$\)/ contains=@notesInline
+syntax match notesShortHeading /^\s*\zs\u.\{1,50}\k:\ze\(\s\|$\)/ contains=@notesInline
 highlight def link notesShortHeading Title
 
 " Atx style headings are also supported. {{{2
