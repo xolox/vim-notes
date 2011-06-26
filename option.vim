@@ -1,7 +1,17 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: March 15, 2011
+" Last Change: June 26, 2011
 " URL: http://peterodding.com/code/vim/misc/
+
+function! xolox#misc#option#get(name, default)
+  if exists('g:' . a:name)
+    return eval('g:' . a:name)
+  elseif exists('b:' . a:name)
+    return eval('b:' . a:name)
+  else
+    return a:default
+  endif
+endfunction
 
 " Functions to parse multi-valued Vim options like &tags and &runtimepath.
 
