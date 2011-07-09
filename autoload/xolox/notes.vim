@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 24, 2011
+" Last Change: July 9, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -429,6 +429,10 @@ function! s:internal_search(bang, pattern, keywords, phase2) " {{{2
     execute 'match IncSearch' pattern
   endif
   call xolox#misc#timer#stop('notes.vim %s: Searched notes in %s.', g:notes_version, starttime)
+  if &verbose == 0
+    " Don't hang on the hit-enter prompt.
+    redraw
+  endif
 endfunction
 
 function! s:vimgrep_wrapper(bang, pattern, files) " {{{2
