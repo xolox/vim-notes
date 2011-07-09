@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 8, 2011
+" Last Change: July 9, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -50,6 +50,14 @@ let b:undo_ftplugin .= ' includeexpr<'
 " Enable completion of note titles using C-x C-u. {{{1
 setlocal completefunc=xolox#notes#user_complete
 let b:undo_ftplugin .= ' completefunc<'
+
+" Enable completion of tag names using C-x C-o. {{{1
+setlocal omnifunc=xolox#notes#omni_complete
+let b:undo_ftplugin .= ' omnifunc<'
+
+" Automatic completion of tag names after typing "@". {{{1
+inoremap <buffer> <silent> @ <C-x><C-o>
+let b:undo_ftplugin .= ' | execute "iunmap <buffer> @"'
 
 " Change double-dash to em-dash as it is typed. {{{1
 if xolox#notes#unicode_enabled()

@@ -11,7 +11,7 @@ if &cp || exists('g:loaded_notes')
   finish
 endif
 
-let g:notes_version = '0.9.5'
+let g:notes_version = '0.10'
 
 " Make sure the default paths below are compatible with Pathogen.
 let s:plugindir = expand('<sfile>:p:h') . '/../misc/notes'
@@ -41,6 +41,11 @@ if !exists('g:notes_suffix')
   let g:notes_suffix = ''
 endif
 
+" Define the default location for the tag name index (used for completion).
+if !exists('g:notes_tagsindex')
+  let g:notes_tagsindex = s:plugindir . '/tags.txt'
+endif
+
 " User commands to create, delete and search notes.
 command! -bar -bang -nargs=? -complete=customlist,xolox#notes#cmd_complete Note call xolox#notes#edit(<q-bang>, <q-args>)
 command! -bar -bang -range NoteFromSelectedText call xolox#notes#from_selection(<q-bang>)
@@ -48,6 +53,7 @@ command! -bar -bang DeleteNote call xolox#notes#delete(<q-bang>)
 command! -bang -nargs=? SearchNotes call xolox#notes#search(<q-bang>, <q-args>)
 command! -bar -bang RelatedNotes call xolox#notes#related(<q-bang>)
 command! -bar -bang -nargs=? RecentNotes call xolox#notes#recent(<q-bang>, <q-args>)
+command! -bar -bang IndexTaggedNotes call xolox#notes#index_tagged_notes(<q-bang> == '!')
 
 " Automatic commands to enable the :edit note:… shortcut and load the notes file type.
 

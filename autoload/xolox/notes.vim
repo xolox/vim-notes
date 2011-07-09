@@ -174,6 +174,84 @@ function! xolox#notes#user_complete(findstart, base) " {{{1
   endif
 endfunction
 
+function! xolox#notes#omni_complete(findstart, base) " {{{1
+  if a:findstart
+    " For now we assume omni completion was triggered by the mapping for
+    " automatic tag completion. Eventually it might be nice to check for a
+    " leading "@" here and otherwise make it complete e.g. note names, so that
+    " there's only one way to complete inside notes and the plug-in is smart
+    " enough to know what the user wants to complete :-)
+    return col('.') - 1
+  else
+    let fname = expand(g:notes_tagsindex)
+    if !filereadable(fname)
+      return xolox#notes#index_tagged_notes(0)
+    else
+      return readfile(fname)
+    endif
+  endif
+endfunction
+
+function! xolox#notes#index_tagged_notes(verbose) " {{{1
+  let starttime = xolox#misc#timer#start()
+  let notes = xolox#notes#get_fnames()
+  let num_notes = len(notes)
+  let known_tags = {}
+  for idx in range(len(notes))
+    let fname = notes[idx]
+    call xolox#misc#msg#info("notes.vim %s: Scanning note %i of %i: %s", g:notes_version, idx + 1, num_notes, fname)
+    let text = join(readfile(fname), "\n")
+    " Strip code blocks from the text.
+    let text = substitute(text, '{{{\w\+\_.\{-}}}}', '', 'g')
+    for token in filter(split(text), 'v:val =~ "^@"')
+      " Strip any trailing punctuation.
+      let token = substitute(token, '[[:punct:]]*$', '', '')
+      if token != ''
+        if !a:verbose
+          let known_tags[token] = 1
+        else
+          " Track the origins of tags.
+          if !has_key(known_tags, token)
+            let known_tags[token] = {}
+          endif
+          let known_tags[token][fname] = 1
+        endif
+      endif
+    endfor
+  endfor
+  " Save the index of known tags as a text file.
+  let fname = expand(g:notes_tagsindex)
+  let tagnames = keys(known_tags)
+  call sort(tagnames, 1)
+  if writefile(tagnames, fname) != 0
+    call xolox#misc#msg#warn("notes.vim %s: Failed to save tags index as %s!", g:notes_version, fname)
+  else
+    call xolox#misc#timer#stop('notes.vim %s: Indexed tags in %s.', g:notes_version, starttime)
+  endif
+  if !a:verbose
+    return tagnames
+  endif
+  " If the user executed :IndexTaggedNotes! we show them the origins of tags,
+  " because after the first time I tried the :IndexTaggedNotes command I was
+  " immediately wondering where all of those false positives came from... This
+  " doesn't give a complete picture (doing so would slow down the indexing
+  " and complicate this code significantly) but it's better than nothing!
+  let lines = ['All tags', '', printf("You have used %i tags in your notes, they're listed below.", len(known_tags))]
+  let bullet = xolox#notes#insert_bullet('*')
+  for tagname in tagnames
+    call extend(lines, ['', '# ' . tagname, ''])
+    let fnames = keys(known_tags[tagname])
+    let titles = map(fnames, 'xolox#notes#fname_to_title(v:val)')
+    call sort(titles, 1)
+    for title in titles
+      call add(lines, ' ' . bullet . ' ' . title)
+    endfor
+  endfor
+  vnew
+  call setline(1, lines)
+  setlocal ft=notes nomod
+endfunction
+
 function! xolox#notes#save() abort " {{{1
   " When the current note's title is changed, automatically rename the file.
   if &filetype == 'notes'
