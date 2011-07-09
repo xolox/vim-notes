@@ -46,11 +46,15 @@ The notes plug-in comes with some default notes containing documentation about t
 
 ### The `g:notes_indexfile` option
 
-This option defines the pathname of the optional keyword index used by the plug-in to perform accelerated keyword searching.
+This option defines the pathname of the optional keyword index used by the `:SearchNotes` to perform accelerated keyword searching.
 
 ### The `g:notes_indexscript` option
 
-This option defines the pathname of the Python script that's used to perform accelerated keyword searching.
+This option defines the pathname of the Python script that's used to perform accelerated keyword searching with `:SearchNotes`.
+
+### The `g:notes_tagsindex` option
+
+This option defined the pathname of the text file that stores the list of known tags used for tag name completion. The text file is created automatically when you first use tag name completion, after that you can update it manually by executing `:IndexTaggedNotes` (see below).
 
 ## Commands
 
@@ -129,6 +133,12 @@ This command makes it easy to find all notes related to the current file: If you
 
 If you execute the `:RecentNotes` command it will open a Vim buffer that lists all your notes grouped by the day they were edited, starting with your most recently edited note. If you pass an argument to `:RecentNotes` it will filter the list of notes by matching the title of each note against the argument which is interpreted as a Vim pattern.
 
+## Other plug-ins that work well with the notes plug-in
+
+ * The [utl.vim] [utl] universal text linking plug-in enables links between your notes, other local files and remote resources like web pages
+ * My [shell.vim] [shell] plug-in also enables easy navigation between your notes and environment like local files and directories, web pages and e-mail addresses
+ * The [VOoM] [voom] outlining plug-in should work well for notes if you use the Markdown style headers starting with `#`, however it has been reported that this combination may not always work so well in practice (sometimes losing notes!)
+
 ## Contact
 
 If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/notes/> and <http://github.com/xolox/vim-notes>. If you like the script please vote for it on [Vim Online] [vim_online].
@@ -138,18 +148,21 @@ If you have questions, bug reports, suggestions, etc. the author can be contacte
 This software is licensed under the [MIT license] [mit].  
 © 2011 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
-[vim]: http://www.vim.org/
-[write]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:write
-[update]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:update
-[python]: http://python.org/
-[sqlite]: http://sqlite.org/
-[gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
-[slate]: http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
 [download]: http://peterodding.com/code/vim/downloads/notes.zip
-[vimrc]: http://vimdoc.sourceforge.net/htmldoc/starting.html#vimrc
 [edit]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:edit
-[split]: http://vimdoc.sourceforge.net/htmldoc/windows.html#:split
-[tabedit]: http://vimdoc.sourceforge.net/htmldoc/tabpage.html#:tabedit
-[vimgrep]: http://vimdoc.sourceforge.net/htmldoc/quickfix.html#:vimgrep
-[vim_online]: http://www.vim.org/scripts/script.php?script_id=3375
+[gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
 [mit]: http://en.wikipedia.org/wiki/MIT_License
+[python]: http://python.org/
+[shell]: http://www.vim.org/scripts/script.php?script_id=3123
+[slate]: http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
+[split]: http://vimdoc.sourceforge.net/htmldoc/windows.html#:split
+[sqlite]: http://sqlite.org/
+[tabedit]: http://vimdoc.sourceforge.net/htmldoc/tabpage.html#:tabedit
+[update]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:update
+[utl]: http://www.vim.org/scripts/script.php?script_id=293
+[vim]: http://www.vim.org/
+[vim_online]: http://www.vim.org/scripts/script.php?script_id=3375
+[vimgrep]: http://vimdoc.sourceforge.net/htmldoc/quickfix.html#:vimgrep
+[vimrc]: http://vimdoc.sourceforge.net/htmldoc/starting.html#vimrc
+[voom]: http://www.vim.org/scripts/script.php?script_id=2657
+[write]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:write

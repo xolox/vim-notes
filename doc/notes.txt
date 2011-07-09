@@ -104,13 +104,21 @@ notes.
 The *g:notes_indexfile* option
 
 This option defines the pathname of the optional keyword index used by the
-plug-in to perform accelerated keyword searching.
+|:SearchNotes| to perform accelerated keyword searching.
 
 -------------------------------------------------------------------------------
 The *g:notes_indexscript* option
 
 This option defines the pathname of the Python script that's used to perform
-accelerated keyword searching.
+accelerated keyword searching with |:SearchNotes|.
+
+-------------------------------------------------------------------------------
+The *g:notes_tagsindex* option
+
+This option defined the pathname of the text file that stores the list of
+known tags used for tag name completion. The text file is created
+automatically when you first use tag name completion, after that you can
+update it manually by executing |:IndexTaggedNotes| (see below).
 
 ===============================================================================
                                                                 *notes-commands*
@@ -170,7 +178,7 @@ start omni completion.
 
 The completion menu is populated from a text file listing all your tags, one
 on each line. The first time omni completion triggers, an index of tag names
-is generated and saved to the location set by 'g:notes_tagsindex'. To update
+is generated and saved to the location set by |g:notes_tagsindex|. To update
 this tags index you need to execute the |:IndexTaggedNotes| command.
 
 If you execute this command with a bang as in ':IndexTaggedNotes!' it wil open
@@ -246,19 +254,34 @@ the list of notes by matching the title of each note against the argument
 which is interpreted as a Vim pattern.
 
 ===============================================================================
+Other plug-ins that work well with the notes plug-in ~
+
+ - The utl.vim [6] universal text linking plug-in enables links between your
+   notes, other local files and remote resources like web pages
+
+ - My shell.vim [7] plug-in also enables easy navigation between your notes and
+   environment like local files and directories, web pages and e-mail
+   addresses
+
+ - The VOoM [8] outlining plug-in should work well for notes if you use the
+   Markdown style headers starting with '#', however it has been reported that
+   this combination may not always work so well in practice (sometimes losing
+   notes!)
+
+===============================================================================
                                                                  *notes-contact*
 Contact ~
 
 If you have questions, bug reports, suggestions, etc. the author can be
 contacted at peter@peterodding.com. The latest version is available at
 http://peterodding.com/code/vim/notes/ and http://github.com/xolox/vim-notes.
-If you like the script please vote for it on Vim Online [6].
+If you like the script please vote for it on Vim Online [9].
 
 ===============================================================================
                                                                  *notes-license*
 License ~
 
-This software is licensed under the MIT license [7]. Copyright 2011 Peter
+This software is licensed under the MIT license [10]. Copyright 2011 Peter
 Odding <peter@peterodding.com>.
 
 ===============================================================================
@@ -270,7 +293,10 @@ References ~
 [3] http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
 [4] http://peterodding.com/code/vim/notes/syntax.png
 [5] http://peterodding.com/code/vim/downloads/notes.zip
-[6] http://www.vim.org/scripts/script.php?script_id=3375
-[7] http://en.wikipedia.org/wiki/MIT_License
+[6] http://www.vim.org/scripts/script.php?script_id=293
+[7] http://www.vim.org/scripts/script.php?script_id=3123
+[8] http://www.vim.org/scripts/script.php?script_id=2657
+[9] http://www.vim.org/scripts/script.php?script_id=3375
+[10] http://en.wikipedia.org/wiki/MIT_License
 
 vim: ft=help
