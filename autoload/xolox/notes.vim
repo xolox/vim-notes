@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: July 9, 2011
+" Last Change: July 22, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -237,7 +237,7 @@ function! xolox#notes#index_tagged_notes(verbose) " {{{1
   " doesn't give a complete picture (doing so would slow down the indexing
   " and complicate this code significantly) but it's better than nothing!
   let lines = ['All tags', '', printf("You have used %i tags in your notes, they're listed below.", len(known_tags))]
-  let bullet = xolox#notes#insert_bullet('*')
+  let bullet = s:get_bullet('*')
   for tagname in tagnames
     call extend(lines, ['', '# ' . tagname, ''])
     let fnames = keys(known_tags[tagname])
@@ -694,12 +694,14 @@ endfunction
 
 function! xolox#notes#insert_bullet(chr) " {{{3
   " Insert a UTF-8 list bullet when the user types "*".
-  if xolox#notes#unicode_enabled()
-    if getline('.')[0 : max([0, col('.') - 2])] =~ '^\s*$'
-      return '•'
-    endif
+  if getline('.')[0 : max([0, col('.') - 2])] =~ '^\s*$'
+    return s:get_bullet(a:chr)
   endif
   return a:chr
+endfunction
+
+function! s:get_bullet(chr)
+  return xolox#notes#unicode_enabled() ? '•' : a:chr
 endfunction
 
 function! xolox#notes#indent_list(command, line1, line2) " {{{3
