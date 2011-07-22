@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: July 9, 2011
+" Last Change: July 22, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -22,14 +22,9 @@ setlocal tabstop=3 shiftwidth=3 expandtab
 let b:undo_ftplugin .= ' tabstop< shiftwidth< expandtab<'
 
 " Automatic formatting for bulleted lists. {{{1
-if xolox#notes#unicode_enabled()
-  let &l:comments = ': • ,: * ,:> '
-else
-  let &l:comments = ': * ,:> '
-endif
-let &l:commentstring = '> %s'
+let &l:comments = xolox#notes#unicode_enabled() ? ': • ,: * ,:> ' : ': * ,:> '
 setlocal formatoptions=tcron
-let b:undo_ftplugin .= ' commentstring< comments< formatoptions<'
+let b:undo_ftplugin .= ' comments< formatoptions<'
 
 " Automatic text folding based on headings. {{{1
 setlocal foldmethod=expr
@@ -96,5 +91,8 @@ imap <buffer> <silent> <S-Tab> <C-o>:call xolox#notes#indent_list('<<', line('.'
 smap <buffer> <silent> <S-Tab> <C-o>:<C-u>call xolox#notes#indent_list('<<', line("'<"), line("'>"))<CR><C-o>gv
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> <S-Tab>"'
 let b:undo_ftplugin .= ' | execute "sunmap <buffer> <S-Tab>"'
+
+" Automatically remove empty list items on Enter. {{{1
+inoremap <buffer> <silent> <expr> <CR> xolox#notes#cleanup_list()
 
 " vim: ts=2 sw=2 et

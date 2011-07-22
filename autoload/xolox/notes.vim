@@ -717,6 +717,16 @@ function! xolox#notes#indent_list(command, line1, line2) " {{{3
   normal $
 endfunction
 
+function! xolox#notes#cleanup_list() " {{{3
+  " Automatically remove empty list items on Enter.
+  setlocal nostartofline " <- so that <C-u> clears the complete line
+  if getline('.') =~ '^\s*\' . s:get_bullet('*') . '\s*$'
+    return "\<C-o>0\<C-o>d$\<C-o>o"
+  else
+    return "\<C-o>o"
+  endif
+endfunction
+
 function! xolox#notes#highlight_names(force) " {{{3
   " Highlight the names of all notes as "notesName" (linked to "Underlined").
   if a:force || !(exists('b:notes_names_last_highlighted') && b:notes_names_last_highlighted > s:cache_mtime)
