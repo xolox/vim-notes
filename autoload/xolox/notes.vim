@@ -735,11 +735,16 @@ endfunction
 
 function! xolox#notes#cleanup_list() " {{{3
   " Automatically remove empty list items on Enter.
-  setlocal nostartofline " <- so that <C-u> clears the complete line
   if getline('.') =~ '^\s*\' . s:get_bullet('*') . '\s*$'
+    let s:sol_save = &startofline
+    setlocal nostartofline " <- so that <C-u> clears the complete line
     return "\<C-o>0\<C-o>d$\<C-o>o"
   else
-    return "\<C-o>o"
+    if exists('s:sol_save')
+      let &l:startofline = s:sol_save
+      unlet s:sol_save
+    endif
+    return "\<CR>"
   endif
 endfunction
 
