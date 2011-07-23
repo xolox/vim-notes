@@ -756,7 +756,7 @@ function! xolox#notes#highlight_names(force) " {{{3
     call map(titles, 's:words_to_pattern(v:val)')
     call sort(titles, 's:sort_longest_to_shortest')
     syntax clear notesName
-    execute 'syntax match notesName /\c\%>2l\<\%(' . escape(join(titles, '\|'), '/') . '\)\>/'
+    execute 'syntax match notesName /\c\%>2l\%(' . escape(join(titles, '\|'), '/') . '\)/'
     let b:notes_names_last_highlighted = localtime()
     call xolox#misc#timer#stop("notes.vim %s: Highlighted note names in %s.", g:notes_version, starttime)
   endif
