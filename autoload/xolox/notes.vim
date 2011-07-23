@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: July 22, 2011
+" Last Change: July 23, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -97,7 +97,7 @@ function! xolox#notes#select(filter) " {{{1
   " Interactively select an existing note whose title contains {filter}.
   let notes = {}
   let filter = xolox#misc#str#trim(a:filter)
-  for [fname, title] in items(xolox#notes#get_fnames_and_titles())
+  for [fname, title] in items(xolox#notes#get_fnames_and_titles(1))
     if title ==? filter
       return fname
     elseif title =~? filter
@@ -131,7 +131,7 @@ function! xolox#notes#cmd_complete(arglead, cmdline, cursorpos) " {{{1
   let cmdline = split(a:cmdline, '\\\@<!|')
   let cmdargs = substitute(cmdline[-1], '^\s*\w\+\s\+', '', '')
   let arguments = split(cmdargs)
-  let titles = xolox#notes#get_titles()
+  let titles = xolox#notes#get_titles(1)
   if a:arglead != '' && len(arguments) == 1
     " If we are completing a single argument and we are able to replace it
     " (the user didn't type <Space><Tab> after the argument) we can select the
@@ -165,7 +165,7 @@ function! xolox#notes#user_complete(findstart, base) " {{{1
       return -1
     endif
   else
-    let titles = xolox#notes#get_titles()
+    let titles = xolox#notes#get_titles(1)
     if !empty(a:base)
       let pattern = xolox#misc#escape#pattern(a:base)
       call filter(titles, 'v:val =~ pattern')
@@ -194,7 +194,7 @@ endfunction
 
 function! xolox#notes#index_tagged_notes(verbose) " {{{1
   let starttime = xolox#misc#timer#start()
-  let notes = xolox#notes#get_fnames()
+  let notes = xolox#notes#get_fnames(0)
   let num_notes = len(notes)
   let known_tags = {}
   for idx in range(len(notes))
@@ -400,7 +400,7 @@ function! xolox#notes#recent(bang, title_filter) " {{{1
   " Filter notes by pattern (argument)?
   let notes = []
   let title_filter = '\v' . a:title_filter
-  for [fname, title] in items(xolox#notes#get_fnames_and_titles())
+  for [fname, title] in items(xolox#notes#get_fnames_and_titles(0))
     if title =~? title_filter
       call add(notes, [getftime(fname), title])
     endif
@@ -480,7 +480,7 @@ function! s:internal_search(bang, pattern, keywords, phase2) " {{{2
     endif
     let pattern = a:phase2 != '' ? a:phase2 : pattern
   else
-    call s:vimgrep_wrapper(a:bang, a:pattern, xolox#notes#get_fnames())
+    call s:vimgrep_wrapper(a:bang, a:pattern, xolox#notes#get_fnames(0))
     let notes = s:qflist_to_filenames()
     if a:phase2 != ''
       let pattern = a:phase2
@@ -569,42 +569,51 @@ if !exists('s:cache_mtime')
   let s:cached_titles = []
   let s:cached_pairs = {}
   let s:cache_mtime = 0
+  let s:shadow_notes = ['New note', 'Note taking commands', 'Note taking syntax']
 endif
 
-function! xolox#notes#get_fnames() " {{{3
+function! xolox#notes#get_fnames(include_shadow_notes) " {{{3
   " Get list with filenames of all existing notes.
   if !s:have_cached_names
     let starttime = xolox#misc#timer#start()
-    for directory in [g:notes_shadowdir, g:notes_directory]
-      let pattern = xolox#misc#path#merge(directory, '*')
-      let listing = glob(xolox#misc#path#absolute(pattern))
-      call extend(s:cached_fnames, split(listing, '\n'))
-    endfor
+    let pattern = xolox#misc#path#merge(g:notes_directory, '*')
+    let listing = glob(xolox#misc#path#absolute(pattern))
+    call extend(s:cached_fnames, split(listing, '\n'))
     let s:have_cached_names = 1
     call xolox#misc#timer#stop('notes.vim %s: Cached note filenames in %s.', g:notes_version, starttime)
   endif
-  return copy(s:cached_fnames)
+  let fnames = copy(s:cached_fnames)
+  if a:include_shadow_notes
+    for title in s:shadow_notes
+      call add(fnames, xolox#misc#path#merge(g:notes_shadowdir, title))
+    endfor
+  endif
+  return fnames
 endfunction
 
-function! xolox#notes#get_titles() " {{{3
+function! xolox#notes#get_titles(include_shadow_notes) " {{{3
   " Get list with titles of all existing notes.
   if !s:have_cached_titles
     let starttime = xolox#misc#timer#start()
-    for filename in xolox#notes#get_fnames()
+    for filename in xolox#notes#get_fnames(0)
       call add(s:cached_titles, xolox#notes#fname_to_title(filename))
     endfor
     let s:have_cached_titles = 1
     call xolox#misc#timer#stop('notes.vim %s: Cached note titles in %s.', g:notes_version, starttime)
   endif
-  return copy(s:cached_titles)
+  let titles = copy(s:cached_titles)
+  if a:include_shadow_notes
+    call extend(titles, s:shadow_notes)
+  endif
+  return titles
 endfunction
 
-function! xolox#notes#get_fnames_and_titles() " {{{3
+function! xolox#notes#get_fnames_and_titles(include_shadow_notes) " {{{3
   " Get dictionary of filename => title pairs of all existing notes.
   if !s:have_cached_items
     let starttime = xolox#misc#timer#start()
-    let fnames = xolox#notes#get_fnames()
-    let titles = xolox#notes#get_titles()
+    let fnames = xolox#notes#get_fnames(0)
+    let titles = xolox#notes#get_titles(0)
     let limit = len(fnames)
     let index = 0
     while index < limit
@@ -614,7 +623,14 @@ function! xolox#notes#get_fnames_and_titles() " {{{3
     let s:have_cached_items = 1
     call xolox#misc#timer#stop('notes.vim %s: Cached note filenames and titles in %s.', g:notes_version, starttime)
   endif
-  return s:cached_pairs
+  let pairs = copy(s:cached_pairs)
+  if a:include_shadow_notes
+    for title in s:shadow_notes
+      let fname = xolox#misc#path#merge(g:notes_shadowdir, title)
+      let pairs[fname] = title
+    endfor
+  endif
+  return pairs
 endfunction
 
 function! xolox#notes#fname_to_title(filename) " {{{3
@@ -731,7 +747,7 @@ function! xolox#notes#highlight_names(force) " {{{3
   " Highlight the names of all notes as "notesName" (linked to "Underlined").
   if a:force || !(exists('b:notes_names_last_highlighted') && b:notes_names_last_highlighted > s:cache_mtime)
     let starttime = xolox#misc#timer#start()
-    let titles = filter(xolox#notes#get_titles(), '!empty(v:val)')
+    let titles = filter(xolox#notes#get_titles(1), '!empty(v:val)')
     call map(titles, 's:words_to_pattern(v:val)')
     call sort(titles, 's:sort_longest_to_shortest')
     syntax clear notesName
@@ -796,7 +812,7 @@ endfunction
 function! xolox#notes#include_expr(fname) " {{{3
   " Translate string {fname} to absolute filename of note.
   " TODO Use inputlist() when more than one note matches?!
-  let notes = copy(xolox#notes#get_fnames_and_titles())
+  let notes = copy(xolox#notes#get_fnames_and_titles(1))
   let pattern = xolox#misc#escape#pattern(a:fname)
   call filter(notes, 'v:val =~ pattern')
   if !empty(notes)
