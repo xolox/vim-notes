@@ -1,6 +1,6 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: March 15, 2011
+" Last Change: August 31, 2011
 " URL: http://peterodding.com/code/vim/misc/
 
 let s:windows_compatible = has('win32') || has('win64')
@@ -69,6 +69,7 @@ endfunction
 " Join a directory and filename into a single pathname.
 
 function! xolox#misc#path#merge(parent, child, ...)
+  " TODO Use isabs()!
   if type(a:parent) == type('') && type(a:child) == type('')
     if s:windows_compatible
       let parent = substitute(a:parent, '[\\/]\+$', '', '')
@@ -126,6 +127,18 @@ else
     return a:a ==# a:b || xolox#misc#path#absolute(a:a) ==# xolox#misc#path#absolute(a:b)
   endfunction
 endif
+
+" Check whether a path is relative.
+
+function! xolox#misc#path#is_relative(path)
+  if a:path =~ '^\w\+://'
+    return 0
+  elseif s:windows_compatible
+    return a:path !~ '^\(\w:\|[\\/]\)'
+  else
+    return a:path !~ '^/'
+  endif
+endfunction
 
 " Create a temporary directory and return the path.
 
