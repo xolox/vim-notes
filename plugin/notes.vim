@@ -51,7 +51,8 @@ command! -bar -bang DeleteNote call xolox#notes#delete(<q-bang>)
 command! -bang -nargs=? SearchNotes call xolox#notes#search(<q-bang>, <q-args>)
 command! -bar -bang RelatedNotes call xolox#notes#related(<q-bang>)
 command! -bar -bang -nargs=? RecentNotes call xolox#notes#recent(<q-bang>, <q-args>)
-command! -bar -bang IndexTaggedNotes call xolox#notes#index_tagged_notes(<q-bang> == '!')
+command! -bar -count=1 ShowTaggedNotes call xolox#notes#tags#show_tags(<count>)
+command! -bar IndexTaggedNotes call xolox#notes#tags#create_index()
 
 " Automatic commands to enable the :edit note:… shortcut and load the notes file type.
 

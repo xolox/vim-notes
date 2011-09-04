@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 24, 2011
+" Last Change: July 23, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -144,6 +144,9 @@ call xolox#notes#highlight_sources('notesCodeStart', 'notesCodeEnd')
 " Hide mode line at end of file. {{{2
 syntax match notesModeLine /\_^vim:.*\_s*\%$/
 highlight def link notesModeLine LineNr
+
+syntax match notesLastEdited /(last edited \(today\|yesterday\|\w\+, \w\+ \d\+, \d\+\))/
+highlight def link notesLastEdited LineNr
 
 " }}}1
 

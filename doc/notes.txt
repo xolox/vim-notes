@@ -115,10 +115,10 @@ accelerated keyword searching with |:SearchNotes|.
 -------------------------------------------------------------------------------
 The *g:notes_tagsindex* option
 
-This option defined the pathname of the text file that stores the list of
-known tags used for tag name completion. The text file is created
-automatically when you first use tag name completion, after that you can
-update it manually by executing |:IndexTaggedNotes| (see below).
+This option defines the pathname of the text file that stores the list of
+known tags used for tag name completion and the |:ShowTaggedNotes| command.
+The text file is created automatically when it's first needed, after that you
+can recreate it manually by executing |:IndexTaggedNotes| (see below).
 
 ===============================================================================
                                                                 *notes-commands*
@@ -167,23 +167,6 @@ The |:DeleteNote| command deletes the current note, destroys the buffer and
 removes the note from the internal cache of filenames and note titles. This
 fails when changes have been made to the current buffer, unless you use
 ':DeleteNote!' which discards any changes.
-
--------------------------------------------------------------------------------
-The *:IndexTaggedNotes* command
-
-The notes plug-in defines an omni completion function that can be used to
-complete the names of tags. To trigger the omni completion you type Control-X
-Control-O. When you type '@' in insert mode the plug-in will automatically
-start omni completion.
-
-The completion menu is populated from a text file listing all your tags, one
-on each line. The first time omni completion triggers, an index of tag names
-is generated and saved to the location set by |g:notes_tagsindex|. To update
-this tags index you need to execute the |:IndexTaggedNotes| command.
-
-If you execute this command with a bang as in ':IndexTaggedNotes!' it wil open
-a split window with a cross reference of all the tags you've used and the
-files in which each tag has been used.
 
 -------------------------------------------------------------------------------
 The *:SearchNotes* command
@@ -252,6 +235,35 @@ all your notes grouped by the day they were edited, starting with your most
 recently edited note. If you pass an argument to |:RecentNotes| it will filter
 the list of notes by matching the title of each note against the argument
 which is interpreted as a Vim pattern.
+
+-------------------------------------------------------------------------------
+The *:ShowTaggedNotes* command
+
+To show a list of all notes that contains @tags@ you can use the
+|:ShowTaggedNotes| command. If you pass a count to this command it will limit
+the list of tags to those that have been used at least this many times. For
+example the following two commands show tags that have been used at least ten
+times:
+>
+    :10ShowTaggedNotes
+    :ShowTaggedNotes 10
+
+-------------------------------------------------------------------------------
+The *:IndexTaggedNotes* command
+
+The notes plug-in defines an omni completion function that can be used to
+complete the names of tags. To trigger the omni completion you type Control-X
+Control-O. When you type '@' in insert mode the plug-in will automatically
+start omni completion.
+
+The completion menu is populated from a text file listing all your tags, one
+on each line. The first time omni completion triggers, an index of tag names
+is generated and saved to the location set by |g:notes_tagsindex|. After this
+file is created, it will be updated automatically as you edit notes and
+add/remove tags.
+
+If for any reason you want to recreate the list of tags you can execute the
+|:IndexTaggedNotes| command.
 
 ===============================================================================
 Other plug-ins that work well with the notes plug-in ~

@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.10.6'
+let g:xolox#notes#version = '0.11'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -111,7 +111,7 @@ function! xolox#notes#select(filter) " {{{1
   elseif !empty(notes)
     let choices = ['Please select a note:']
     let values = ['']
-    for fname in sort(keys(notes))
+    for fname in sort(keys(notes), 1)
       call add(choices, ' ' . len(choices) . ') ' . notes[fname])
       call add(values, fname)
     endfor
@@ -183,75 +183,10 @@ function! xolox#notes#omni_complete(findstart, base) " {{{1
     " leading "@" here and otherwise make it complete e.g. note names, so that
     " there's only one way to complete inside notes and the plug-in is smart
     " enough to know what the user wants to complete :-)
-    return col('.') - 1
+    return col('.')
   else
-    let fname = expand(g:notes_tagsindex)
-    if !filereadable(fname)
-      return xolox#notes#index_tagged_notes(0)
-    else
-      return readfile(fname)
-    endif
+    return sort(keys(xolox#notes#tags#load_index()), 1)
   endif
-endfunction
-
-function! xolox#notes#index_tagged_notes(verbose) " {{{1
-  let starttime = xolox#misc#timer#start()
-  let notes = xolox#notes#get_fnames(0)
-  let num_notes = len(notes)
-  let known_tags = {}
-  for idx in range(len(notes))
-    let fname = notes[idx]
-    call xolox#misc#msg#info("notes.vim %s: Scanning note %i of %i: %s", g:xolox#notes#version, idx + 1, num_notes, fname)
-    let text = join(readfile(fname), "\n")
-    " Strip code blocks from the text.
-    let text = substitute(text, '{{{\w\+\_.\{-}}}}', '', 'g')
-    for token in filter(split(text), 'v:val =~ "^@"')
-      " Strip any trailing punctuation.
-      let token = substitute(token, '[[:punct:]]*$', '', '')
-      if token != ''
-        if !a:verbose
-          let known_tags[token] = 1
-        else
-          " Track the origins of tags.
-          if !has_key(known_tags, token)
-            let known_tags[token] = {}
-          endif
-          let known_tags[token][fname] = 1
-        endif
-      endif
-    endfor
-  endfor
-  " Save the index of known tags as a text file.
-  let fname = expand(g:notes_tagsindex)
-  let tagnames = keys(known_tags)
-  call sort(tagnames, 1)
-  if writefile(tagnames, fname) != 0
-    call xolox#misc#msg#warn("notes.vim %s: Failed to save tags index as %s!", g:xolox#notes#version, fname)
-  else
-    call xolox#misc#timer#stop('notes.vim %s: Indexed tags in %s.', g:xolox#notes#version, starttime)
-  endif
-  if !a:verbose
-    return tagnames
-  endif
-  " If the user executed :IndexTaggedNotes! we show them the origins of tags,
-  " because after the first time I tried the :IndexTaggedNotes command I was
-  " immediately wondering where all of those false positives came from... This
-  " doesn't give a complete picture (doing so would slow down the indexing
-  " and complicate this code significantly) but it's better than nothing!
-  let lines = ['All tags', '', printf("You have used %i tags in your notes, they're listed below.", len(known_tags))]
-  let bullet = s:get_bullet('*')
-  for tagname in tagnames
-    call extend(lines, ['', '# ' . tagname, ''])
-    let fnames = keys(known_tags[tagname])
-    let titles = map(fnames, 'xolox#notes#fname_to_title(v:val)')
-    call sort(titles, 1)
-    for title in titles
-      call add(lines, ' ' . bullet . ' ' . title)
-    endfor
-  endfor
-  vnew
-  call setline(1, lines)
-  setlocal ft=notes nomod
 endfunction
 
 function! xolox#notes#save() abort " {{{1
@@ -280,6 +215,11 @@ function! xolox#notes#save() abort " {{{1
       endif
       call delete(oldpath)
     endif
+    " Update the tags index on disk and in-memory.
+    call xolox#notes#tags#forget_note(xolox#notes#fname_to_title(oldpath))
+    call xolox#notes#tags#scan_note(title, join(getline(1, '$'), "\n"))
+    call xolox#notes#tags#save_index()
+    " Update in-memory list of all notes.
     call xolox#notes#cache_del(oldpath)
     call xolox#notes#cache_add(newpath, title)
   endif
@@ -432,24 +372,14 @@ function! xolox#notes#recent(bang, title_filter) " {{{1
   " Sort, group and format list of (matching) notes.
   let last_date = ''
   let list_item_format = xolox#notes#unicode_enabled() ? ' • %s' : ' * %s'
-  let date_format = '%A, %B %d:'
-  let today = strftime(date_format, localtime())
-  let yesterday = strftime(date_format, localtime() - 60*60*24)
   call sort(notes)
   call reverse(notes)
   let lines = []
   for [ftime, title] in notes
-    let date = strftime(date_format, ftime)
-    " Add date heading because date changed?
+    let date = xolox#notes#friendly_date(ftime)
     if date != last_date
       call add(lines, '')
-      if date == today
-        call add(lines, "Today:")
-      elseif date == yesterday
-        call add(lines, "Yesterday:")
-      else
-        call add(lines, date)
-      endif
+      call add(lines, substitute(date, '^\w', '\u\0', '') . ':')
       let last_date = date
     endif
     call add(lines, printf(list_item_format, title))
@@ -461,9 +391,18 @@ endfunction
 
 " Miscellaneous functions. {{{1
 
-function! s:is_empty_buffer() " {{{2
-  " Check if the buffer is an empty, unchanged buffer which can be reused.
-  return !&modified && expand('%') == '' && line('$') <= 1 && getline(1) == ''
+function! xolox#notes#friendly_date(time) " {{{2
+  let format = '%A, %B %d, %Y'
+  let today = strftime(format, localtime())
+  let yesterday = strftime(format, localtime() - 60*60*24)
+  let datestr = strftime(format, a:time)
+  if datestr == today
+    return "today"
+  elseif datestr == yesterday
+    return "yesterday"
+  else
+    return datestr
+  endif
 endfunction
 
 function! s:internal_search(bang, pattern, keywords, phase2) " {{{2
@@ -713,12 +652,12 @@ endfunction
 function! xolox#notes#insert_bullet(chr) " {{{3
   " Insert a UTF-8 list bullet when the user types "*".
   if getline('.')[0 : max([0, col('.') - 2])] =~ '^\s*$'
-    return s:get_bullet(a:chr)
+    return xolox#notes#get_bullet(a:chr)
   endif
   return a:chr
 endfunction
 
-function! s:get_bullet(chr)
+function! xolox#notes#get_bullet(chr)
   return xolox#notes#unicode_enabled() ? '•' : a:chr
 endfunction
 
@@ -729,6 +668,7 @@ function! xolox#notes#indent_list(command, line1, line2) " {{{3
   else
     execute a:line1 . ',' . a:line2 . 'normal' a:command
     if getline('.') =~ '\(•\|\*\)$'
+      " Restore trailing space after list bullet.
       call setline('.', getline('.') . ' ')
     endif
   endif
@@ -737,7 +677,7 @@ endfunction
 
 function! xolox#notes#cleanup_list() " {{{3
   " Automatically remove empty list items on Enter.
-  if getline('.') =~ '^\s*\' . s:get_bullet('*') . '\s*$'
+  if getline('.') =~ '^\s*\' . xolox#notes#get_bullet('*') . '\s*$'
     let s:sol_save = &startofline
     setlocal nostartofline " <- so that <C-u> clears the complete line
     return "\<C-o>0\<C-o>d$\<C-o>o"

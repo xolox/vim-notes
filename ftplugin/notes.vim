@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: July 22, 2011
+" Last Change: September 4, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -15,44 +15,49 @@ let b:undo_ftplugin = 'set matchpairs<'
 
 " Copy indent from previous line. {{{1
 setlocal autoindent
-let b:undo_ftplugin .= ' autoindent<'
+let b:undo_ftplugin .= ' | set autoindent<'
 
 " Set &tabstop and &shiftwidth options for bulleted lists. {{{1
 setlocal tabstop=3 shiftwidth=3 expandtab
-let b:undo_ftplugin .= ' tabstop< shiftwidth< expandtab<'
+let b:undo_ftplugin .= ' | set tabstop< shiftwidth< expandtab<'
 
 " Automatic formatting for bulleted lists. {{{1
 let &l:comments = xolox#notes#unicode_enabled() ? ': • ,: * ,:> ' : ': * ,:> '
 setlocal formatoptions=tcron
-let b:undo_ftplugin .= ' comments< formatoptions<'
+let b:undo_ftplugin .= ' | set comments< formatoptions<'
 
 " Automatic text folding based on headings. {{{1
 setlocal foldmethod=expr
 setlocal foldexpr=xolox#notes#foldexpr()
 setlocal foldtext=xolox#notes#foldtext()
-let b:undo_ftplugin .= ' foldmethod< foldexpr< foldtext<'
+let b:undo_ftplugin .= ' | set foldmethod< foldexpr< foldtext<'
 
 " Enable concealing of notes syntax markers? {{{1
 if has('conceal')
   setlocal conceallevel=3
-  let b:undo_ftplugin .= ' conceallevel<'
+  let b:undo_ftplugin .= ' | set conceallevel<'
 endif
 
 " Change <cfile> to jump to notes by name. {{{1
 setlocal includeexpr=xolox#notes#include_expr(v:fname)
-let b:undo_ftplugin .= ' includeexpr<'
+let b:undo_ftplugin .= ' | set includeexpr<'
 
 " Enable completion of note titles using C-x C-u. {{{1
 setlocal completefunc=xolox#notes#user_complete
-let b:undo_ftplugin .= ' completefunc<'
+let b:undo_ftplugin .= ' | set completefunc<'
 
 " Enable completion of tag names using C-x C-o. {{{1
 setlocal omnifunc=xolox#notes#omni_complete
-let b:undo_ftplugin .= ' omnifunc<'
+let b:undo_ftplugin .= ' | set omnifunc<'
 
 " Automatic completion of tag names after typing "@". {{{1
-inoremap <buffer> <silent> @ <C-x><C-o>
+
+inoremap <buffer> <silent> @ @<C-x><C-o>
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> @"'
+
+" Automatic completion of tag names should not interrupt the flow of typing,
+" for this we have to change the (unfortunately) global option &completeopt.
+set completeopt+=longest
 
 " Change double-dash to em-dash as it is typed. {{{1
 if xolox#notes#unicode_enabled()
