@@ -1,6 +1,6 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: July 23, 2011
+" Last Change: September 4, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Support for automatic update using the GLVS plug-in.
@@ -10,8 +10,6 @@
 if &cp || exists('g:loaded_notes')
   finish
 endif
-
-let g:notes_version = '0.10.5'
 
 " Make sure the default paths below are compatible with Pathogen.
 let s:plugindir = expand('<sfile>:p:h') . '/../misc/notes'
