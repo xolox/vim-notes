@@ -45,9 +45,11 @@ function! xolox#notes#tags#create_index() " {{{1
   let filenames = xolox#notes#get_fnames(0)
   let s:currently_tagged_notes = {}
   for idx in range(len(filenames))
-    let title = xolox#notes#fname_to_title(filenames[idx])
-    call xolox#misc#msg#info("notes.vim %s: Scanning note %i/%i: %s", g:xolox#notes#version, idx + 1, len(filenames), title)
-    call xolox#notes#tags#scan_note(title, join(readfile(filenames[idx]), "\n"))
+    if filereadable(filenames[idx])
+      let title = xolox#notes#fname_to_title(filenames[idx])
+      call xolox#misc#msg#info("notes.vim %s: Scanning note %i/%i: %s", g:xolox#notes#version, idx + 1, len(filenames), title)
+      call xolox#notes#tags#scan_note(title, join(readfile(filenames[idx]), "\n"))
+    endif
   endfor
   if xolox#notes#tags#save_index()
     let s:previously_tagged_notes = deepcopy(s:currently_tagged_notes)
@@ -58,17 +60,23 @@ function! xolox#notes#tags#create_index() " {{{1
 endfunction
 
 function! xolox#notes#tags#save_index() " {{{1
-  if s:currently_tagged_notes == s:previously_tagged_notes
+  let indexfile = expand(g:notes_tagsindex)
+  let existingfile = filereadable(indexfile)
+  let nothingchanged = (s:currently_tagged_notes == s:previously_tagged_notes)
+  if existingfile && nothingchanged
+    call xolox#misc#msg#debug("notes.vim %s: Index not dirty so not saved.", g:xolox#notes#version)
     return 1 " Nothing to be done
   else
     let lines = []
     for [tagname, filenames] in items(s:currently_tagged_notes)
       call add(lines, join([tagname] + filenames, "\t"))
     endfor
-    let indexfile = expand(g:notes_tagsindex)
     let status = writefile(lines, indexfile) == 0
     if status
+      call xolox#misc#msg#debug("notes.vim %s: Index saved to %s.", g:xolox#notes#version, g:notes_tagsindex)
       let s:last_disk_sync = getftime(indexfile)
+    else
+      call xolox#misc#msg#debug("notes.vim %s: Failed to save index to %s.", g:xolox#notes#version, g:notes_tagsindex)
     endif
     return status
   endif
