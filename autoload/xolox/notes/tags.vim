@@ -1,6 +1,6 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: September 4, 2011
+" Last Change: September 17, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 if !exists('s:currently_tagged_notes')
@@ -8,14 +8,21 @@ if !exists('s:currently_tagged_notes')
   let s:previously_tagged_notes = {} " Copy of index as it is / should be now on disk (to detect changes).
   let s:last_disk_sync = 0 " Whether the on-disk representation of the tags has been read.
   let s:buffer_name = 'Tagged Notes' " The buffer name for the list of tagged notes.
+  let s:loading_index = 0
 endif
 
 function! xolox#notes#tags#load_index() " {{{1
+  if s:loading_index
+    " Guard against recursive calls.
+    return s:currently_tagged_notes
+  endif
   let starttime = xolox#misc#timer#start()
   let indexfile = expand(g:notes_tagsindex)
   let lastmodified = getftime(indexfile)
   if lastmodified == -1
+    let s:loading_index = 1
     call xolox#notes#tags#create_index()
+    let s:loading_index = 0
   elseif lastmodified > s:last_disk_sync
     let s:currently_tagged_notes = {}
     for line in readfile(indexfile)
