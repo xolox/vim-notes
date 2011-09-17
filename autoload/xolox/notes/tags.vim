@@ -1,6 +1,6 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: September 17, 2011
+" Last Change: September 18, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 if !exists('s:currently_tagged_notes')
@@ -117,18 +117,43 @@ function! xolox#notes#tags#show_tags(minsize) " {{{1
   if empty(s:currently_tagged_notes)
     call add(lines, "You haven't used any tags yet!")
   else
-    let bullet = xolox#notes#get_bullet('*')
+    " Create a dictionary with note titles as keys.
+    let unmatched = {}
+    for title in xolox#notes#get_titles(0)
+      let unmatched[title] = 1
+    endfor
+    " Group matching notes and remove them from the dictionary.
+    let grouped_notes = []
     let numtags = 0
     for tagname in sort(keys(s:currently_tagged_notes), 1)
-      let friendly_name = xolox#notes#tags#friendly_name(tagname)
       let numnotes = len(s:currently_tagged_notes[tagname])
       if numnotes >= a:minsize
+        let matched_notes = s:currently_tagged_notes[tagname]
+        for title in matched_notes
+          if has_key(unmatched, title)
+            unlet unmatched[title]
+          endif
+        endfor
+        call add(grouped_notes, {'name': tagname, 'notes': matched_notes})
+        let numtags += 1
+      endif
+    endfor
+    " Add a "fake tag" with all unmatched notes.
+    if !empty(unmatched)
+      call add(grouped_notes, {'name': "Unmatched notes", 'notes': keys(unmatched)})
+    endif
+    " Format the results as a note.
+    let bullet = xolox#notes#get_bullet('*')
+    for group in grouped_notes
+      let tagname = group['name']
+      let friendly_name = xolox#notes#tags#friendly_name(tagname)
+      let numnotes = len(group['notes'])
+      if numnotes >= a:minsize
         call extend(lines, ['', printf('# %s (%i note%s)', friendly_name, numnotes, numnotes == 1 ? '' : 's'), ''])
-        for title in s:currently_tagged_notes[tagname]
+        for title in group['notes']
           let lastmodified = xolox#notes#friendly_date(getftime(xolox#notes#title_to_fname(title)))
           call add(lines, ' ' . bullet . ' ' . title . ' (last edited ' . lastmodified . ')')
         endfor
-        let numtags += 1
       endif
     endfor
     if a:minsize <= 1
@@ -140,9 +165,15 @@ function! xolox#notes#tags#show_tags(minsize) " {{{1
             \ numtags == 1 ? "tag" : "tags",
             \ numtags == 1 ? "has" : "have", a:minsize)
     endif
-    let message .= ", "
-    let message .= numtags == 1 ? "it's" : "they're"
+    let message .= ", " . (numtags == 1 ? "it's" : "they're")
     let message .= " listed below. Tags and notes are sorted alphabetically and after each note is the date when it was last modified."
+    if !empty(unmatched)
+      if a:minsize <= 1
+        let message .= " At the bottom is a list of untagged notes."
+      else
+        let message .= " At the bottom is a list of unmatched notes."
+      endif
+    endif
     if numtags > 1 && !(&foldmethod == 'expr' && &foldenable)
       let message .= " You can enable text folding to get an overview of just the tag names and how many times they've been used."
     endif
