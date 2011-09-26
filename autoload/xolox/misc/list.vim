@@ -6,18 +6,9 @@
 " Remove duplicate values from {list} in-place (preserves order).
 
 function! xolox#misc#list#unique(list)
-  let index = 0
-  while index < len(a:list)
-    let value = a:list[index]
-    let match = index(a:list, value, index+1)
-    if match >= 0
-      call remove(a:list, match)
-    else
-      let index += 1
-    endif
-    unlet value
-  endwhile
-  return a:list
+  call reverse(a:list)
+  call filter(a:list, 'count(a:list, v:val) == 1')
+  return reverse(a:list)
 endfunction
 
 " Binary insertion (more efficient than calling sort() after each insertion).
