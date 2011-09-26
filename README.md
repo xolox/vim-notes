@@ -82,7 +82,7 @@ When you execute this command it will start a new note with the selected text as
 
 ### The `:DeleteNote` command
 
-The `:DeleteNote` command deletes the current note, destroys the buffer and removes the note from the internal cache of filenames and note titles. This fails when changes have been made to the current buffer, unless you use `:DeleteNote!` which discards any changes.
+The `:DeleteNote` command deletes a note file, destroys the buffer and removes the note from the internal cache of filenames and note titles. If you pass a note name as an argument to `:DeleteNote` it will delete the given note, otherwise it will delete the current note. This fails when changes have been made to the buffer, unless you use `:DeleteNote!` which discards any changes.
 
 ### The `:SearchNotes` command
 
