@@ -225,15 +225,28 @@ function! xolox#notes#save() abort " {{{1
   endif
 endfunction
 
-function! xolox#notes#delete(bang) " {{{1
-  " Delete the current note, close the associated buffer & window.
-  let filename = expand('%:p')
+function! xolox#notes#delete(bang, title) " {{{1
+  " Delete the note `title` and closes the associated buffer & window.
+  " If no `title` is given then use the current note.
+  let title = xolox#misc#str#trim(a:title)
+  if title == ''
+    " Try the current buffer.
+    let title = xolox#notes#fname_to_title(expand('%:p'))
+  end
+
+  if xolox#notes#exists(title) == 0
+    call xolox#misc#msg#warn("notes.vim %s: Failed to delete %s! (not a note)",
+          \ g:xolox#notes#version, expand('%:p'))
+      return
+  end
+
+  let filename = xolox#notes#title_to_fname(title)
   if filereadable(filename) && delete(filename)
     call xolox#misc#msg#warn("notes.vim %s: Failed to delete %s!", g:xolox#notes#version, filename)
     return
   endif
   call xolox#notes#cache_del(filename)
-  execute 'bdelete' . a:bang
+  execute 'bdelete' . a:bang . bufnr(filename)
 endfunction
 
 function! xolox#notes#search(bang, input) " {{{1
@@ -547,6 +560,17 @@ function! xolox#notes#get_titles(include_shadow_notes) " {{{3
     call extend(titles, s:shadow_notes)
   endif
   return titles
+endfunction
+
+function! xolox#notes#exists(title) " {{{3
+  " Return true if a note `title` exists
+  let titles = xolox#notes#get_titles(0)
+  for note in titles
+    if note == a:title
+      return 1
+    end
+  endfor
+  return 0
 endfunction
 
 function! xolox#notes#get_fnames_and_titles(include_shadow_notes) " {{{3
