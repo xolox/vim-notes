@@ -1,6 +1,6 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: September 4, 2011
+" Last Change: October 18, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Support for automatic update using the GLVS plug-in.
@@ -42,6 +42,12 @@ endif
 " Define the default location for the tag name index (used for completion).
 if !exists('g:notes_tagsindex')
   let g:notes_tagsindex = s:plugindir . '/tags.txt'
+endif
+
+" Define the default action when a note's filename and title are out of sync.
+if !exists('g:notes_title_sync')
+  " Valid values are "no", "change_title", "rename_file" and "prompt".
+  let g:notes_title_sync = 'prompt'
 endif
 
 " User commands to create, delete and search notes.

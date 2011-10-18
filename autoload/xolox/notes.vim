@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: September 29, 2011
+" Last Change: October 18, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.11.6'
+let g:xolox#notes#version = '0.12'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -32,6 +32,7 @@ function! xolox#notes#edit(bang, title) abort " {{{1
   else
     let title = 'New note'
   endif
+  " At this point we're dealing with a new note.
   let fname = xolox#notes#title_to_fname(title)
   execute 'edit' . a:bang fnameescape(fname)
   setlocal filetype=notes
@@ -49,6 +50,50 @@ function! xolox#notes#edit(bang, title) abort " {{{1
   endif
   doautocmd BufReadPost
   call xolox#misc#timer#stop('notes.vim %s: Started new note in %s.', g:xolox#notes#version, starttime)
+endfunction
+
+function! xolox#notes#check_sync_title() " {{{1
+  if g:notes_title_sync != 'no' && xolox#notes#buffer_is_note()
+    " Check if the note's title and filename are out of sync.
+    let name_on_disk = xolox#misc#path#absolute(expand('%:p'))
+    let name_from_title = xolox#notes#title_to_fname(getline(1))
+    if !xolox#misc#path#equals(name_on_disk, name_from_title)
+      let action = g:notes_title_sync
+      if action == 'prompt'
+        " Prompt the user what to do (if anything). First we perform a redraw
+        " to make sure the note's content is visible (without this the Vim
+        " window would be blank in my tests).
+        redraw
+        let message = "The note's title and filename do not correspond. What do you want to do?"
+        let options = "Change &title\nRename &file\nDo &nothing"
+        let choice = confirm(message, options, 3, 'Question')
+        if choice == 1
+          let action = 'change_title'
+        elseif choice == 2
+          let action = 'rename_file'
+        else
+          " User chose to do nothing or <Escape>'d the prompt.
+          return
+        endif
+        " Intentional fall through here :-)
+      endif
+      if action == 'change_title'
+        let new_title = xolox#notes#fname_to_title(name_on_disk)
+        call setline(1, new_title)
+        setlocal modified
+        call xolox#misc#msg#info("notes.vim %s: Changed note title to match filename.", g:xolox#notes#version)
+      elseif action == 'rename_file'
+        let new_fname = xolox#notes#title_to_fname(getline(1))
+        if rename(name_on_disk, new_fname) == 0
+          execute 'edit' fnameescape(new_fname)
+          setlocal filetype=notes
+          call xolox#misc#msg#info("notes.vim %s: Renamed file to match note title.", g:xolox#notes#version)
+        else
+          call xolox#misc#msg#warn("notes.vim %s: Failed to rename file to match note title?!", g:xolox#notes#version)
+        endif
+      endif
+    endif
+  endif
 endfunction
 
 function! xolox#notes#from_selection(bang) " {{{1
@@ -312,7 +357,7 @@ function! xolox#notes#related(bang) " {{{1
     call xolox#misc#msg#warn("notes.vim %s: :RelatedNotes only works on named buffers!", g:xolox#notes#version)
   else
     let filename = xolox#misc#path#absolute(bufname)
-    if &filetype == 'notes' && xolox#misc#path#equals(g:notes_directory, expand('%:h'))
+    if xolox#notes#buffer_is_note()
       let pattern = '\<' . s:words_to_pattern(getline(1)) . '\>'
       let keywords = getline(1)
     else
@@ -397,6 +442,10 @@ function! xolox#notes#recent(bang, title_filter) " {{{1
   call setline(line('$') + 1, lines)
   setlocal readonly nomodifiable nomodified filetype=notes
   call xolox#misc#timer#stop("notes.vim %s: Created list of notes in %s.", g:xolox#notes#version, start)
+endfunction
+
+function! xolox#notes#buffer_is_note() " {{{1
+  return &filetype == 'notes' && xolox#misc#path#equals(expand('%:p:h'), g:notes_directory)
 endfunction
 
 " Miscellaneous functions. {{{1

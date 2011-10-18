@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: September 4, 2011
+" Last Change: October 18, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -99,5 +99,12 @@ let b:undo_ftplugin .= ' | execute "sunmap <buffer> <S-Tab>"'
 
 " Automatically remove empty list items on Enter. {{{1
 inoremap <buffer> <silent> <expr> <CR> xolox#notes#cleanup_list()
+
+" }}}1
+
+" This is currently the only place where a command is guaranteed to be
+" executed when the user edits a note. Maybe I shouldn't abuse this (it
+" doesn't feel right ;-) but for now it will do.
+call xolox#notes#check_sync_title()
 
 " vim: ts=2 sw=2 et

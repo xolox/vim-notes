@@ -40,6 +40,12 @@ The suffix to add to generated filenames. The plug-in generates filenames for yo
 
     :let g:notes_suffix = '.txt'
 
+### The `g:notes_title_sync` option
+
+When you rename a file in your notes directory but don't change the title, the plug-in will notice this the next time you open the note in Vim. Likewise when you change the title in another text editor but don't rename the file. By default the plug-in will prompt you whether you want it to update the title of the note, rename the file on disk or dismiss the prompt without doing anything.
+
+If you set this option to the string `'no'` this feature will be completely disabled. If you set it to `'change_title'` it will automatically change the title to match the filename. If you set it to `'rename_file'` it will automatically rename the file on disk to match the title.
+
 ### The `g:notes_shadowdir` option
 
 The notes plug-in comes with some default notes containing documentation about the plug-in. This option defines the path of the directory containing these notes.
