@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: October 18, 2011
+" Last Change: October 23, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.12'
+let g:xolox#notes#version = '0.12.1'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -852,6 +852,15 @@ endfunction
 
 function! xolox#notes#foldexpr() " {{{3
   " Folding expression to fold atx style Markdown headings.
+  if xolox#misc#option#get('notes_fold_ignore_code', 0)
+    let pos_save = getpos('.')
+    call setpos('.', [0, v:lnum, 1, 0])
+    let in_code = (search('{{{\|\(}}}\)', 'bnpW') == 1)
+    call setpos('.', pos_save)
+    if in_code
+      return '='
+    endif
+  endif
   let lastlevel = foldlevel(v:lnum - 1)
   let nextlevel = match(getline(v:lnum), '^#\+\zs')
   if lastlevel <= 0 && nextlevel >= 1
