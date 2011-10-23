@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.12.1'
+let g:xolox#notes#version = '0.12.2'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -34,8 +34,7 @@ function! xolox#notes#edit(bang, title) abort " {{{1
   endif
   " At this point we're dealing with a new note.
   let fname = xolox#notes#title_to_fname(title)
-  execute 'edit' . a:bang fnameescape(fname)
-  setlocal filetype=notes
+  noautocmd execute 'edit' . a:bang fnameescape(fname)
   if line('$') == 1 && getline(1) == ''
     let fname = xolox#misc#path#merge(g:notes_shadowdir, 'New note')
     execute 'silent read' fnameescape(fname)
@@ -48,6 +47,7 @@ function! xolox#notes#edit(bang, title) abort " {{{1
   if title != 'New note'
     call setline(1, title)
   endif
+  setlocal filetype=notes
   doautocmd BufReadPost
   call xolox#misc#timer#stop('notes.vim %s: Started new note in %s.', g:xolox#notes#version, starttime)
 endfunction
@@ -55,18 +55,23 @@ endfunction
 function! xolox#notes#check_sync_title() " {{{1
   if g:notes_title_sync != 'no' && xolox#notes#buffer_is_note()
     " Check if the note's title and filename are out of sync.
+    let title = getline(1)
     let name_on_disk = xolox#misc#path#absolute(expand('%:p'))
-    let name_from_title = xolox#notes#title_to_fname(getline(1))
+    let name_from_title = xolox#notes#title_to_fname(title)
     if !xolox#misc#path#equals(name_on_disk, name_from_title)
+      call xolox#misc#msg#debug("notes.vim %s: Filename (%s) doesn't match note title (%s)", g:xolox#notes#version, name_on_disk, name_from_title)
       let action = g:notes_title_sync
       if action == 'prompt'
         " Prompt the user what to do (if anything). First we perform a redraw
         " to make sure the note's content is visible (without this the Vim
         " window would be blank in my tests).
         redraw
-        let message = "The note's title and filename do not correspond. What do you want to do?"
-        let options = "Change &title\nRename &file\nDo &nothing"
-        let choice = confirm(message, options, 3, 'Question')
+        let message = "The note's title and filename do not correspond. What do you want to do?\n\n"
+        let message .= "Current filename: " . name_on_disk . "\n"
+        let message .= "Corresponding title: " . xolox#notes#fname_to_title(name_on_disk) . "\n\n"
+        let message .= "Current title: " . title . "\n"
+        let message .= "Corresponding filename: " . xolox#notes#title_to_fname(title)
+        let choice = confirm(message, "Change &title\nRename &file\nDo &nothing", 3, 'Question')
         if choice == 1
           let action = 'change_title'
         elseif choice == 2
