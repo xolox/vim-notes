@@ -262,7 +262,7 @@ which is interpreted as a Vim pattern.
 -------------------------------------------------------------------------------
 The *:ShowTaggedNotes* command
 
-To show a list of all notes that contains @tags@ you can use the
+To show a list of all notes that contains @tags you can use the
 |:ShowTaggedNotes| command. If you pass a count to this command it will limit
 the list of tags to those that have been used at least this many times. For
 example the following two commands show tags that have been used at least ten

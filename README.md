@@ -106,7 +106,6 @@ To search for one or more keywords you can just omit the slashes, this matches n
 
 If you don't pass any arguments to the `:SearchNotes` command it will search for the word under the cursor. If the word under the cursor starts with '@' this character will be included in the search, which makes it possible to easily add *@tags* to your *@notes* and then search for those tags. To make searching for tags even easier you can create key mappings for the `:SearchNotes` command:
 
-
     " Make the C-] combination search for @tags:
     imap <C-]> <C-o>:SearchNotes<CR>
     nmap <C-]> :SearchNotes<CR>
@@ -135,7 +134,7 @@ If you execute the `:RecentNotes` command it will open a Vim buffer that lists a
 
 ### The `:ShowTaggedNotes` command
 
-To show a list of all notes that contains *@tags@* you can use the `:ShowTaggedNotes` command. If you pass a count to this command it will limit the list of tags to those that have been used at least this many times. For example the following two commands show tags that have been used at least ten times:
+To show a list of all notes that contains *@tags* you can use the `:ShowTaggedNotes` command. If you pass a count to this command it will limit the list of tags to those that have been used at least this many times. For example the following two commands show tags that have been used at least ten times:
 
     :10ShowTaggedNotes
     :ShowTaggedNotes 10
