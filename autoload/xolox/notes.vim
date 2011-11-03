@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.12.5'
+let g:xolox#notes#version = '0.12.6'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -510,7 +510,6 @@ function! s:internal_search(bang, pattern, keywords, phase2) " {{{2
   endif
   silent cwindow
   if &buftype == 'quickfix'
-    setlocal ignorecase
     execute 'match IncSearch' substitute(pattern, '^/', '/\\c', '')
   endif
   call xolox#misc#timer#stop('notes.vim %s: Searched notes in %s.', g:xolox#notes#version, starttime)
@@ -859,27 +858,33 @@ endfunction
 
 function! xolox#notes#foldexpr() " {{{3
   " Folding expression to fold atx style Markdown headings.
-  if xolox#misc#option#get('notes_fold_ignore_code', 0)
-    let pos_save = getpos('.')
-    call setpos('.', [0, v:lnum, 1, 0])
-    let in_code = (search('{{{\|\(}}}\)', 'bnpW') == 1)
-    call setpos('.', pos_save)
-    if in_code
-      return '='
-    endif
-  endif
   let lastlevel = foldlevel(v:lnum - 1)
   let nextlevel = match(getline(v:lnum), '^#\+\zs')
+  let retval = '='
   if lastlevel <= 0 && nextlevel >= 1
-    return '>' . nextlevel
+    let retval = '>' . nextlevel
   elseif nextlevel >= 1
     if lastlevel > nextlevel
-      return '<' . nextlevel
+      let retval = '<' . nextlevel
     else
-      return '>' . nextlevel
+      let retval = '>' . nextlevel
     endif
   endif
-  return '='
+  if retval != '='
+    " Check whether the change in folding introduced by 'rv'
+    " is invalidated because we're inside a code block.
+    let pos_save = getpos('.')
+    try
+      call setpos('.', [0, v:lnum, 1, 0])
+      if search('{{{\|\(}}}\)', 'bnpW') == 1
+        let retval = '='
+      endif
+    finally
+      " Always restore the cursor position!
+      call setpos('.', pos_save)
+    endtry
+  endif
+  return retval
 endfunction
 
 function! xolox#notes#foldtext() " {{{3

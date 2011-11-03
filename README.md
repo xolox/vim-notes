@@ -62,12 +62,6 @@ This option defines the pathname of the Python script that's used to perform acc
 
 This option defines the pathname of the text file that stores the list of known tags used for tag name completion and the `:ShowTaggedNotes` command. The text file is created automatically when it's first needed, after that you can recreate it manually by executing `:IndexTaggedNotes` (see below).
 
-### The `g:notes_fold_ignore_code` option
-
-The notes syntax uses `#` to mark headings which define foldable sections of text. The notes syntax also supports embedding fragments of syntax highlighted text. Of course the plug-in should not fold lines starting with `#` inside a code block, because `#` is frequently used for single line comments! The fold function knows how to deal with this, however I suspect the current implementation to be very slow, so it's not enabled by default. If you set this variable to true the feature will be enabled:
-
-    :let g:notes_fold_ignore_code = 1
-
 ## Commands
 
 To edit one of your existing notes you can use Vim commands such as [:edit] [edit], [:split] [split] and [:tabedit] [tabedit] with a filename that starts with *note:* followed by (part of) the title of one of your notes, e.g.:
