@@ -93,7 +93,7 @@ def tokenize(text):
 
 notes_on_disk = {}
 for filename in os.listdir(user_directory):
-  if filename != '.swp' and not fnmatch.fnmatch(filename, '.*.sw?'): # (Vim swap files are ignored)
+  if filename != '.swp' and not fnmatch.fnmatch(filename, '.*.s??'): # (Vim swap files are ignored)
     filename = os.path.join(user_directory, filename)
     notes_on_disk[filename] = dict(filename=filename, last_modified=os.path.getmtime(filename))
 if first_use:
