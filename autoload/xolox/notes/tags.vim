@@ -1,6 +1,6 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: September 18, 2011
+" Last Change: November 3, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 if !exists('s:currently_tagged_notes')
@@ -112,6 +112,7 @@ endfunction
 
 function! xolox#notes#tags#show_tags(minsize) " {{{1
   " TODO Mappings to "zoom" in/out (show only big tags).
+  let starttime = xolox#misc#timer#start()
   call xolox#notes#tags#load_index()
   let lines = [s:buffer_name, '']
   if empty(s:currently_tagged_notes)
@@ -183,6 +184,7 @@ function! xolox#notes#tags#show_tags(minsize) " {{{1
   call setline(1, lines)
   call xolox#misc#buffer#lock()
   setlocal filetype=notes nospell wrap
+  call xolox#misc#timer#stop('notes.vim %s: Generated [%s] in %s.', g:xolox#notes#version, s:buffer_name, starttime)
 endfunction
 
 function! xolox#notes#tags#friendly_name(tagname) " {{{1

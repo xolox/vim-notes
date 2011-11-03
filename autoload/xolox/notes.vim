@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.12.6'
+let g:xolox#notes#version = '0.12.7'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -298,6 +298,7 @@ endfunction
 
 function! xolox#notes#search(bang, input) " {{{1
   " Search all notes for the pattern or keywords {input} (current word if none given).
+  let starttime = xolox#misc#timer#start()
   let input = a:input
   if input == ''
     let input = s:tag_under_cursor()
@@ -322,6 +323,7 @@ function! xolox#notes#search(bang, input) " {{{1
           \ len(keywords) > 1 ? (join(keywords[0:-2], ', ') . ' and ' . keywords[-1]) : keywords[0])
     endif
   endif
+  call xolox#misc#timer#stop("notes.vim %s: Searched notes in %s.", g:xolox#notes#version, starttime)
 endfunction
 
 function! s:tag_under_cursor() " {{{2
@@ -357,6 +359,7 @@ endfunction
 
 function! xolox#notes#related(bang) " {{{1
   " Find all notes related to the current note or file.
+  let starttime = xolox#misc#timer#start()
   let bufname = bufname('%')
   if bufname == ''
     call xolox#misc#msg#warn("notes.vim %s: :RelatedNotes only works on named buffers!", g:xolox#notes#version)
@@ -385,10 +388,11 @@ function! xolox#notes#related(bang) " {{{1
       call xolox#misc#msg#warn("notes.vim %s: No related notes found for %s", g:xolox#notes#version, friendly_path)
     endtry
   endif
+  call xolox#misc#timer#stop("notes.vim %s: Found related notes in %s.", g:xolox#notes#version, starttime)
 endfunction
 
 function! xolox#notes#recent(bang, title_filter) " {{{1
-  let start = xolox#misc#timer#start()
+  let starttime = xolox#misc#timer#start()
   let bufname = '[All Notes]'
   " Open buffer that holds list of notes.
   if !bufexists(bufname)
@@ -446,7 +450,7 @@ function! xolox#notes#recent(bang, title_filter) " {{{1
   endfor
   call setline(line('$') + 1, lines)
   setlocal readonly nomodifiable nomodified filetype=notes
-  call xolox#misc#timer#stop("notes.vim %s: Created list of notes in %s.", g:xolox#notes#version, start)
+  call xolox#misc#timer#stop("notes.vim %s: Generated %s in %s.", g:xolox#notes#version, bufname, starttime)
 endfunction
 
 function! xolox#notes#buffer_is_note() " {{{1
@@ -471,7 +475,6 @@ endfunction
 
 function! s:internal_search(bang, pattern, keywords, phase2) " {{{2
   " Search notes for {pattern} regex, try to accelerate with {keywords} search.
-  let starttime = xolox#misc#timer#start()
   let bufnr_save = bufnr('%')
   let pattern = a:pattern
   silent cclose
@@ -511,11 +514,6 @@ function! s:internal_search(bang, pattern, keywords, phase2) " {{{2
   silent cwindow
   if &buftype == 'quickfix'
     execute 'match IncSearch' substitute(pattern, '^/', '/\\c', '')
-  endif
-  call xolox#misc#timer#stop('notes.vim %s: Searched notes in %s.', g:xolox#notes#version, starttime)
-  if &verbose == 0
-    " Don't hang on the hit-enter prompt.
-    redraw
   endif
 endfunction
 
