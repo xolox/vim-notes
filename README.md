@@ -3,9 +3,11 @@
 The notes.vim plug-in for the [Vim text editor] [vim] makes it easy to manage your notes in Vim:
 
  * **Starting a new note:** Execute the `:Note` command to create a new buffer and load the appropriate file type and syntax
-   * You can also start a new note with the selected text as title using the `:NoteFromSelectedText` command
+   * You can also start a note with Vim commands like `:edit`, `:tabedit` and `:split` by starting the filename with `note:`, as in `:edit note:todo` (the part after `note:` doesn't have to be the complete note title and if it's empty a new note will be created)
+   * You can start a new note with the selected text as title using the `:NoteFromSelectedText` command
  * **Saving notes:** Just use Vim's [:write] [write] and [:update] [update] commands, you don't need to provide a filename because it will be set based on the title (first line) of your note (you also don't need to worry about special characters, they'll be escaped)
  * **Editing existing notes:** Execute `:Note anything` to edit a note containing `anything` in its title (if no notes are found a new one is created with its title set to `anything`)
+   * The `:Note` and `:DeleteNote` commands support tab completion of note titles
  * **Deleting notes:** The `:DeleteNote` command enables you to delete the current note
  * **Searching notes:** `:SearchNotes keyword …` searches for keywords and `:SearchNotes /pattern/` searches for regular expressions
    * **Smart defaults:** Without an argument `:SearchNotes` searches for the word under the cursor (if the word starts with `@` that character will be included in the search, this means you can easily search for *@tagged* notes)
