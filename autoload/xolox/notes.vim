@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: October 23, 2011
+" Last Change: November 3, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.12.2'
+let g:xolox#notes#version = '0.12.3'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -552,7 +552,7 @@ function! s:run_scanner(keywords, matches) " {{{2
   if !(executable(python) && filereadable(scanner))
     call xolox#misc#msg#debug("notes.vim %s: The %s script isn't executable.", g:xolox#notes#version, scanner)
   else
-    let arguments = [scanner, g:notes_indexfile, g:notes_directory, g:notes_shadowdir, a:keywords]
+    let arguments = [scanner, g:notes_indexfile, g:notes_directory, a:keywords]
     call map(arguments, 'shellescape(v:val)')
     let output = xolox#misc#str#trim(system(join([python] + arguments)))
     if !v:shell_error

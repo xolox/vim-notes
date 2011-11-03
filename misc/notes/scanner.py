@@ -36,8 +36,7 @@ def decodestr(s):
 
 database_file = mungepath(sys.argv[1])
 user_directory = mungepath(sys.argv[2])
-shadow_directory = mungepath(sys.argv[3])
-keywords = decodestr(' '.join(sys.argv[4:]))
+keywords = decodestr(' '.join(sys.argv[3:]))
 
 # Create or open SQLite database. {{{1
 
@@ -93,11 +92,10 @@ def tokenize(text):
 # Find filenames & last modified times of existing notes. {{{1
 
 notes_on_disk = {}
-for directory in user_directory, shadow_directory:
-  for filename in os.listdir(directory):
-    if filename != '.swp' and not fnmatch.fnmatch(filename, '.*.sw?'): # (Vim swap files are ignored)
-      filename = os.path.join(directory, filename)
-      notes_on_disk[filename] = dict(filename=filename, last_modified=os.path.getmtime(filename))
+for filename in os.listdir(user_directory):
+  if filename != '.swp' and not fnmatch.fnmatch(filename, '.*.sw?'): # (Vim swap files are ignored)
+    filename = os.path.join(user_directory, filename)
+    notes_on_disk[filename] = dict(filename=filename, last_modified=os.path.getmtime(filename))
 if first_use:
   for note in notes_on_disk.itervalues():
     scan_note(note)
