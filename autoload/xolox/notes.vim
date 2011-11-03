@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.12.4'
+let g:xolox#notes#version = '0.12.5'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -483,7 +483,9 @@ function! s:internal_search(bang, pattern, keywords, phase2) " {{{2
       call xolox#misc#msg#warn("notes.vim %s: No matches", g:xolox#notes#version)
       return
     endif
-    let pattern = a:phase2 != '' ? a:phase2 : pattern
+    if a:phase2 != ''
+      let pattern = a:phase2
+    endif
   else
     call s:vimgrep_wrapper(a:bang, a:pattern, xolox#notes#get_fnames(0))
     let notes = s:qflist_to_filenames()
@@ -509,7 +511,7 @@ function! s:internal_search(bang, pattern, keywords, phase2) " {{{2
   silent cwindow
   if &buftype == 'quickfix'
     setlocal ignorecase
-    execute 'match IncSearch' pattern
+    execute 'match IncSearch' substitute(pattern, '^/', '/\\c', '')
   endif
   call xolox#misc#timer#stop('notes.vim %s: Searched notes in %s.', g:xolox#notes#version, starttime)
   if &verbose == 0
