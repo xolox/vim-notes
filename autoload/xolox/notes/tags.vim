@@ -123,6 +123,7 @@ function! xolox#notes#tags#show_tags(minsize) " {{{1
     for title in xolox#notes#get_titles(0)
       let unmatched[title] = 1
     endfor
+    let totalnotes = len(unmatched)
     " Group matching notes and remove them from the dictionary.
     let grouped_notes = []
     let numtags = 0
@@ -158,8 +159,9 @@ function! xolox#notes#tags#show_tags(minsize) " {{{1
       endif
     endfor
     if a:minsize <= 1
-      let message = printf("You've used %i %s in your notes",
-            \ numtags, numtags == 1 ? "tag" : "tags")
+      let message = printf("You've used %i %s in %i %s",
+            \ numtags, numtags == 1 ? "tag" : "tags",
+            \ totalnotes, totalnotes == 1 ? "note" : "notes")
     else
       let message = printf("There %s %i %s that %s been used at least %s times",
             \ numtags == 1 ? "is" : "are", numtags,
