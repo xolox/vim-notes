@@ -79,9 +79,12 @@ Options ~
 All options have reasonable defaults so if the plug-in works after
 installation you don't need to change any options. They're available for
 people who like to customize their directory layout. These options can be
-configured in your |vimrc| by including a line like this:
+configured in your |vimrc| script by including a line like this:
 >
     let g:notes_directory = '~/Documents/Notes'
+
+Note that after changing an option in your |vimrc| script you have to restart
+Vim for the changes to take effect.
 
 -------------------------------------------------------------------------------
 The *g:notes_directory* option
@@ -114,6 +117,29 @@ If you set this option to the string 'no' this feature will be completely
 disabled. If you set it to 'change_title' it will automatically change the
 title to match the filename. If you set it to 'rename_file' it will
 automatically rename the file on disk to match the title.
+
+-------------------------------------------------------------------------------
+The *g:notes_smart_quotes* option
+
+By default the notes plug-in automatically performs several substitutions on
+the text you type in insert mode. Here are those substitutions:
+
+ - ' becomes '‘' or '’' depending on where you type it
+
+ - '"' becomes '“' or '”' (same goes for these)
+
+ - '--' becomes '—'
+
+ - '->' becomes '->'
+
+ - '<-' becomes '←'
+
+ - the bullets '*', '+' and '-' become '•'
+
+If you don't want the plug-in to perform these substitutions, you can set this
+option to zero like this:
+>
+    :let g:notes_smart_quotes = 0
 
 -------------------------------------------------------------------------------
 The *g:notes_shadowdir* option

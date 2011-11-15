@@ -1,6 +1,6 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: October 18, 2011
+" Last Change: November 15, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Support for automatic update using the GLVS plug-in.
@@ -48,6 +48,11 @@ endif
 if !exists('g:notes_title_sync')
   " Valid values are "no", "change_title", "rename_file" and "prompt".
   let g:notes_title_sync = 'prompt'
+endif
+
+" Smart quotes and such are enabled by default.
+if !exists('g:notes_smart_quotes')
+  let g:notes_smart_quotes = 1
 endif
 
 " User commands to create, delete and search notes.
