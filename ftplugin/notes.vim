@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: October 18, 2011
+" Last Change: November 15, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -11,7 +11,7 @@ endif
 
 " Copy indent from previous line. {{{1
 setlocal autoindent
-let b:undo_ftplugin = ' | set autoindent<'
+let b:undo_ftplugin = 'set autoindent<'
 
 " Set &tabstop and &shiftwidth options for bulleted lists. {{{1
 setlocal tabstop=3 shiftwidth=3 expandtab
