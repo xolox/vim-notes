@@ -9,13 +9,9 @@ else
   let b:did_ftplugin = 1
 endif
 
-" Disable highlighting of matching pairs. {{{1
-setlocal matchpairs=
-let b:undo_ftplugin = 'set matchpairs<'
-
 " Copy indent from previous line. {{{1
 setlocal autoindent
-let b:undo_ftplugin .= ' | set autoindent<'
+let b:undo_ftplugin = ' | set autoindent<'
 
 " Set &tabstop and &shiftwidth options for bulleted lists. {{{1
 setlocal tabstop=3 shiftwidth=3 expandtab
