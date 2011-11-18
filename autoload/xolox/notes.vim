@@ -250,7 +250,7 @@ function! xolox#notes#save() abort " {{{1
       return
     endif
     let bang = v:cmdbang ? '!' : ''
-    execute 'saveas' bang fnameescape(newpath)
+    execute 'saveas' . bang . ' ' . fnameescape(newpath)
     " XXX If {oldpath} and {newpath} end up pointing to the same file on disk
     " yet xolox#misc#path#equals() doesn't catch this, we might end up
     " deleting the user's one and only note! One way to circumvent this
