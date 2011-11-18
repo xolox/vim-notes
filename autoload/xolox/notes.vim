@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 15, 2011
+" Last Change: November 18, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.12.10'
+let g:xolox#notes#version = '0.12.11'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -250,7 +250,7 @@ function! xolox#notes#save() abort " {{{1
       return
     endif
     let bang = v:cmdbang ? '!' : ''
-    execute 'saveas' . bang . ' ' . fnameescape(newpath)
+    execute 'saveas' . bang fnameescape(newpath)
     " XXX If {oldpath} and {newpath} end up pointing to the same file on disk
     " yet xolox#misc#path#equals() doesn't catch this, we might end up
     " deleting the user's one and only note! One way to circumvent this
