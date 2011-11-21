@@ -1,10 +1,10 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 18, 2011
+" Last Change: November 21, 2011
 " URL: http://peterodding.com/code/vim/misc/
 
 if !exists('s:version')
-  let s:version = '1.0'
+  let s:version = '1.1'
   let s:enoimpl = "open.vim %s: %s() hasn't been implemented for your platform! If you have suggestions, please contact peter@peterodding.com."
   let s:handlers = ['gnome-open', 'kde-open', 'exo-open', 'xdg-open']
 endif
@@ -15,7 +15,7 @@ function! xolox#misc#open#file(path, ...)
       call xolox#shell#open_with_windows_shell(a:path)
     catch /^Vim\%((\a\+)\)\=:E117/
       let command = '!start CMD /C START "" %s'
-      silent execute printf(command, shellescape(a:path))
+      silent execute printf(command, xolox#misc#escape#shell(a:path))
     endtry
     return
   elseif has('macunix')
