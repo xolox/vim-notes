@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.14'
+let g:xolox#notes#version = '0.14.1'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -543,24 +543,35 @@ endfunction
 
 function! s:run_scanner(keywords, matches) " {{{2
   " Try to run scanner.py script to find notes matching {keywords}.
-  let scanner = xolox#misc#path#absolute(g:notes_indexscript)
-  let python = 'python'
-  if executable('python2')
-    let python = 'python2'
+  let output = s:python_command(a:keywords)
+  if !empty(output)
+    call extend(a:matches, split(output, '\n'))
+    return 1
   endif
-  if !(executable(python) && filereadable(scanner))
-    call xolox#misc#msg#debug("notes.vim %s: The %s script isn't executable.", g:xolox#notes#version, scanner)
+endfunction
+
+function! xolox#notes#keyword_complete(arglead, cmdline, cursorpos) " {{{2
+  return s:python_command('--list=' . a:arglead)
+endfunction
+
+function! s:python_command(...) " {{{2
+  let script = xolox#misc#path#absolute(g:notes_indexscript)
+  let python = executable('python2') ? 'python2' : 'python'
+  if !(executable(python) && filereadable(script))
+    call xolox#misc#msg#debug("notes.vim %s: The %s script isn't executable.", g:xolox#notes#version, script)
   else
-    let arguments = [scanner, '--database', g:notes_indexfile, '--notes', g:notes_directory, a:keywords]
-    call map(arguments, 'xolox#misc#escape#shell(v:val)')
-    let output = xolox#misc#str#trim(system(join([python] + arguments)))
-    if !v:shell_error
-      call extend(a:matches, split(output, '\n'))
-      return 1
+    let options = ['--database', g:notes_indexfile, '--notes', g:notes_directory]
+    let arguments = map([script] + options + a:000, 'xolox#misc#escape#shell(v:val)')
+    let command = join([python] + arguments)
+    call xolox#misc#msg#debug("notes.vim %s: Executing external command %s", g:xolox#notes#version, command)
+    let output = xolox#misc#str#trim(system(command))
+    if v:shell_error
+      call xolox#misc#msg#warn("notes.vim %s: Search script failed with output: %s", g:xolox#notes#version, output)
     else
-      call xolox#misc#msg#warn("notes.vim %s: scanner.py failed with output: %s", g:xolox#notes#version, output)
+      return output
     endif
   endif
+  return ''
 endfunction
 
 " Getters for filenames & titles of existing notes. {{{2
