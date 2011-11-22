@@ -12,7 +12,7 @@ The notes.vim plug-in for the [Vim text editor] [vim] makes it easy to manage yo
  * **Searching notes:** `:SearchNotes keyword …` searches for keywords and `:SearchNotes /pattern/` searches for regular expressions
    * **Smart defaults:** Without an argument `:SearchNotes` searches for the word under the cursor (if the word starts with `@` that character will be included in the search, this means you can easily search for *@tagged* notes)
    * **Back-references:** The `:RelatedNotes` command find all notes referencing the current file
-   * A [Python 2] [python] script is included that accelerates keyword searches using an [SQLite] [sqlite] database
+   * A [Python 2] [python] script is included that accelerates keyword searches using a keyword index
    * The `:RecentNotes` command lists your notes by modification date, starting with the most recently edited note
  * **Navigating between notes:** The included file type plug-in redefines [gf] [gf] to jump between notes and the syntax script highlights note names as hyper links
  * **Writing aids:** The included file type plug-in contains mappings for automatic curly quotes, arrows and list bullets and supports completion of note titles using Control-X Control-U and completion of tags using Control-X Control-O
@@ -135,11 +135,11 @@ If you don't pass any arguments to the `:SearchNotes` command it will search for
 
 These mappings are currently not enabled by default because they conflict with already useful key mappings, but if you have any suggestions for alternatives feel free to contact me through GitHub or at <peter@peterodding.com>.
 
-#### Accelerated searching with Python and SQLite
+#### Accelerated searching with Python
 
-After collecting a fair amount of notes (say more than 5 MB) you will probably start to get annoyed at how long it takes Vim to search through all of your notes. To make searching more scalable the notes plug-in includes a Python script which uses a full text index of your notes stored in an SQLite database.
+After collecting a fair amount of notes (say more than 5 MB) you will probably start to get annoyed at how long it takes Vim to search through all of your notes. To make searching more scalable the notes plug-in includes a Python script which uses a persistent full text index of your notes stored in a file.
 
-The first time the Python script is run it will need to build the complete index which can take a few minutes, but after the index has been initialized updates and searches should be more or less instantaneous.
+The first time the Python script is run it will need to build the complete index which can take a moment, but after the index has been initialized updates and searches should be more or less instantaneous.
 
 ### The `:RelatedNotes` command
 
@@ -187,7 +187,6 @@ This software is licensed under the [MIT license] [mit].
 [shell]: http://www.vim.org/scripts/script.php?script_id=3123
 [slate]: http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
 [split]: http://vimdoc.sourceforge.net/htmldoc/windows.html#:split
-[sqlite]: http://sqlite.org/
 [tabedit]: http://vimdoc.sourceforge.net/htmldoc/tabpage.html#:tabedit
 [update]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:update
 [utl]: http://www.vim.org/scripts/script.php?script_id=293

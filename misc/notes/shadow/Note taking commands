@@ -68,15 +68,15 @@ These mappings are currently not enabled by default because they conflict with
 already useful key mappings, but if you have any suggestions for alternatives
 feel free to contact me through GitHub or at peter@peterodding.com.
 
-## Accelerated searching with Python and SQLite
+## Accelerated searching with Python
 
 After collecting a fair amount of notes (say >= 5 MB) you will probably start
 to get annoyed at how long it takes Vim to search through all of your notes. To
 make searching more scalable the notes plug-in includes a Python script which
-uses a full text index of your notes stored in an SQLite database.
+uses a persistent keyword index of your notes stored in a file.
 
 The first time the Python script is run it will need to build the complete
-index which can take a few minutes, but after the index has been initialized
+index which can take a moment, but after the index has been initialized
 updates and searches should be more or less instantaneous.
 
 # :RelatedNotes finds related notes

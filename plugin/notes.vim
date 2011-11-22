@@ -1,6 +1,6 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 15, 2011
+" Last Change: November 22, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Support for automatic update using the GLVS plug-in.
@@ -26,12 +26,12 @@ endif
 
 " Define the default location for the full text index.
 if !exists('g:notes_indexfile')
-  let g:notes_indexfile = s:plugindir . '/index.sqlite3'
+  let g:notes_indexfile = s:plugindir . '/index.pickle'
 endif
 
 " Define the default location for the keyword scanner script.
 if !exists('g:notes_indexscript')
-  let g:notes_indexscript = s:plugindir . '/scanner.py'
+  let g:notes_indexscript = s:plugindir . '/search-notes.py'
 endif
 
 " Define the default suffix for note filenames.
