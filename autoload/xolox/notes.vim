@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 22, 2011
+" Last Change: November 23, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.14.1'
+let g:xolox#notes#version = '0.14.2'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -551,7 +551,7 @@ function! s:run_scanner(keywords, matches) " {{{2
 endfunction
 
 function! xolox#notes#keyword_complete(arglead, cmdline, cursorpos) " {{{2
-  return s:python_command('--list=' . a:arglead)
+  return split(s:python_command('--list=' . a:arglead), '\n')
 endfunction
 
 function! s:python_command(...) " {{{2

@@ -20,6 +20,12 @@ import pickle
 import re
 import sys
 
+try:
+  import Levenshtein
+  levenshtein_supported = True
+except ImportError:
+  levenshtein_supported = False
+
 class NotesIndex:
 
   def __init__(self):
@@ -33,7 +39,7 @@ class NotesIndex:
       self.list_keywords(self.keyword_filter)
     else:
       matches = self.search_index(keywords)
-      print '\n'.join(sorted(matches))
+      print self.encode('\n'.join(sorted(matches)))
 
   def parse_args(self):
     ''' Parse the command line arguments. '''
@@ -64,6 +70,8 @@ class NotesIndex:
         sys.exit(0)
       else:
         assert False, "Unhandled option"
+    if self.keyword_filter is not None:
+      self.keyword_filter = self.decode(self.keyword_filter)
     # Canonicalize pathnames, check validity.
     self.database_file = self.munge_path(self.database_file)
     self.user_directory = self.munge_path(self.user_directory)
@@ -147,26 +155,36 @@ class NotesIndex:
         matches &= set(filenames)
     return list(matches) if matches else []
 
-  def list_keywords(self, substring, limit=100):
+  def list_keywords(self, substring, limit=25):
     ''' Print all (matching) keywords to standard output. '''
-    i = 0
-    for kw in self.index['keywords']:
+    decorated = []
+    for kw, filenames in self.index['keywords'].iteritems():
       if substring in kw.lower():
-        print kw
-        if i < limit:
-          i += 1
+        if levenshtein_supported:
+          decorated.append((Levenshtein.distance(kw.lower(), substring), -len(filenames), kw))
         else:
-          break
+          decorated.append((-len(filenames), kw))
+    decorated.sort()
+    selection = [d[-1] for d in decorated[:limit]]
+    print self.encode('\n'.join(selection))
 
   def tokenize(self, text):
     ''' Tokenize a string into a list of normalized, unique keywords. '''
     words = set()
-    text = text.decode(self.character_encoding, 'ignore')
-    for word in re.findall(r'\w+', text.lower(), re.UNICODE):
+    text = self.decode(text).lower()
+    for word in re.findall(r'\w+', text, re.UNICODE):
       word = word.strip()
       if word != '' and not word.isspace():
         words.add(word)
     return words
+
+  def encode(self, text):
+    ''' Encode a string in the user's preferred character encoding. '''
+    return text.encode(self.character_encoding, 'ignore')
+
+  def decode(self, text):
+    ''' Decode a string in the user's preferred character encoding. '''
+    return text.decode(self.character_encoding, 'ignore')
 
   def munge_path(self, path):
     ''' Canonicalize user-defined path, making it absolute. '''
