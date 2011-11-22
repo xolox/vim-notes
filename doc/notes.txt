@@ -31,6 +31,9 @@ notes in Vim:
  - Searching notes: ':SearchNotes keyword …' searches for keywords and
    ':SearchNotes /pattern/' searches for regular expressions
 
+ - The |:SearchNotes| command supports tab completion of keywords and sorts
+   candidates by relevance (Levenshtein distance [1])
+
  - Smart defaults: Without an argument |:SearchNotes| searches for the word
    under the cursor (if the word starts with '@' that character will be
    included in the search, this means you can easily search for @tagged notes)
@@ -38,7 +41,7 @@ notes in Vim:
  - Back-references: The |:RelatedNotes| command find all notes referencing the
    current file
 
- - A Python 2 [1] script is included that accelerates keyword searches using a
+ - A Python 2 [2] script is included that accelerates keyword searches using a
    keyword index
 
  - The |:RecentNotes| command lists your notes by modification date, starting
@@ -57,15 +60,15 @@ notes in Vim:
    highlighting using blocks marked with '{{{type … }}}' which allows you to
    embed highlighted code and configuration snippets in your notes
 
-Here's a screen shot of the syntax mode using the slate [2] color scheme:
+Here's a screen shot of the syntax mode using the slate [3] color scheme:
 
-    Syntax mode screen shot, see reference [3]
+    Syntax mode screen shot, see reference [4]
 
 ===============================================================================
                                                            *notes-install-usage*
 Install & usage ~
 
-Unzip the most recent ZIP archive [4] file inside your Vim profile directory
+Unzip the most recent ZIP archive [5] file inside your Vim profile directory
 (usually this is '~/.vim' on UNIX and '%USERPROFILE%\vimfiles' on Windows),
 restart Vim and execute the command ':helptags ~/.vim/doc' (use ':helptags
 ~\vimfiles\doc' instead on Windows). To get started execute |:Note| or ':edit
@@ -317,14 +320,14 @@ If for any reason you want to recreate the list of tags you can execute the
 ===============================================================================
 Other plug-ins that work well with the notes plug-in ~
 
- - The utl.vim [5] universal text linking plug-in enables links between your
+ - The utl.vim [6] universal text linking plug-in enables links between your
    notes, other local files and remote resources like web pages
 
- - My shell.vim [6] plug-in also enables easy navigation between your notes and
+ - My shell.vim [7] plug-in also enables easy navigation between your notes and
    environment like local files and directories, web pages and e-mail
    addresses
 
- - The VOoM [7] outlining plug-in should work well for notes if you use the
+ - The VOoM [8] outlining plug-in should work well for notes if you use the
    Markdown style headers starting with '#', however it has been reported that
    this combination may not always work so well in practice (sometimes losing
    notes!)
@@ -336,27 +339,28 @@ Contact ~
 If you have questions, bug reports, suggestions, etc. the author can be
 contacted at peter@peterodding.com. The latest version is available at
 http://peterodding.com/code/vim/notes/ and http://github.com/xolox/vim-notes.
-If you like the script please vote for it on Vim Online [8].
+If you like the script please vote for it on Vim Online [9].
 
 ===============================================================================
                                                                  *notes-license*
 License ~
 
-This software is licensed under the MIT license [9]. Copyright 2011 Peter
+This software is licensed under the MIT license [10]. Copyright 2011 Peter
 Odding <peter@peterodding.com>.
 
 ===============================================================================
                                                               *notes-references*
 References ~
 
-[1] http://python.org/
-[2] http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
-[3] http://peterodding.com/code/vim/notes/syntax.png
-[4] http://peterodding.com/code/vim/downloads/notes.zip
-[5] http://www.vim.org/scripts/script.php?script_id=293
-[6] http://www.vim.org/scripts/script.php?script_id=3123
-[7] http://www.vim.org/scripts/script.php?script_id=2657
-[8] http://www.vim.org/scripts/script.php?script_id=3375
-[9] http://en.wikipedia.org/wiki/MIT_License
+[1] http://en.wikipedia.org/wiki/Levenshtein_distance
+[2] http://python.org/
+[3] http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
+[4] http://peterodding.com/code/vim/notes/syntax.png
+[5] http://peterodding.com/code/vim/downloads/notes.zip
+[6] http://www.vim.org/scripts/script.php?script_id=293
+[7] http://www.vim.org/scripts/script.php?script_id=3123
+[8] http://www.vim.org/scripts/script.php?script_id=2657
+[9] http://www.vim.org/scripts/script.php?script_id=3375
+[10] http://en.wikipedia.org/wiki/MIT_License
 
 vim: ft=help

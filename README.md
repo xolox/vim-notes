@@ -10,6 +10,7 @@ The notes.vim plug-in for the [Vim text editor] [vim] makes it easy to manage yo
    * The `:Note` and `:DeleteNote` commands support tab completion of note titles
  * **Deleting notes:** The `:DeleteNote` command enables you to delete the current note
  * **Searching notes:** `:SearchNotes keyword …` searches for keywords and `:SearchNotes /pattern/` searches for regular expressions
+   * The `:SearchNotes` command supports tab completion of keywords and sorts candidates by relevance ([Levenshtein distance] [levenshtein])
    * **Smart defaults:** Without an argument `:SearchNotes` searches for the word under the cursor (if the word starts with `@` that character will be included in the search, this means you can easily search for *@tagged* notes)
    * **Back-references:** The `:RelatedNotes` command find all notes referencing the current file
    * A [Python 2] [python] script is included that accelerates keyword searches using a keyword index
@@ -182,6 +183,7 @@ This software is licensed under the [MIT license] [mit].
 [download]: http://peterodding.com/code/vim/downloads/notes.zip
 [edit]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:edit
 [gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
+[levenshtein]: http://en.wikipedia.org/wiki/Levenshtein_distance
 [mit]: http://en.wikipedia.org/wiki/MIT_License
 [python]: http://python.org/
 [shell]: http://www.vim.org/scripts/script.php?script_id=3123
