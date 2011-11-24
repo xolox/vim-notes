@@ -44,8 +44,8 @@ class NotesIndex:
   def parse_args(self):
     ''' Parse the command line arguments. '''
     try:
-      opts, keywords = getopt.getopt(sys.argv[1:], 'l:d:n:e:h',
-          ['list=', 'database=', 'notes=', 'encoding=', 'help'])
+      opts, keywords = getopt.getopt(sys.argv[1:], 'l:d:n:e:vh',
+          ['list=', 'database=', 'notes=', 'encoding=', 'verbose', 'help'])
     except getopt.GetoptError, error:
       print str(error)
       self.usage()
@@ -55,6 +55,7 @@ class NotesIndex:
     self.user_directory = '~/.vim/misc/notes/user/'
     self.character_encoding = 'UTF-8'
     self.keyword_filter = None
+    self.verbose = False
     # Map command line options to variables.
     for opt, arg in opts:
       if opt in ('-l', '--list'):
@@ -65,6 +66,8 @@ class NotesIndex:
         self.user_directory = arg
       elif opt in ('-e', '--encoding'):
         self.character_encoding = arg
+      elif opt in ('-v', '--verbose'):
+        self.verbose = True
       elif opt in ('-h', '--help'):
         self.usage()
         sys.exit(0)
@@ -127,7 +130,8 @@ class NotesIndex:
 
   def add_note(self, filename, last_modified):
     ''' Add a note to the index (assumes the note is not already indexed). '''
-    sys.stderr.write("Scanning %s ..\n" % filename)
+    if self.verbose:
+      sys.stderr.write("Indexing %s ..\n" % filename)
     self.index['files'][filename] = last_modified
     with open(filename) as handle:
       for kw in self.tokenize(handle.read()):
@@ -139,6 +143,8 @@ class NotesIndex:
 
   def delete_note(self, filename):
     ''' Remove a note from the index. '''
+    if self.verbose:
+      sys.stderr.write("Forgetting %s ..\n" % filename)
     del self.index['files'][filename]
     for kw in self.index['keywords']:
       filter(lambda x: x != filename, self.index['keywords'][kw])
@@ -203,6 +209,7 @@ Valid options include:
   -d, --database=FILE  set path to keywords index file
   -n, --notes=DIR      set directory with user notes
   -e, --encoding=NAME  set character encoding of notes
+  -v, --verbose        make more noise
   -h, --help           show this message and exit
 
 For more information see http://peterodding.com/code/vim/notes/
