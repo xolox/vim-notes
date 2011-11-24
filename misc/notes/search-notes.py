@@ -117,13 +117,14 @@ class NotesIndex:
         self.add_note(filename, last_modified)
     else:
       # Check for updated and/or deleted notes since the last run.
-      for filename, last_modified_in_db in self.index['files'].iteritems():
+      for filename in self.index['files'].keys():
         if filename not in notes_on_disk:
           # Forget a deleted note.
           self.delete_note(filename)
         else:
           # Check whether previously seen note has changed?
           last_modified_on_disk = notes_on_disk[filename]
+          last_modified_in_db = self.index['files'][filename]
           if last_modified_on_disk > last_modified_in_db:
             self.delete_note(filename)
             self.add_note(filename, last_modified_on_disk)
