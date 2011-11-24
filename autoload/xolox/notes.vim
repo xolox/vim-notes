@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 23, 2011
+" Last Change: November 24, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.14.2'
+let g:xolox#notes#version = '0.14.3'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -551,7 +551,11 @@ function! s:run_scanner(keywords, matches) " {{{2
 endfunction
 
 function! xolox#notes#keyword_complete(arglead, cmdline, cursorpos) " {{{2
-  return split(s:python_command('--list=' . a:arglead), '\n')
+  let first_run = !filereadable(g:notes_indexfile)
+  if first_run | call inputsave() | endif
+  let keywords = split(s:python_command('--list=' . a:arglead), '\n')
+  if first_run | call inputrestore() | endif
+  return keywords
 endfunction
 
 function! s:python_command(...) " {{{2
@@ -564,6 +568,9 @@ function! s:python_command(...) " {{{2
     let arguments = map([script] + options + a:000, 'xolox#misc#escape#shell(v:val)')
     let command = join([python] + arguments)
     call xolox#misc#msg#debug("notes.vim %s: Executing external command %s", g:xolox#notes#version, command)
+    if !filereadable(xolox#misc#path#absolute(g:notes_indexfile))
+      call xolox#misc#msg#info("notes.vim %s: Building keyword index (this might take a while) ..", g:xolox#notes#version)
+    endif
     let output = xolox#misc#str#trim(system(command))
     if v:shell_error
       call xolox#misc#msg#warn("notes.vim %s: Search script failed with output: %s", g:xolox#notes#version, output)

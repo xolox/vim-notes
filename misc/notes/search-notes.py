@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
-# Copyright 2011 Peter Odding <peter@peterodding.com>
-# This program is licensed under the MIT license.
+# Python script for fast text file searching using keyword index on disk.
+#
+# Author: Peter Odding <peter@peterodding.com>
+# Last Change: November 24, 2011
+# URL: http://peterodding.com/code/vim/notes/
+# License: MIT
 #
 # This Python script can be used by the notes.vim plug-in to perform fast
 # keyword searches in the user's notes. It has two advantages over just using
