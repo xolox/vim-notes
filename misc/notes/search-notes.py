@@ -39,7 +39,7 @@ class NotesIndex:
       self.list_keywords(self.keyword_filter)
     else:
       matches = self.search_index(keywords)
-      print self.encode('\n'.join(sorted(matches)))
+      print '\n'.join(sorted(matches))
 
   def parse_args(self):
     ''' Parse the command line arguments. '''
@@ -172,7 +172,7 @@ class NotesIndex:
           decorated.append((-len(filenames), kw))
     decorated.sort()
     selection = [d[-1] for d in decorated[:limit]]
-    print self.encode('\n'.join(selection))
+    print u'\n'.join(selection)
 
   def tokenize(self, text):
     ''' Tokenize a string into a list of normalized, unique keywords. '''
@@ -180,7 +180,7 @@ class NotesIndex:
     text = self.decode(text).lower()
     for word in re.findall(r'\w+', text, re.UNICODE):
       word = word.strip()
-      if word != '' and not word.isspace():
+      if word != '' and not word.isspace() and len(word) >= 2:
         words.add(word)
     return words
 
