@@ -154,12 +154,19 @@ class NotesIndex:
   def search_index(self, keywords):
     ''' Return names of files containing all of the given keywords. '''
     matches = None
-    for kw in keywords:
-      filenames = self.index['keywords'].get(kw, [])
+    for usr_kw in keywords:
+      submatches = set()
+      for db_kw in self.index['keywords']:
+        # Yes I'm using a nested for loop over all keywords in the index. If
+        # I really have to I'll probably come up with something more
+        # efficient, but really it doesn't seem to be needed -- I have over
+        # 850 notes (about 8 MB) and 25000 keywords and it's plenty fast.
+        if usr_kw in db_kw:
+          submatches.update(self.index['keywords'][db_kw])
       if matches is None:
-        matches = set(filenames)
+        matches = submatches
       else:
-        matches &= set(filenames)
+        matches &= submatches
     return list(matches) if matches else []
 
   def list_keywords(self, substring, limit=25):
