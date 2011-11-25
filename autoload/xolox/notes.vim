@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.15'
+let g:xolox#notes#version = '0.15.1'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -203,7 +203,9 @@ function! xolox#notes#cmd_complete(arglead, cmdline, cursorpos) " {{{1
     let prevargs = '^' . xolox#misc#escape#pattern(cmdargs[0 : len(cmdargs) - len(a:arglead) - 1])
     call map(titles, 'substitute(v:val, prevargs, "", "")')
   endif
-  return titles
+  " Sort from shortest to longest as a rough approximation of
+  " sorting by similarity to the word that's being completed.
+  return reverse(sort(titles, 's:sort_longest_to_shortest'))
 endfunction
 
 function! xolox#notes#user_complete(findstart, base) " {{{1
