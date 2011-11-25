@@ -66,6 +66,8 @@ If you don't want the plug-in to perform these substitutions, you can set this o
 
     :let g:notes_smart_quotes = 0
 
+If you type the three characters `***` in insert mode in quick succession, a horizontal ruler delimited by empty lines will be inserted. This mapping cannot be disabled simply because it seems unlikely to me that someone would want to type this actual text.
+
 ### The `g:notes_shadowdir` option
 
 The notes plug-in comes with some default notes containing documentation about the plug-in. This option defines the path of the directory containing these notes.

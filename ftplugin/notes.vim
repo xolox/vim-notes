@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 15, 2011
+" Last Change: November 25, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -86,6 +86,10 @@ if g:notes_smart_quotes
   let b:undo_ftplugin .= ' | execute "iunmap <buffer> +"'
   let b:undo_ftplugin .= ' | execute "iunmap <buffer> *"'
 endif
+
+" Format three asterisks as a horizontal ruler. {{{1
+inoremap <buffer> *** <C-o>:call xolox#notes#insert_ruler()<CR>
+let b:undo_ftplugin .= ' | execute "iunmap <buffer> ***"'
 
 " Indent list items using <Tab>. {{{1
 imap <buffer> <silent> <Tab> <C-o>:call xolox#notes#indent_list('>>', line('.'), line('.'))<CR>

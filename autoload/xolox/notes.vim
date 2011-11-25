@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.15.3'
+let g:xolox#notes#version = '0.15.4'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -732,6 +732,19 @@ function! xolox#notes#unload_from_cache() " {{{3
 endfunction
 
 " Functions called by the file type plug-in and syntax script. {{{2
+
+function! xolox#notes#insert_ruler() " {{{3
+  let lnum = line('.')
+  if getline(lnum) =~ '\S' && getline(lnum + 1) !~ '\S'
+    let lnum += 1
+  endif
+  let line1 = prevnonblank(lnum)
+  let line2 = nextnonblank(lnum)
+  if line1 < lnum && line2 > lnum
+    execute printf('%i,%idelete', line1 + 1, line2 - 1)
+  endif
+  call append(line1, ['', g:notes_ruler_text, ''])
+endfunction
 
 function! xolox#notes#insert_quote(style) " {{{3
   " XXX When I pass the below string constants as arguments from the file type
