@@ -106,9 +106,10 @@ augroup PluginNotes
   call s:DAC('BufReadCmd', g:notes_shadowdir, 'call xolox#notes#edit_shadow()')
   call s:DAC('BufWriteCmd', g:notes_directory, 'call xolox#notes#save()')
   au SwapExists * call xolox#notes#swaphack()
-  au WinEnter * if &ft == 'notes' | call xolox#notes#highlight_names(0) | endif
-  au BufReadPost * if &ft == 'notes' | unlet! b:notes_names_last_highlighted | endif
   au BufUnload * if &ft == 'notes' | call xolox#notes#unload_from_cache() | endif
+  au BufReadPost,BufWritePost * call xolox#notes#refresh_syntax()
+  au InsertEnter,InsertLeave * call xolox#notes#refresh_syntax()
+  au CursorHold,CursorHoldI * call xolox#notes#refresh_syntax()
 augroup END
 
 augroup filetypedetect

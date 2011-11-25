@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.16.3'
+let g:xolox#notes#version = '0.16.4'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -859,6 +859,16 @@ function! xolox#notes#cleanup_list() " {{{3
   endif
 endfunction
 
+function! xolox#notes#refresh_syntax() " {{{3
+  " Update syntax highlighting of note names and code blocks.
+  if &filetype == 'notes' && line('$') > 1
+    let starttime = xolox#misc#timer#start()
+    call xolox#notes#highlight_names(0)
+    call xolox#notes#highlight_sources(0)
+    call xolox#misc#timer#stop("notes.vim %s: Refreshed highlighting in %s.", g:xolox#notes#version, starttime)
+  endif
+endfunction
+
 function! xolox#notes#highlight_names(force) " {{{3
   " Highlight the names of all notes as "notesName" (linked to "Underlined").
   if a:force || !(exists('b:notes_names_last_highlighted') && b:notes_names_last_highlighted > s:cache_mtime)
@@ -886,22 +896,36 @@ function! s:sort_longest_to_shortest(a, b)
   return len(a:a) < len(a:b) ? 1 : -1
 endfunction
 
-function! xolox#notes#highlight_sources(sg, eg) " {{{3
+function! xolox#notes#highlight_sources(force) " {{{3
   " Syntax highlight source code embedded in notes.
   let starttime = xolox#misc#timer#start()
+  " Look for code blocks in the current note.
   let lines = getline(1, '$')
   let filetypes = {}
   for line in getline(1, '$')
     let ft = matchstr(line, '{{' . '{\zs\w\+\>')
     if ft !~ '^\d*$' | let filetypes[ft] = 1 | endif
   endfor
-  for ft in keys(filetypes)
-    let group = 'notesSnippet' . toupper(ft)
-    let include = s:syntax_include(ft)
-    let command = 'syntax region %s matchgroup=%s start="{{{%s" matchgroup=%s end="}}}" keepend contains=%s%s'
-    execute printf(command, group, a:sg, ft, a:eg, include, has('conceal') ? ' concealends' : '')
-  endfor
-  call xolox#misc#timer#stop("notes.vim %s: Highlighted embedded sources in %s.", g:xolox#notes#version, starttime)
+  " Don't refresh the highlighting if nothing has changed.
+  if !a:force && exists('b:notes_previous_sources') && b:notes_previous_sources == filetypes
+    return
+  else
+    let b:notes_previous_sources = filetypes
+  endif
+  " Now we're ready to actually highlight the code blocks.
+  if !empty(filetypes)
+    let startgroup = 'notesCodeStart'
+    let endgroup = 'notesCodeEnd'
+    for ft in keys(filetypes)
+      let group = 'notesSnippet' . toupper(ft)
+      let include = s:syntax_include(ft)
+      let command = 'syntax region %s matchgroup=%s start="{{{%s" matchgroup=%s end="}}}" keepend contains=%s%s'
+      execute printf(command, group, startgroup, ft, endgroup, include, has('conceal') ? ' concealends' : '')
+    endfor
+    if &vbs >= 1
+      call xolox#misc#timer#stop("notes.vim %s: Highlighted embedded %s sources in %s.", g:xolox#notes#version, join(sort(keys(filetypes)), '/'), starttime)
+    endif
+  endif
 endfunction
 
 function! s:syntax_include(filetype)

@@ -142,7 +142,7 @@ syntax match notesCodeStart /{{[{]\w*/
 syntax match notesCodeEnd /}}[}]/
 highlight def link notesCodeStart Ignore
 highlight def link notesCodeEnd Ignore
-call xolox#notes#highlight_sources('notesCodeStart', 'notesCodeEnd')
+call xolox#notes#highlight_sources(1)
 
 " Hide mode line at end of file. {{{2
 syntax match notesModeLine /\_^vim:.*\_s*\%$/
