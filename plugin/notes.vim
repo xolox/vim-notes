@@ -11,27 +11,38 @@ if &cp || exists('g:loaded_notes')
   finish
 endif
 
-" Make sure the default paths below are compatible with Pathogen.
-let s:plugindir = expand('<sfile>:p:h') . '/../misc/notes'
+" This is a bit tricky: We want to be compatible with Pathogen which installs
+" plug-ins as "bundles" under ~/.vim/bundle/*/ so we use a relative path to
+" make sure we 'stay inside the bundle'. However if the notes.vim plug-in is
+" installed system wide the user probably won't have permission to write
+" inside the installation directory, so we have to switch to $HOME then.
+let s:systemdir = xolox#misc#path#absolute(expand('<sfile>:p:h') . '/../misc/notes')
+if filewritable(s:systemdir) == 2
+  let s:localdir = s:systemdir
+elseif xolox#misc#os#is_win()
+  let s:localdir = xolox#misc#path#absolute('~/vimfiles/misc/notes')
+else
+  let s:localdir = xolox#misc#path#absolute('~/.vim/misc/notes')
+endif
 
 " Define the default location where the user's notes are saved?
 if !exists('g:notes_directory')
-  let g:notes_directory = s:plugindir . '/user'
+  let g:notes_directory = xolox#misc#path#merge(s:localdir, 'user')
 endif
 
 " Define the default location of the shadow directory with predefined notes?
 if !exists('g:notes_shadowdir')
-  let g:notes_shadowdir = s:plugindir . '/shadow'
+  let g:notes_shadowdir = xolox#misc#path#merge(s:systemdir, 'shadow')
 endif
 
 " Define the default location for the full text index.
 if !exists('g:notes_indexfile')
-  let g:notes_indexfile = s:plugindir . '/index.pickle'
+  let g:notes_indexfile = xolox#misc#path#merge(s:localdir, 'index.pickle')
 endif
 
 " Define the default location for the keyword scanner script.
 if !exists('g:notes_indexscript')
-  let g:notes_indexscript = s:plugindir . '/search-notes.py'
+  let g:notes_indexscript = xolox#misc#path#merge(s:systemdir, 'search-notes.py')
 endif
 
 " Define the default suffix for note filenames.
@@ -41,7 +52,7 @@ endif
 
 " Define the default location for the tag name index (used for completion).
 if !exists('g:notes_tagsindex')
-  let g:notes_tagsindex = s:plugindir . '/tags.txt'
+  let g:notes_tagsindex = xolox#misc#path#merge(s:localdir, 'tags.txt')
 endif
 
 " Define the default action when a note's filename and title are out of sync.
