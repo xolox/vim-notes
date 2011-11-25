@@ -53,20 +53,21 @@ If you set this option to the string `'no'` this feature will be completely disa
 
 ### The `g:notes_smart_quotes` option
 
-By default the notes plug-in automatically performs several substitutions on the text you type in insert mode. Here are those substitutions:
-
- * `'` becomes `‘` or `’` depending on where you type it
- * `"` becomes `“` or `”` (same goes for these)
- * `--` becomes `—`
- * `->` becomes `→`
- * `<-` becomes `←`
- * the bullets `*`, `+` and `-` become `•`
-
-If you don't want the plug-in to perform these substitutions, you can set this option to zero like this:
+By default the notes plug-in automatically performs several substitutions on the text you type in insert mode, for example regular quote marks are replaced with curly quotes. The full list of substitutions can be found below in the documentation on mappings. If you don't want the plug-in to perform these substitutions, you can set this option to zero like this:
 
     :let g:notes_smart_quotes = 0
 
-If you type the three characters `***` in insert mode in quick succession, a horizontal ruler delimited by empty lines will be inserted. This mapping cannot be disabled simply because it seems unlikely to me that someone would want to type this actual text.
+### The `g:notes_ruler_text` option
+
+The text of the ruler line inserted when you type `***` in quick succession. It defaults to three asterisks separated by spaces, center aligned to the text width.
+
+### The `g:notes_list_bullets` option
+
+A list of characters used as list bullets. When you're using a Unicode encoding this defaults to `['•', '◦', '▸', '▹', '▪', '▫']`, otherwise it defaults to `['*', '-', '+']`.
+
+When you change the nesting level (indentation) of a line containing a bullet point using one of the mappings `Tab`, `Shift-Tab`, `Alt-Left` and `Alt-Right` the bullet point will be automatically changed to correspond to the new nesting level.
+
+The first level of list items gets the first bullet point in `g:notes_list_bullets`, the second level gets the second, etc. When you're indenting a list item to a level where the `g:notes_list_bullets` doesn't have enough bullets, the plug-in starts again at the first bullet in the list (in other words the selection of bullets wraps around).
 
 ### The `g:notes_shadowdir` option
 
@@ -173,6 +174,24 @@ The notes plug-in defines an omni completion function that can be used to comple
 The completion menu is populated from a text file listing all your tags, one on each line. The first time omni completion triggers, an index of tag names is generated and saved to the location set by `g:notes_tagsindex`. After this file is created, it will be updated automatically as you edit notes and add/remove tags.
 
 If for any reason you want to recreate the list of tags you can execute the `:IndexTaggedNotes` command.
+
+## Mappings
+
+The following key mappings are defined inside notes.
+
+### Insert mode mappings
+
+ * `@` automatically triggers tag completion
+ * `'` becomes `‘` or `’` depending on where you type it
+ * `"` becomes `“` or `”` (same goes for these)
+ * `--` becomes `—`
+ * `->` becomes `→`
+ * `<-` becomes `←`
+ * the bullets `*`, `-` and `+` become `•`
+ * the three characters `***` in insert mode in quick succession insert a horizontal ruler delimited by empty lines
+ * `Tab` and `Alt-Right` increase indentation of list items (works on the current line and selected lines)
+ * `Shift-Tab` and `Alt-Left` decrease indentation of list items
+ * `Enter` on a line with only a list bullet removes the bullet and starts a new line below the current line
 
 ## Customizing the syntax highlighting of notes
 

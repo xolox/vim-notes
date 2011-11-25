@@ -32,7 +32,7 @@ syntax match notesTagName /\(^\|\s\)\@<=@\k\+/
 highlight def link notesTagName Underlined
 
 " Highlight list bullets and numbers. {{{2
-syntax match notesListBullet /^\s*\zs\(•\|\*\)/
+execute 'syntax match notesListBullet /' . escape(xolox#notes#leading_bullet_pattern(), '/') . '/'
 highlight def link notesListBullet Comment
 syntax match notesListNumber /^\s*\zs\d\+[[:punct:]]\?\ze\s/
 highlight def link notesListNumber Comment

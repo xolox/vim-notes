@@ -18,7 +18,7 @@ setlocal tabstop=3 shiftwidth=3 expandtab
 let b:undo_ftplugin .= ' | set tabstop< shiftwidth< expandtab<'
 
 " Automatic formatting for bulleted lists. {{{1
-let &l:comments = xolox#notes#unicode_enabled() ? ': • ,: * ,:> ' : ': * ,:> '
+let &l:comments = xolox#notes#get_comments_option()
 setlocal formatoptions=tcron
 let b:undo_ftplugin .= ' | set comments< formatoptions<'
 
@@ -79,27 +79,37 @@ endif
 
 " Convert ASCII list bullets to Unicode bullets. {{{1
 if g:notes_smart_quotes
+  imap <buffer> <expr> * xolox#notes#insert_bullet('*')
   imap <buffer> <expr> - xolox#notes#insert_bullet('-')
   imap <buffer> <expr> + xolox#notes#insert_bullet('+')
-  imap <buffer> <expr> * xolox#notes#insert_bullet('*')
+  let b:undo_ftplugin .= ' | execute "iunmap <buffer> *"'
   let b:undo_ftplugin .= ' | execute "iunmap <buffer> -"'
   let b:undo_ftplugin .= ' | execute "iunmap <buffer> +"'
-  let b:undo_ftplugin .= ' | execute "iunmap <buffer> *"'
 endif
 
 " Format three asterisks as a horizontal ruler. {{{1
 inoremap <buffer> *** <C-o>:call xolox#notes#insert_ruler()<CR>
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> ***"'
 
-" Indent list items using <Tab>. {{{1
-imap <buffer> <silent> <Tab> <C-o>:call xolox#notes#indent_list('>>', line('.'), line('.'))<CR>
-smap <buffer> <silent> <Tab> <C-o>:<C-u>call xolox#notes#indent_list('>>', line("'<"), line("'>"))<CR><C-o>gv
+" Indent list items using <Tab> and <Shift-Tab>. {{{1
+imap <buffer> <silent> <Tab> <C-o>:call xolox#notes#indent_list(1, line('.'), line('.'))<CR>
+smap <buffer> <silent> <Tab> <C-o>:<C-u>call xolox#notes#indent_list(1, line("'<"), line("'>"))<CR><C-o>gv
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> <Tab>"'
 let b:undo_ftplugin .= ' | execute "sunmap <buffer> <Tab>"'
-imap <buffer> <silent> <S-Tab> <C-o>:call xolox#notes#indent_list('<<', line('.'), line('.'))<CR>
-smap <buffer> <silent> <S-Tab> <C-o>:<C-u>call xolox#notes#indent_list('<<', line("'<"), line("'>"))<CR><C-o>gv
+imap <buffer> <silent> <S-Tab> <C-o>:call xolox#notes#indent_list(-1, line('.'), line('.'))<CR>
+smap <buffer> <silent> <S-Tab> <C-o>:<C-u>call xolox#notes#indent_list(-1, line("'<"), line("'>"))<CR><C-o>gv
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> <S-Tab>"'
 let b:undo_ftplugin .= ' | execute "sunmap <buffer> <S-Tab>"'
+
+" Indent list items using <Alt-Left> and <Alt-Right>. {{{1
+imap <buffer> <silent> <A-Right> <C-o>:call xolox#notes#indent_list(1, line('.'), line('.'))<CR>
+smap <buffer> <silent> <A-Right> <C-o>:<C-u>call xolox#notes#indent_list(1, line("'<"), line("'>"))<CR><C-o>gv
+let b:undo_ftplugin .= ' | execute "iunmap <buffer> <A-Right>"'
+let b:undo_ftplugin .= ' | execute "sunmap <buffer> <A-Right>"'
+imap <buffer> <silent> <A-Left> <C-o>:call xolox#notes#indent_list(-1, line('.'), line('.'))<CR>
+smap <buffer> <silent> <A-Left> <C-o>:<C-u>call xolox#notes#indent_list(-1, line("'<"), line("'>"))<CR><C-o>gv
+let b:undo_ftplugin .= ' | execute "iunmap <buffer> <A-Left>"'
+let b:undo_ftplugin .= ' | execute "sunmap <buffer> <A-Left>"'
 
 " Automatically remove empty list items on Enter. {{{1
 inoremap <buffer> <silent> <expr> <CR> xolox#notes#cleanup_list()

@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.15.5'
+let g:xolox#notes#version = '0.16'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -770,13 +770,31 @@ function! xolox#notes#get_bullet(chr)
   return xolox#notes#unicode_enabled() ? '•' : a:chr
 endfunction
 
-function! xolox#notes#indent_list(command, line1, line2) " {{{3
+function! xolox#notes#indent_list(direction, line1, line2) " {{{3
   " Change indent of list items from {line1} to {line2} using {command}.
+  let indentstr = repeat(' ', &tabstop)
   if a:line1 == a:line2 && getline(a:line1) == ''
-    call setline(a:line1, repeat(' ', &tabstop))
+    call setline(a:line1, indentstr)
   else
-    execute a:line1 . ',' . a:line2 . 'normal' a:command
-    if getline('.') =~ '\(•\|\*\)$'
+    " Regex to match a leading bullet.
+    let leading_bullet = xolox#notes#leading_bullet_pattern()
+    for lnum in range(a:line1, a:line2)
+      let line = getline(lnum)
+      " Calculate new nesting level, should not result in < 0.
+      let level = max([0, xolox#notes#get_list_level(line) + a:direction])
+      if a:direction == 1
+        " Indent the line.
+        let line = indentstr . line
+      else
+        " Unindent the line.
+        let line = substitute(line, '^' . indentstr, '', '')
+      endif
+      " Replace the bullet.
+      let bullet = g:notes_list_bullets[level % len(g:notes_list_bullets)]
+      call setline(lnum, substitute(line, leading_bullet, xolox#misc#escape#substitute(bullet), ''))
+    endfor
+    " Regex to match a trailing bullet.
+    if getline('.') =~ xolox#notes#trailing_bullet_pattern()
       " Restore trailing space after list bullet.
       call setline('.', getline('.') . ' ')
     endif
@@ -784,9 +802,39 @@ function! xolox#notes#indent_list(command, line1, line2) " {{{3
   normal $
 endfunction
 
+function! xolox#notes#leading_bullet_pattern()
+  " Return a regular expression pattern that matches any leading list bullet.
+  let escaped_bullets = copy(g:notes_list_bullets)
+  call map(escaped_bullets, 'xolox#misc#escape#pattern(v:val)')
+  return '\(\_^\s*\)\@<=\(' . join(escaped_bullets, '\|') . '\)'
+endfunction
+
+function! xolox#notes#trailing_bullet_pattern()
+  " Return a regular expression pattern that matches any trailing list bullet.
+  let escaped_bullets = copy(g:notes_list_bullets)
+  call map(escaped_bullets, 'xolox#misc#escape#pattern(v:val)')
+  return '\(' . join(escaped_bullets, '\|') . '\|\*\)$'
+endfunction
+
+function! xolox#notes#get_comments_option()
+  " Get the value for the &comments option including user defined list bullets.
+  let items = copy(g:notes_list_bullets)
+  call map(items, '": " . v:val . " "')
+  call add(items, ':> ') " <- e-mail style block quotes.
+  return join(items, ',')
+endfunction
+
+function! xolox#notes#get_list_level(line)
+  " Get the nesting level of the list item on the given line. This will only
+  " work with the list item indentation style expected by the notes plug-in
+  " (that is, top level list items are indented with one space, each nested
+  " level below that is indented by pairs of three spaces).
+  return (len(matchstr(a:line, '^\s*')) - 1) / 3
+endfunction
+
 function! xolox#notes#cleanup_list() " {{{3
   " Automatically remove empty list items on Enter.
-  if getline('.') =~ '^\s*\' . xolox#notes#get_bullet('*') . '\s*$'
+  if getline('.') =~ (xolox#notes#leading_bullet_pattern() . '\s*$')
     let s:sol_save = &startofline
     setlocal nostartofline " <- so that <C-u> clears the complete line
     return "\<C-o>0\<C-o>d$\<C-o>o"

@@ -60,6 +60,15 @@ if !exists('g:notes_ruler_text')
   let g:notes_ruler_text = repeat(' ', ((&tw > 0 ? &tw : 79) - 5) / 2) . '* * *'
 endif
 
+" Symbols used to denote list items with increasing nesting levels.
+if !exists('g:notes_list_bullets')
+  if xolox#notes#unicode_enabled()
+    let g:notes_list_bullets = ['•', '◦', '▸', '▹', '▪', '▫']
+  else
+    let g:notes_list_bullets = ['*', '-', '+']
+  endif
+endif
+
 " User commands to create, delete and search notes.
 command! -bar -bang -nargs=? -complete=customlist,xolox#notes#cmd_complete Note call xolox#notes#edit(<q-bang>, <q-args>)
 command! -bar -bang -range NoteFromSelectedText call xolox#notes#from_selection(<q-bang>, 'edit')
