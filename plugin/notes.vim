@@ -1,6 +1,6 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 23, 2011
+" Last Change: November 25, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Support for automatic update using the GLVS plug-in.
@@ -57,7 +57,8 @@ endif
 
 " User commands to create, delete and search notes.
 command! -bar -bang -nargs=? -complete=customlist,xolox#notes#cmd_complete Note call xolox#notes#edit(<q-bang>, <q-args>)
-command! -bar -bang -range NoteFromSelectedText call xolox#notes#from_selection(<q-bang>)
+command! -bar -bang -range NoteFromSelectedText call xolox#notes#from_selection(<q-bang>, 'edit')
+command! -bar -bang -range SplitNoteFromSelectedText call xolox#notes#from_selection(<q-bang>, 'vsplit')
 command! -bar -bang -nargs=? -complete=customlist,xolox#notes#cmd_complete DeleteNote call xolox#notes#delete(<q-bang>, <q-args>)
 command! -bang -nargs=? -complete=customlist,xolox#notes#keyword_complete SearchNotes call xolox#notes#search(<q-bang>, <q-args>)
 command! -bar -bang RelatedNotes call xolox#notes#related(<q-bang>)

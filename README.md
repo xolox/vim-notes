@@ -104,7 +104,14 @@ This command will fail when changes have been made to the current buffer, unless
 
 ### The `:NoteFromSelectedText` command
 
-When you execute this command it will start a new note with the selected text as the title of the note.
+Start a new note in the current window with the selected text as the title of the note. The name of this command isn't very well suited to daily use, however the idea is that users will define their own mapping to invoke this command. For example:
+
+    " Map \ns in visual mode to start new note with selected text as title.
+    vmap <Leader>ns :NoteFromSelectedText<CR>
+
+### The `:SplitNoteFromSelectedText` command
+
+Same as `:NoteFromSelectedText` but opens the new note in a vertical split window.
 
 ### The `:DeleteNote` command
 

@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.14.6'
+let g:xolox#notes#version = '0.15'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -101,11 +101,10 @@ function! xolox#notes#check_sync_title() " {{{1
   endif
 endfunction
 
-function! xolox#notes#from_selection(bang) " {{{1
-  " TODO This will always open a new buffer in the current window which I
-  " don't consider very friendly (because the user loses his/her context),
-  " but choosing to always split the window doesn't seem right either...
-  call xolox#notes#edit(a:bang, s:get_visual_selection())
+function! xolox#notes#from_selection(bang, cmd) " {{{1
+  let selection = s:get_visual_selection()
+  if a:cmd != 'edit' | execute a:cmd | endif
+  call xolox#notes#edit(a:bang, selection)
 endfunction
 
 function! s:get_visual_selection()
