@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.16.1'
+let g:xolox#notes#version = '0.16.2'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -320,6 +320,16 @@ function! xolox#notes#search(bang, input) " {{{1
     call s:internal_search(a:bang, all_keywords, input, any_keyword)
     if &buftype == 'quickfix'
       call map(keywords, '"`" . v:val . "''"')
+      " Enable line wrapping in the quick-fix window.
+      setlocal wrap
+      " Resize the quick-fix window to 1/3 of the screen height.
+      let max_height = &lines / 3
+      execute 'resize' max_height
+      " Make it smaller if the content doesn't fill the window.
+      normal G$
+      let preferred_height = winline()
+      execute 'resize' min([max_height, preferred_height])
+      normal gg
       let w:quickfix_title = printf('Notes containing the word%s %s', len(keywords) == 1 ? '' : 's',
           \ len(keywords) > 1 ? (join(keywords[0:-2], ', ') . ' and ' . keywords[-1]) : keywords[0])
     endif
