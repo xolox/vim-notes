@@ -348,8 +348,8 @@ like. To do so you can add lines such as the following to your |vimrc| script:
     " Show double quoted strings in italic font.
     highlight notesDoubleQuoted gui=italic
 
-See the documentation of the [:highlight] [hl] command for more information.
-Below are the names of the syntax items defined by the notes syntax mode:
+See the documentation of the |:highlight| command for more information. Below
+are the names of the syntax items defined by the notes syntax mode:
 
  - 'notesName' - the names of other notes, usually highlighted as a hyperlink
 

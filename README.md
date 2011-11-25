@@ -184,7 +184,7 @@ The syntax mode for notes is written so you can override styles you don't like. 
     " Show double quoted strings in italic font.
     highlight notesDoubleQuoted gui=italic
 
-See the documentation of the [:highlight] [hl] command for more information. Below are the names of the syntax items defined by the notes syntax mode:
+See the documentation of the [:highlight] [highlight] command for more information. Below are the names of the syntax items defined by the notes syntax mode:
 
  * `notesName` - the names of other notes, usually highlighted as a hyperlink
  * `notesTagName` - words preceded by an `@` character, also highlighted as a hyperlink
