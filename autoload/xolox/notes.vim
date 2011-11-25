@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.14.4'
+let g:xolox#notes#version = '0.14.5'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -55,7 +55,7 @@ endfunction
 function! xolox#notes#check_sync_title() " {{{1
   if g:notes_title_sync != 'no' && xolox#notes#buffer_is_note()
     " Check if the note's title and filename are out of sync.
-    let title = getline(1)
+    let title = xolox#notes#current_title()
     let name_on_disk = xolox#misc#path#absolute(expand('%:p'))
     let name_from_title = xolox#notes#title_to_fname(title)
     if !xolox#misc#path#equals(name_on_disk, name_from_title)
@@ -88,7 +88,7 @@ function! xolox#notes#check_sync_title() " {{{1
         setlocal modified
         call xolox#misc#msg#info("notes.vim %s: Changed note title to match filename.", g:xolox#notes#version)
       elseif action == 'rename_file'
-        let new_fname = xolox#notes#title_to_fname(getline(1))
+        let new_fname = xolox#notes#title_to_fname(xolox#notes#current_title())
         if rename(name_on_disk, new_fname) == 0
           execute 'edit' fnameescape(new_fname)
           setlocal filetype=notes
@@ -242,7 +242,7 @@ endfunction
 function! xolox#notes#save() abort " {{{1
   " When the current note's title is changed, automatically rename the file.
   if &filetype == 'notes'
-    let title = getline(1)
+    let title = xolox#notes#current_title()
     let oldpath = expand('%:p')
     let newpath = xolox#notes#title_to_fname(title)
     if newpath == ''
@@ -366,8 +366,8 @@ function! xolox#notes#related(bang) " {{{1
   else
     let filename = xolox#misc#path#absolute(bufname)
     if xolox#notes#buffer_is_note()
-      let pattern = '\<' . s:words_to_pattern(getline(1)) . '\>'
-      let keywords = getline(1)
+      let keywords = xolox#notes#current_title()
+      let pattern = '\<' . s:words_to_pattern(keywords) . '\>'
     else
       let pattern = s:words_to_pattern(filename)
       let keywords = filename
@@ -458,6 +458,15 @@ function! xolox#notes#buffer_is_note() " {{{1
 endfunction
 
 " Miscellaneous functions. {{{1
+
+function! xolox#notes#current_title() " {{{2
+  let title = getline(1)
+  let trimmed = xolox#misc#str#trim(title)
+  if title != trimmed
+    call setline(1, trimmed)
+  endif
+  return trimmed
+endfunction
 
 function! xolox#notes#friendly_date(time) " {{{2
   let format = '%A, %B %d, %Y'
@@ -780,7 +789,7 @@ function! xolox#notes#highlight_names(force) " {{{3
   " Highlight the names of all notes as "notesName" (linked to "Underlined").
   if a:force || !(exists('b:notes_names_last_highlighted') && b:notes_names_last_highlighted > s:cache_mtime)
     let starttime = xolox#misc#timer#start()
-    let current_note = getline(1)
+    let current_note = xolox#notes#current_title()
     let titles = filter(xolox#notes#get_titles(1), '!empty(v:val) && v:val != current_note')
     call map(titles, 's:words_to_pattern(v:val)')
     call sort(titles, 's:sort_longest_to_shortest')
