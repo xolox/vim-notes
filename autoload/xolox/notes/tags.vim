@@ -1,6 +1,6 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 3, 2011
+" Last Change: November 25, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 if !exists('s:currently_tagged_notes')
@@ -85,13 +85,19 @@ endfunction
 function! xolox#notes#tags#scan_note(title, text) " {{{1
   " Add a note to the tags index.
   call xolox#notes#tags#load_index()
-  for token in split(substitute(a:text, '{{{\w\+\_.\{-}}}}', '', 'g'))
-    if token =~ '^@\w'
+  " Don't scan tags inside code blocks.
+  let text = substitute(a:text, '{{{\w\+\_.\{-}}}}', '', 'g')
+  " Split everything on whitespace.
+  for token in split(text)
+    " Match words that start with @ and don't contain { (BibTeX entries).
+    if token =~ '^@\w' && token !~ '{'
+      " Strip any trailing punctuation.
       let token = substitute(token[1:], '[[:punct:]]*$', '', '')
       if token != ''
         if !has_key(s:currently_tagged_notes, token)
           let s:currently_tagged_notes[token] = [a:title]
         elseif index(s:currently_tagged_notes[token], a:title) == -1
+          " Keep the tags sorted.
           call xolox#misc#list#binsert(s:currently_tagged_notes[token], a:title, 1)
         endif
       endif
