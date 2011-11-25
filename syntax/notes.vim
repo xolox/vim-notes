@@ -148,6 +148,7 @@ call xolox#notes#highlight_sources('notesCodeStart', 'notesCodeEnd')
 syntax match notesModeLine /\_^vim:.*\_s*\%$/
 highlight def link notesModeLine LineNr
 
+" Last edited dates in :ShowTaggedNotes buffers.
 syntax match notesLastEdited /(last edited \(today\|yesterday\|\w\+, \w\+ \d\+, \d\+\))/
 highlight def link notesLastEdited LineNr
 

@@ -174,6 +174,48 @@ The completion menu is populated from a text file listing all your tags, one on 
 
 If for any reason you want to recreate the list of tags you can execute the `:IndexTaggedNotes` command.
 
+## Customizing the syntax highlighting of notes
+
+The syntax mode for notes is written so you can override styles you don't like. To do so you can add lines such as the following to your [vimrc script] [vimrc]:
+
+    " Don't highlight single quoted strings.
+    highlight link notesSingleQuoted Normal
+
+    " Show double quoted strings in italic font.
+    highlight notesDoubleQuoted gui=italic
+
+See the documentation of the [:highlight] [hl] command for more information. Below are the names of the syntax items defined by the notes syntax mode:
+
+ * `notesName` - the names of other notes, usually highlighted as a hyperlink
+ * `notesTagName` - words preceded by an `@` character, also highlighted as a hyperlink
+ * `notesListBullet` - the bullet characters used for list items
+ * `notesListNumber` - numbers in front of list items
+ * `notesDoubleQuoted` - double quoted strings
+ * `notesSingleQuoted` - single quoted strings
+ * `notesItalic` - strings between two `_` characters
+ * `notesBold` - strings between two `*` characters
+ * `notesTextURL` - plain domain name (recognized by leading `www.`)
+ * `notesRealURL` - URLs (e.g. <http://vim.org/>)
+ * `notesEmailAddr` - e-mail addresses
+ * `notesUnixPath` - UNIX file paths (e.g. `~/.vimrc` and `/home/peter/.vimrc`)
+ * `notesPathLnum` - line number following a UNIX path
+ * `notesWindowsPath` - Windows file paths (e.g. `c:\users\peter\_vimrc`)
+ * `notesTodo` - `TODO` markers
+ * `notesXXX` - `XXX` markers
+ * `notesFixMe` - `FIXME` markers
+ * `notesDoneItem` - lines containing the marker `DONE`, usually highlighted as a comment
+ * `notesDoneMarker` - `DONE` markers
+ * `notesVimCmd` - Vim commands, words preceded by an `:` character
+ * `notesTitle` - the first line of each note
+ * `notesShortHeading` - short sentences ending in a `:` character
+ * `notesAtxHeading` - lines preceded by one or more `#` characters
+ * `notesBlockQuote` - lines preceded by a `>` character
+ * `notesRule` - lines containing only whitespace and `* * *`
+ * `notesCodeStart` - the `{{{` markers that begin a block of code (including the syntax name)
+ * `notesCodeEnd` - the `}}}` markers that end a block of code
+ * `notesModeLine` - Vim [modeline] [modeline] in last line of notes
+ * `notesLastEdited` - last edited dates in `:ShowTaggedNotes` buffers
+
 ## Other plug-ins that work well with the notes plug-in
 
  * The [utl.vim] [utl] universal text linking plug-in enables links between your notes, other local files and remote resources like web pages
@@ -195,8 +237,10 @@ This software is licensed under the [MIT license] [mit].
 [download]: http://peterodding.com/code/vim/downloads/notes.zip
 [edit]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:edit
 [gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
+[highlight]: http://vimdoc.sourceforge.net/htmldoc/syntax.html#:highlight
 [levenshtein]: http://en.wikipedia.org/wiki/Levenshtein_distance
 [mit]: http://en.wikipedia.org/wiki/MIT_License
+[modeline]: http://vimdoc.sourceforge.net/htmldoc/options.html#modeline
 [python]: http://python.org/
 [shell]: http://www.vim.org/scripts/script.php?script_id=3123
 [slate]: http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
