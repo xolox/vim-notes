@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 24, 2011
+" Last Change: November 25, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.14.3'
+let g:xolox#notes#version = '0.14.4'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -780,7 +780,8 @@ function! xolox#notes#highlight_names(force) " {{{3
   " Highlight the names of all notes as "notesName" (linked to "Underlined").
   if a:force || !(exists('b:notes_names_last_highlighted') && b:notes_names_last_highlighted > s:cache_mtime)
     let starttime = xolox#misc#timer#start()
-    let titles = filter(xolox#notes#get_titles(1), '!empty(v:val)')
+    let current_note = getline(1)
+    let titles = filter(xolox#notes#get_titles(1), '!empty(v:val) && v:val != current_note')
     call map(titles, 's:words_to_pattern(v:val)')
     call sort(titles, 's:sort_longest_to_shortest')
     if hlexists('notesName')
