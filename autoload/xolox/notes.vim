@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.15.1'
+let g:xolox#notes#version = '0.15.2'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -742,7 +742,7 @@ function! xolox#notes#insert_quote(style) " {{{3
   else
     let [open_quote, close_quote] = a:style == 1 ? ['`', "'"] : ['"', '"']
   endif
-  return getline('.')[col('.')-2] =~ '\S$' ? close_quote : open_quote
+  return getline('.')[col('.')-2] =~ '[^\t (]$' ? close_quote : open_quote
 endfunction
 
 function! xolox#notes#insert_bullet(chr) " {{{3
