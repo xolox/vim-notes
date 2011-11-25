@@ -97,6 +97,7 @@ class NotesIndex:
         assert self.index['version'] == 1
         self.first_use = False
         self.dirty = False
+        self.message("Found %i notes in %s ..", len(self.index['files']), self.database_file)
     except:
       self.first_use = True
       self.dirty = True
@@ -116,12 +117,9 @@ class NotesIndex:
         abspath = os.path.join(self.user_directory, filename)
         if os.path.isfile(abspath):
           notes_on_disk[abspath] = os.path.getmtime(abspath)
-    # Then we either scan the whole bunch or be a bit more subtle.
-    if self.first_use:
-      for filename, last_modified in notes_on_disk.iteritems():
-        self.add_note(filename, last_modified)
-    else:
-      # Check for updated and/or deleted notes since the last run.
+    self.message("Found %i notes in %s ..", len(notes_on_disk), self.user_directory)
+    # Check for updated and/or deleted notes since the last run?
+    if not self.first_use:
       for filename in self.index['files'].keys():
         if filename not in notes_on_disk:
           # Forget a deleted note.
@@ -133,11 +131,15 @@ class NotesIndex:
           if last_modified_on_disk > last_modified_in_db:
             self.delete_note(filename)
             self.add_note(filename, last_modified_on_disk)
+          # Already checked this note, we can forget about it.
+          del notes_on_disk[filename]
+    # Add new notes to index.
+    for filename, last_modified in notes_on_disk.iteritems():
+      self.add_note(filename, last_modified)
 
   def add_note(self, filename, last_modified):
     ''' Add a note to the index (assumes the note is not already indexed). '''
-    if self.verbose:
-      sys.stderr.write("Indexing %s ..\n" % filename)
+    self.message("Indexing %s ..", filename)
     self.index['files'][filename] = last_modified
     with open(filename) as handle:
       for kw in self.tokenize(handle.read()):
@@ -149,8 +151,7 @@ class NotesIndex:
 
   def delete_note(self, filename):
     ''' Remove a note from the index. '''
-    if self.verbose:
-      sys.stderr.write("Forgetting %s ..\n" % filename)
+    self.message("Forgetting %s ..", filename)
     del self.index['files'][filename]
     for kw in self.index['keywords']:
       filter(lambda x: x != filename, self.index['keywords'][kw])
@@ -208,6 +209,10 @@ class NotesIndex:
   def munge_path(self, path):
     ''' Canonicalize user-defined path, making it absolute. '''
     return os.path.abspath(os.path.expanduser(path))
+
+  def message(self, msg, *args):
+    if self.verbose:
+      sys.stderr.write((msg + "\n") % args)
 
   def usage(self):
     print '''
