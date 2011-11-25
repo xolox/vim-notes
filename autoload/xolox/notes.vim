@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.16'
+let g:xolox#notes#version = '0.16.1'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -553,9 +553,9 @@ endfunction
 
 function! s:run_scanner(keywords, matches) " {{{2
   " Try to run scanner.py script to find notes matching {keywords}.
-  let output = s:python_command(a:keywords)
-  if !empty(output)
-    call extend(a:matches, split(output, '\n'))
+  let lines = s:python_command(a:keywords)
+  if type(lines) == type([])
+    call extend(a:matches, lines)
     return 1
   endif
 endfunction
@@ -563,9 +563,9 @@ endfunction
 function! xolox#notes#keyword_complete(arglead, cmdline, cursorpos) " {{{2
   let first_run = !filereadable(g:notes_indexfile)
   if first_run | call inputsave() | endif
-  let keywords = split(s:python_command('--list=' . a:arglead), '\n')
+  let keywords = s:python_command('--list=' . a:arglead)
   if first_run | call inputrestore() | endif
-  return keywords
+  return type(keywords) == type([]) ? keywords : []
 endfunction
 
 function! s:python_command(...) " {{{2
@@ -585,10 +585,12 @@ function! s:python_command(...) " {{{2
     if v:shell_error
       call xolox#misc#msg#warn("notes.vim %s: Search script failed with output: %s", g:xolox#notes#version, output)
     else
-      return output
+      let lines = split(output, "\n")
+      if !empty(lines) && lines[0] == 'Python works fine!'
+        return lines[1:]
+      endif
     endif
   endif
-  return ''
 endfunction
 
 " Getters for filenames & titles of existing notes. {{{2

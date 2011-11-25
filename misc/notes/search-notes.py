@@ -3,7 +3,7 @@
 # Python script for fast text file searching using keyword index on disk.
 #
 # Author: Peter Odding <peter@peterodding.com>
-# Last Change: November 24, 2011
+# Last Change: November 25, 2011
 # URL: http://peterodding.com/code/vim/notes/
 # License: MIT
 #
@@ -39,6 +39,7 @@ class NotesIndex:
     self.update_index()
     if self.dirty:
       self.save_index()
+    print "Python works fine!"
     if self.keyword_filter is not None:
       self.list_keywords(self.keyword_filter)
     else:
