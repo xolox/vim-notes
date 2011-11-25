@@ -4,7 +4,7 @@ The notes.vim plug-in for the [Vim text editor] [vim] makes it easy to manage yo
 
  * **Starting a new note:** Execute the `:Note` command to create a new buffer and load the appropriate file type and syntax
    * You can also start a note with Vim commands like `:edit`, `:tabedit` and `:split` by starting the filename with `note:`, as in `:edit note:todo` (the part after `note:` doesn't have to be the complete note title and if it's empty a new note will be created)
-   * You can start a new note with the selected text as title using the `:NoteFromSelectedText` command
+   * You can start a new note with the selected text as title in the current window using the `:NoteFromSelectedText` command (the `:SplitNoteFromSelectedText` command opens the new note in a split window)
  * **Saving notes:** Just use Vim's [:write] [write] and [:update] [update] commands, you don't need to provide a filename because it will be set based on the title (first line) of your note (you also don't need to worry about special characters, they'll be escaped)
  * **Editing existing notes:** Execute `:Note anything` to edit a note containing `anything` in its title (if no notes are found a new one is created with its title set to `anything`)
    * The `:Note` and `:DeleteNote` commands support tab completion of note titles
@@ -15,7 +15,7 @@ The notes.vim plug-in for the [Vim text editor] [vim] makes it easy to manage yo
    * **Back-references:** The `:RelatedNotes` command find all notes referencing the current file
    * A [Python 2] [python] script is included that accelerates keyword searches using a keyword index
    * The `:RecentNotes` command lists your notes by modification date, starting with the most recently edited note
- * **Navigating between notes:** The included file type plug-in redefines [gf] [gf] to jump between notes and the syntax script highlights note names as hyper links
+ * **Navigating between notes:** The included syntax script highlights note names as hyper links and the file type plug-in redefines [gf] [gf] to jump between notes (the [Control-w f] [ctrlwf] mapping to jump to a note in a split window and the [Control-w gf] [ctrlwgf] mapping to jump to a note in a new tab page also work)
  * **Writing aids:** The included file type plug-in contains mappings for automatic curly quotes, arrows and list bullets and supports completion of note titles using Control-X Control-U and completion of tags using Control-X Control-O
  * **Embedded file types:** The included syntax script supports embedded highlighting using blocks marked with `{{{type … }}}` which allows you to embed highlighted code and configuration snippets in your notes
 
@@ -187,6 +187,9 @@ If you have questions, bug reports, suggestions, etc. the author can be contacte
 This software is licensed under the [MIT license] [mit].  
 © 2011 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
+
+[ctrlwf]: http://vimdoc.sourceforge.net/htmldoc/windows.html#CTRL-W_f
+[ctrlwgf]: http://vimdoc.sourceforge.net/htmldoc/windows.html#CTRL-W_gf
 [download]: http://peterodding.com/code/vim/downloads/notes.zip
 [edit]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:edit
 [gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
