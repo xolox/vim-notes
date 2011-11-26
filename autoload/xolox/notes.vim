@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 25, 2011
+" Last Change: November 26, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.16.5'
+let g:xolox#notes#version = '0.16.6'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -53,7 +53,7 @@ function! xolox#notes#edit(bang, title) abort " {{{1
 endfunction
 
 function! xolox#notes#check_sync_title() " {{{1
-  if g:notes_title_sync != 'no' && xolox#notes#buffer_is_note()
+  if g:notes_title_sync != 'no' && xolox#notes#buffer_is_note() && &buftype == ''
     " Check if the note's title and filename are out of sync.
     let title = xolox#notes#current_title()
     let name_on_disk = xolox#misc#path#absolute(expand('%:p'))
