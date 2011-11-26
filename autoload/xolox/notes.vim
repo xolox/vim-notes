@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.16.8'
+let g:xolox#notes#version = '0.16.9'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -67,10 +67,10 @@ function! xolox#notes#check_sync_title() " {{{1
         " window would be blank in my tests).
         redraw
         let message = "The note's title and filename do not correspond. What do you want to do?\n\n"
-        let message .= "Current filename: " . name_on_disk . "\n"
-        let message .= "Corresponding title: " . xolox#notes#fname_to_title(name_on_disk) . "\n\n"
-        let message .= "Current title: " . title . "\n"
-        let message .= "Corresponding filename: " . xolox#notes#title_to_fname(title)
+        let message .= "Current filename: " . s:sync_value(name_on_disk) . "\n"
+        let message .= "Corresponding title: " . s:sync_value(xolox#notes#fname_to_title(name_on_disk)) . "\n\n"
+        let message .= "Current title: " . s:sync_value(title) . "\n"
+        let message .= "Corresponding filename: " . s:sync_value(xolox#notes#title_to_fname(title))
         let choice = confirm(message, "Change &title\nRename &file\nDo &nothing", 3, 'Question')
         if choice == 1
           let action = 'change_title'
@@ -99,6 +99,11 @@ function! xolox#notes#check_sync_title() " {{{1
       endif
     endif
   endif
+endfunction
+
+function! s:sync_value(s)
+  let s = xolox#misc#str#trim(a:s)
+  return empty(s) ? '(none)' : s
 endfunction
 
 function! xolox#notes#from_selection(bang, cmd) " {{{1
