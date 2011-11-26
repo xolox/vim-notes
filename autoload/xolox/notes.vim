@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.16.9'
+let g:xolox#notes#version = '0.16.10'
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -61,7 +61,10 @@ function! xolox#notes#check_sync_title() " {{{1
     if !xolox#misc#path#equals(name_on_disk, name_from_title)
       call xolox#misc#msg#debug("notes.vim %s: Filename (%s) doesn't match note title (%s)", g:xolox#notes#version, name_on_disk, name_from_title)
       let action = g:notes_title_sync
-      if action == 'prompt'
+      if action == 'prompt' && empty(name_from_title)
+        " There's no point in prompting the user when there's only one choice.
+        let action = 'change_title'
+      elseif action == 'prompt'
         " Prompt the user what to do (if anything). First we perform a redraw
         " to make sure the note's content is visible (without this the Vim
         " window would be blank in my tests).
