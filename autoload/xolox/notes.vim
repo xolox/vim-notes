@@ -6,7 +6,70 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.16.10'
+let g:xolox#notes#version = '0.16.11'
+let s:scriptdir = expand('<sfile>:p:h')
+
+function! xolox#notes#init() " {{{1
+  " Initialize the configuration of the notes plug-in. This is a bit tricky:
+  " We want to be compatible with Pathogen which installs plug-ins as
+  " "bundles" under ~/.vim/bundle/*/ so we use a relative path to make sure we
+  " 'stay inside the bundle'. However if the notes.vim plug-in is installed
+  " system wide the user probably won't have permission to write inside the
+  " installation directory, so we have to switch to $HOME then.
+  let systemdir = xolox#misc#path#absolute(s:scriptdir . '/../../misc/notes')
+  if filewritable(systemdir) == 2
+    let localdir = systemdir
+  elseif xolox#misc#os#is_win()
+    let localdir = xolox#misc#path#absolute('~/vimfiles/misc/notes')
+  else
+    let localdir = xolox#misc#path#absolute('~/.vim/misc/notes')
+  endif
+  " Define the default location where the user's notes are saved?
+  if !exists('g:notes_directory')
+    let g:notes_directory = xolox#misc#path#merge(localdir, 'user')
+  endif
+  " Define the default location of the shadow directory with predefined notes?
+  if !exists('g:notes_shadowdir')
+    let g:notes_shadowdir = xolox#misc#path#merge(systemdir, 'shadow')
+  endif
+  " Define the default location for the full text index.
+  if !exists('g:notes_indexfile')
+    let g:notes_indexfile = xolox#misc#path#merge(localdir, 'index.pickle')
+  endif
+  " Define the default location for the keyword scanner script.
+  if !exists('g:notes_indexscript')
+    let g:notes_indexscript = xolox#misc#path#merge(systemdir, 'search-notes.py')
+  endif
+  " Define the default suffix for note filenames.
+  if !exists('g:notes_suffix')
+    let g:notes_suffix = ''
+  endif
+  " Define the default location for the tag name index (used for completion).
+  if !exists('g:notes_tagsindex')
+    let g:notes_tagsindex = xolox#misc#path#merge(localdir, 'tags.txt')
+  endif
+  " Define the default action when a note's filename and title are out of sync.
+  if !exists('g:notes_title_sync')
+    " Valid values are "no", "change_title", "rename_file" and "prompt".
+    let g:notes_title_sync = 'prompt'
+  endif
+  " Smart quotes and such are enabled by default.
+  if !exists('g:notes_smart_quotes')
+    let g:notes_smart_quotes = 1
+  endif
+  " Text used for horizontal rulers.
+  if !exists('g:notes_ruler_text')
+    let g:notes_ruler_text = repeat(' ', ((&tw > 0 ? &tw : 79) - 5) / 2) . '* * *'
+  endif
+  " Symbols used to denote list items with increasing nesting levels.
+  if !exists('g:notes_list_bullets')
+    if xolox#notes#unicode_enabled()
+      let g:notes_list_bullets = ['•', '◦', '▸', '▹', '▪', '▫']
+    else
+      let g:notes_list_bullets = ['*', '-', '+']
+    endif
+  endif
+endfunction
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
@@ -372,13 +435,6 @@ function! s:match_any_keyword(keywords)
   return '/' . escape(join(results, '\|'), '/') . '/'
 endfunction
 
-function! xolox#notes#swaphack() " {{{1
-  " Selectively ignore the dreaded E325 interactive prompt.
-  if exists('s:swaphack_enabled')
-    let v:swapchoice = 'o'
-  endif
-endfunction
-
 function! xolox#notes#related(bang) " {{{1
   " Find all notes related to the current note or file.
   let starttime = xolox#misc#timer#start()
@@ -477,6 +533,32 @@ function! xolox#notes#recent(bang, title_filter) " {{{1
 endfunction
 
 " Miscellaneous functions. {{{1
+
+function! xolox#notes#swaphack() " {{{2
+  " Selectively ignore the dreaded E325 interactive prompt.
+  if exists('s:swaphack_enabled')
+    let v:swapchoice = 'o'
+  endif
+endfunction
+
+function! xolox#notes#autocmd_pattern(directory) " {{{2
+  " Generate a normalized automatic command pattern. First we resolve the path
+  " to the directory with notes (eliminating any symbolic links) so that the
+  " automatic command also applies to symbolic links pointing to notes (Vim
+  " matches filename patterns in automatic commands after resolving
+  " filenames).
+  let directory = xolox#misc#path#absolute(a:directory)
+  " On Windows we have to replace backslashes with forward slashes, otherwise
+  " the automatic command will never trigger! This has to happen before we
+  " make the fnameescape() call.
+  if xolox#misc#os#is_win()
+    let directory = substitute(directory, '\\', '/', 'g')
+  endif
+  " Escape the directory but not the trailing "*".
+  let pattern = fnameescape(directory) . '/*'
+  " On Windows the pattern won't match if it contains repeating slashes.
+  return substitute(pattern, '/\+', '/', 'g')
+endfunction
 
 function! xolox#notes#filetype_is_note(ft) " {{{2
   " Check whether the given file type value refers to the notes.vim plug-in.
