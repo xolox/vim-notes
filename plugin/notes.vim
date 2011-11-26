@@ -1,6 +1,6 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 25, 2011
+" Last Change: November 26, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Support for automatic update using the GLVS plug-in.
@@ -117,7 +117,7 @@ augroup PluginNotes
   call s:DAC('BufReadCmd', g:notes_shadowdir, 'call xolox#notes#edit_shadow()')
   call s:DAC('BufWriteCmd', g:notes_directory, 'call xolox#notes#save()')
   au SwapExists * call xolox#notes#swaphack()
-  au BufUnload * if &ft == 'notes' | call xolox#notes#unload_from_cache() | endif
+  au BufUnload * call xolox#notes#unload_from_cache()
   au BufReadPost,BufWritePost * call xolox#notes#refresh_syntax()
   au InsertEnter,InsertLeave * call xolox#notes#refresh_syntax()
   au CursorHold,CursorHoldI * call xolox#notes#refresh_syntax()
