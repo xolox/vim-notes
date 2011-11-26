@@ -458,25 +458,43 @@ are the names of the syntax items defined by the notes syntax mode:
 ===============================================================================
 Other plug-ins that work well with the notes plug-in ~
 
- - The utl.vim [6] universal text linking plug-in enables links between your
-   notes, other local files and remote resources like web pages.
+-------------------------------------------------------------------------------
+                                                                 *notes-utl.vim*
+utl.vim ~
 
- - My shell.vim [7] plug-in also enables easy navigation between your notes and
-   environment like local files and directories, web pages and e-mail
-   addresses by providing key mappings and commands to e.g. open the file/URL
-   under the text cursor. This plug-in can also change Vim to full screen
-   which can be really nice for large notes.
+The utl.vim [6] universal text linking plug-in enables links between your
+notes, other local files and remote resources like web pages.
 
- - The VOoM [8] outlining plug-in should work well for notes if you use the
-   Markdown style headers starting with '#', however it has been reported that
-   this combination may not always work so well in practice (sometimes losing
-   notes!)
+-------------------------------------------------------------------------------
+                                                               *notes-shell.vim*
+shell.vim ~
 
- - If the text formatting supported by the notes plug-in is not enough for you,
-   consider trying the Txtfmt [9] (The Vim Highlighter) plug-in. To use the
-   two plug-ins together, create the file 'after/ftplugin/notes.vim' inside
-   your Vim profile with the following contents: " Integration between
-   notes.vim and txtfmt.vim. :setlocal filetype=notes.txtfmt
+My shell.vim [7] plug-in also enables easy navigation between your notes and
+environment like local files and directories, web pages and e-mail addresses
+by providing key mappings and commands to e.g. open the file/URL under the
+text cursor. This plug-in can also change Vim to full screen which can be
+really nice for large notes.
+
+-------------------------------------------------------------------------------
+                                                                    *notes-voom*
+VOoM ~
+
+The VOoM [8] outlining plug-in should work well for notes if you use the
+Markdown style headers starting with '#', however it has been reported that
+this combination may not always work so well in practice (sometimes losing
+notes!)
+
+-------------------------------------------------------------------------------
+                                                                  *notes-txtfmt*
+Txtfmt ~
+
+If the text formatting supported by the notes plug-in is not enough for you,
+consider trying the Txtfmt [9] (The Vim Highlighter) plug-in. To use the two
+plug-ins together, create the file 'after/ftplugin/notes.vim' inside your Vim
+profile with the following contents:
+>
+    " Enable Txtfmt formatting inside notes.
+    setlocal filetype=notes.txtfmt
 
 ===============================================================================
                                                                  *notes-contact*

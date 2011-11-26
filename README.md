@@ -237,13 +237,24 @@ See the documentation of the [:highlight] [highlight] command for more informati
 
 ## Other plug-ins that work well with the notes plug-in
 
- * The [utl.vim] [utl] universal text linking plug-in enables links between your notes, other local files and remote resources like web pages.
- * My [shell.vim] [shell] plug-in also enables easy navigation between your notes and environment like local files and directories, web pages and e-mail addresses by providing key mappings and commands to e.g. open the file/URL under the text cursor. This plug-in can also change Vim to full screen which can be really nice for large notes.
- * The [VOoM] [voom] outlining plug-in should work well for notes if you use the Markdown style headers starting with `#`, however it has been reported that this combination may not always work so well in practice (sometimes losing notes!)
- * If the text formatting supported by the notes plug-in is not enough for you, consider trying the [Txtfmt] [txtfmt] (The Vim Highlighter) plug-in. To use the two plug-ins together, create the file `after/ftplugin/notes.vim` inside your Vim profile with the following contents:
+### utl.vim
 
-    " Integration between notes.vim and txtfmt.vim.
-    :setlocal filetype=notes.txtfmt
+The [utl.vim] [utl] universal text linking plug-in enables links between your notes, other local files and remote resources like web pages.
+
+### shell.vim
+
+My [shell.vim] [shell] plug-in also enables easy navigation between your notes and environment like local files and directories, web pages and e-mail addresses by providing key mappings and commands to e.g. open the file/URL under the text cursor. This plug-in can also change Vim to full screen which can be really nice for large notes.
+
+### VOoM
+
+The [VOoM] [voom] outlining plug-in should work well for notes if you use the Markdown style headers starting with `#`, however it has been reported that this combination may not always work so well in practice (sometimes losing notes!)
+
+### Txtfmt
+
+If the text formatting supported by the notes plug-in is not enough for you, consider trying the [Txtfmt] [txtfmt] (The Vim Highlighter) plug-in. To use the two plug-ins together, create the file `after/ftplugin/notes.vim` inside your Vim profile with the following contents:
+
+    " Enable Txtfmt formatting inside notes.
+    setlocal filetype=notes.txtfmt
 
 ## Contact
 
