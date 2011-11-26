@@ -31,7 +31,7 @@ Unzip the most recent [ZIP archive] [download] file inside your Vim profile dire
 
 All options have reasonable defaults so if the plug-in works after installation you don't need to change any options. They're available for people who like to customize their directory layout. These options can be configured in your [vimrc script] [vimrc] by including a line like this:
 
-    let g:notes_directory = '~/Documents/Notes'
+    :let g:notes_directory = '~/Documents/Notes'
 
 Note that after changing an option in your [vimrc script] [vimrc] you have to restart Vim for the changes to take effect.
 
@@ -237,9 +237,13 @@ See the documentation of the [:highlight] [highlight] command for more informati
 
 ## Other plug-ins that work well with the notes plug-in
 
- * The [utl.vim] [utl] universal text linking plug-in enables links between your notes, other local files and remote resources like web pages
- * My [shell.vim] [shell] plug-in also enables easy navigation between your notes and environment like local files and directories, web pages and e-mail addresses
+ * The [utl.vim] [utl] universal text linking plug-in enables links between your notes, other local files and remote resources like web pages.
+ * My [shell.vim] [shell] plug-in also enables easy navigation between your notes and environment like local files and directories, web pages and e-mail addresses by providing key mappings and commands to e.g. open the file/URL under the text cursor. This plug-in can also change Vim to full screen which can be really nice for large notes.
  * The [VOoM] [voom] outlining plug-in should work well for notes if you use the Markdown style headers starting with `#`, however it has been reported that this combination may not always work so well in practice (sometimes losing notes!)
+ * If the text formatting supported by the notes plug-in is not enough for you, consider trying the [Txtfmt] [txtfmt] (The Vim Highlighter) plug-in. To use the two plug-ins together, create the file `after/ftplugin/notes.vim` inside your Vim profile with the following contents:
+
+    " Integration between notes.vim and txtfmt.vim.
+    :setlocal filetype=notes.txtfmt
 
 ## Contact
 
@@ -265,6 +269,7 @@ This software is licensed under the [MIT license] [mit].
 [slate]: http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
 [split]: http://vimdoc.sourceforge.net/htmldoc/windows.html#:split
 [tabedit]: http://vimdoc.sourceforge.net/htmldoc/tabpage.html#:tabedit
+[txtfmt]: http://www.vim.org/scripts/script.php?script_id=2208
 [update]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:update
 [utl]: http://www.vim.org/scripts/script.php?script_id=293
 [vim]: http://www.vim.org/
