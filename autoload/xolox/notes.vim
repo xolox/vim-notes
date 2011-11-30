@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 27, 2011
+" Last Change: November 30, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.16.12'
+let g:xolox#notes#version = '0.16.13'
 let s:scriptdir = expand('<sfile>:p:h')
 
 function! xolox#notes#init() " {{{1
@@ -1131,5 +1131,11 @@ function! xolox#notes#foldtext() " {{{3
     return line
   endif
 endfunction
+
+" }}}1
+
+" Make sure the plug-in configuration has been properly initialized before
+" any of the auto-load functions in this Vim script can be called.
+call xolox#notes#init()
 
 " vim: ts=2 sw=2 et bomb
