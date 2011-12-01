@@ -4,7 +4,7 @@ The notes.vim plug-in for the [Vim text editor] [vim] makes it easy to manage yo
 
  * **Starting a new note:** Execute the `:Note` command to create a new buffer and load the appropriate file type and syntax
    * You can also start a note with Vim commands like `:edit`, `:tabedit` and `:split` by starting the filename with `note:`, as in `:edit note:todo` (the part after `note:` doesn't have to be the complete note title and if it's empty a new note will be created)
-   * You can start a new note with the selected text as title in the current window using the `:NoteFromSelectedText` command (the `:SplitNoteFromSelectedText` command opens the new note in a split window)
+   * You can start a new note with the selected text as title in the current window using the `\en` mapping or `:NoteFromSelectedText` command (there are similar mappings and commands for opening split windows and tab pages)
  * **Saving notes:** Just use Vim's [:write] [write] and [:update] [update] commands, you don't need to provide a filename because it will be set based on the title (first line) of your note (you also don't need to worry about special characters, they'll be escaped)
  * **Editing existing notes:** Execute `:Note anything` to edit a note containing `anything` in its title (if no notes are found a new one is created with its title set to `anything`)
    * The `:Note` and `:DeleteNote` commands support tab completion of note titles
@@ -107,14 +107,15 @@ This command will fail when changes have been made to the current buffer, unless
 
 ### The `:NoteFromSelectedText` command
 
-Start a new note in the current window with the selected text as the title of the note. The name of this command isn't very well suited to daily use, however the idea is that users will define their own mapping to invoke this command. For example:
-
-    " Map \ns in visual mode to start new note with selected text as title.
-    vmap <Leader>ns :NoteFromSelectedText<CR>
+Start a new note in the current window with the selected text as the title of the note. The name of this command isn't very well suited to daily use, that's because it's intended to be executed from a mapping. The default mapping for this command is `\en` (the backslash is actually the character defined by the [mapleader] [mapleader] variable).
 
 ### The `:SplitNoteFromSelectedText` command
 
-Same as `:NoteFromSelectedText` but opens the new note in a vertical split window.
+Same as `:NoteFromSelectedText` but opens the new note in a vertical split window. The default mapping for this command is `\sn`.
+
+### The `:TabNoteFromSelectedText` command
+
+Same as `:NoteFromSelectedText` but opens the new note in a new tab page. The default mapping for this command is `\tn`.
 
 ### The `:DeleteNote` command
 
@@ -192,6 +193,9 @@ The following key mappings are defined inside notes.
  * `Tab` and `Alt-Right` increase indentation of list items (works on the current line and selected lines)
  * `Shift-Tab` and `Alt-Left` decrease indentation of list items
  * `Enter` on a line with only a list bullet removes the bullet and starts a new line below the current line
+ * `\en` executes `:NoteFromSelectedText`
+ * `\sn` executes `:SplitNoteFromSelectedText`
+ * `\tn` executes `:TabNoteFromSelectedText`
 
 ## Customizing the syntax highlighting of notes
 
@@ -273,6 +277,7 @@ This software is licensed under the [MIT license] [mit].
 [gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
 [highlight]: http://vimdoc.sourceforge.net/htmldoc/syntax.html#:highlight
 [levenshtein]: http://en.wikipedia.org/wiki/Levenshtein_distance
+[mapleader]: http://vimdoc.sourceforge.net/htmldoc/map.html#mapleader
 [mit]: http://en.wikipedia.org/wiki/MIT_License
 [modeline]: http://vimdoc.sourceforge.net/htmldoc/options.html#modeline
 [python]: http://python.org/

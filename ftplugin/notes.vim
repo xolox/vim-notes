@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 25, 2011
+" Last Change: December 1, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -113,6 +113,18 @@ let b:undo_ftplugin .= ' | execute "sunmap <buffer> <A-Left>"'
 
 " Automatically remove empty list items on Enter. {{{1
 inoremap <buffer> <silent> <expr> <CR> xolox#notes#cleanup_list()
+let b:undo_ftplugin .= ' | execute "iunmap <buffer> <CR>"'
+
+" Shortcuts to create new notes from the selected text. {{{1
+
+vmap <buffer> <silent> <Leader>en :NoteFromSelectedText<CR>
+let b:undo_ftplugin .= ' | execute "vunmap <buffer> <Leader>en"'
+
+vmap <buffer> <silent> <Leader>sn :SplitNoteFromSelectedText<CR>
+let b:undo_ftplugin .= ' | execute "vunmap <buffer> <Leader>sn"'
+
+vmap <buffer> <silent> <Leader>tn :TabNoteFromSelectedText<CR>
+let b:undo_ftplugin .= ' | execute "vunmap <buffer> <Leader>tn"'
 
 " }}}1
 
