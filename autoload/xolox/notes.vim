@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 1, 2011
+" Last Change: December 10, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -1006,7 +1006,6 @@ function! xolox#notes#highlight_sources(force) " {{{3
   " Syntax highlight source code embedded in notes.
   let starttime = xolox#misc#timer#start()
   " Look for code blocks in the current note.
-  let lines = getline(1, '$')
   let filetypes = {}
   for line in getline(1, '$')
     let ft = matchstr(line, '{{' . '{\zs\w\+\>')
