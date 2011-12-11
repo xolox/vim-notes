@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 10, 2011
+" Last Change: December 11, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.16.14'
+let g:xolox#notes#version = '0.16.15'
 let s:scriptdir = expand('<sfile>:p:h')
 
 function! xolox#notes#init() " {{{1
@@ -541,7 +541,7 @@ function! xolox#notes#swaphack() " {{{2
   endif
 endfunction
 
-function! xolox#notes#autocmd_pattern(directory) " {{{2
+function! xolox#notes#autocmd_pattern(directory, use_extension) " {{{2
   " Generate a normalized automatic command pattern. First we resolve the path
   " to the directory with notes (eliminating any symbolic links) so that the
   " automatic command also applies to symbolic links pointing to notes (Vim
@@ -556,6 +556,9 @@ function! xolox#notes#autocmd_pattern(directory) " {{{2
   endif
   " Escape the directory but not the trailing "*".
   let pattern = fnameescape(directory) . '/*'
+  if a:use_extension && !empty(g:notes_suffix)
+    let pattern .= g:notes_suffix
+  endif
   " On Windows the pattern won't match if it contains repeating slashes.
   return substitute(pattern, '/\+', '/', 'g')
 endfunction

@@ -1,6 +1,6 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 28, 2011
+" Last Change: December 11, 2011
 " URL: http://peterodding.com/code/vim/notes/
 
 " Support for automatic update using the GLVS plug-in.
@@ -41,8 +41,8 @@ augroup PluginNotes
   " to notes (which is IMHO better than always showing the E325 prompt).
   au BufReadCmd note:* nested call xolox#notes#shortcut()
   " Automatic commands to read/write notes (used for automatic renaming).
-  exe 'au BufReadCmd' xolox#notes#autocmd_pattern(g:notes_shadowdir) 'call xolox#notes#edit_shadow()'
-  exe 'au BufWriteCmd' xolox#notes#autocmd_pattern(g:notes_directory) 'call xolox#notes#save()'
+  exe 'au BufReadCmd' xolox#notes#autocmd_pattern(g:notes_shadowdir, 0) 'call xolox#notes#edit_shadow()'
+  exe 'au BufWriteCmd' xolox#notes#autocmd_pattern(g:notes_directory, 1) 'call xolox#notes#save()'
 augroup END
 
 " Make sure the plug-in is only loaded once.
