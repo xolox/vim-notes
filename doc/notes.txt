@@ -1,5 +1,50 @@
 *notes.txt*  Easy note taking in Vim
 
+===============================================================================
+                                                                *notes-contents*
+Contents ~
+
+ 1. Introduction                                            |notes-introduction|
+ 2. Install & usage                                        |notes-install-usage|
+ 3. Options                                                      |notes-options|
+  1. The |g:notes_directory| option
+  2. The |g:notes_suffix| option
+  3. The |g:notes_title_sync| option
+  4. The |g:notes_smart_quotes| option
+  5. The |g:notes_ruler_text| option
+  6. The |g:notes_list_bullets| option
+  7. The |g:notes_shadowdir| option
+  8. The |g:notes_indexfile| option
+  9. The |g:notes_indexscript| option
+  10. The |g:notes_tagsindex| option
+ 4. Commands                                                    |notes-commands|
+  1. The |:Note| command
+  2. The |:NoteFromSelectedText| command
+  3. The |:SplitNoteFromSelectedText| command
+  4. The |:TabNoteFromSelectedText| command
+  5. The |:DeleteNote| command
+  6. The |:SearchNotes| command
+   1. |:SearchNotes| understands @tags
+   2. Accelerated searching with Python |notes-accelerated-searching-with-python|
+  7. The |:RelatedNotes| command
+  8. The |:RecentNotes| command
+  9. The |:ShowTaggedNotes| command
+  10. The |:IndexTaggedNotes| command
+ 5. Mappings                                                    |notes-mappings|
+  1. Insert mode mappings                           |notes-insert-mode-mappings|
+ 6. Customizing the syntax highlighting of notes
+ 7. Other plug-ins that work well with the notes plug-in
+  1. utl.vim                                                     |notes-utl.vim|
+  2. shell.vim                                                 |notes-shell.vim|
+  3. VOoM                                                           |notes-voom|
+  4. Txtfmt                                                       |notes-txtfmt|
+ 8. Contact                                                      |notes-contact|
+ 9. License                                                      |notes-license|
+
+===============================================================================
+                                                            *notes-introduction*
+Introduction ~
+
 The notes.vim plug-in for the Vim text editor makes it easy to manage your
 notes in Vim:
 
@@ -266,7 +311,6 @@ notes containing all of the given keywords:
     :SearchNotes syntax highlighting
 
 -------------------------------------------------------------------------------
-                                                 *:searchnotes-understands-tags*
 |:SearchNotes| understands @tags ~
 
 If you don't pass any arguments to the |:SearchNotes| command it will search
@@ -360,7 +404,7 @@ Insert mode mappings ~
 
  - '@' automatically triggers tag completion
 
- - ' becomes '‘' or '’' depending on where you type it
+ - '' becomes '‘' or '’' depending on where you type it
 
  - '"' becomes '“' or '”' (same goes for these)
 

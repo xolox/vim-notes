@@ -3,7 +3,7 @@
 # Python script for fast text file searching using keyword index on disk.
 #
 # Author: Peter Odding <peter@peterodding.com>
-# Last Change: November 25, 2011
+# Last Change: January 18, 2012
 # URL: http://peterodding.com/code/vim/notes/
 # License: MIT
 #
@@ -113,7 +113,9 @@ class NotesIndex:
     # First we find the filenames and last modified times of the notes on disk.
     notes_on_disk = {}
     for filename in os.listdir(self.user_directory):
-      if filename != '.swp' and not fnmatch.fnmatch(filename, '.*.s??'): # (Vim swap files are ignored)
+      # Vim swap files are ignored.
+      if (filename != '.swp' and not fnmatch.fnmatch(filename, '.s??')
+          and not fnmatch.fnmatch(filename, '.*.s??')):
         abspath = os.path.join(self.user_directory, filename)
         if os.path.isfile(abspath):
           notes_on_disk[abspath] = os.path.getmtime(abspath)
