@@ -16,7 +16,7 @@ The notes.vim plug-in for the [Vim text editor] [vim] makes it easy to manage yo
    * A [Python 2] [python] script is included that accelerates keyword searches using a keyword index
    * The `:RecentNotes` command lists your notes by modification date, starting with the most recently edited note
  * **Navigating between notes:** The included syntax script highlights note names as hyper links and the file type plug-in redefines [gf] [gf] to jump between notes (the [Control-w f] [ctrlwf] mapping to jump to a note in a split window and the [Control-w gf] [ctrlwgf] mapping to jump to a note in a new tab page also work)
- * **Writing aids:** The included file type plug-in contains mappings for automatic curly quotes, arrows and list bullets and supports completion of note titles using Control-X Control-U and completion of tags using Control-X Control-O
+ * **Writing aids:** The included file type plug-in contains mappings for automatic curly quotes, arrows, list bullets and check boxes and supports completion of note titles using Control-X Control-U and completion of tags using Control-X Control-O
  * **Embedded file types:** The included syntax script supports embedded highlighting using blocks marked with `{{{type … }}}` which allows you to embed highlighted code and configuration snippets in your notes
 
 Here's a screen shot of the syntax mode using the [slate] [slate] color scheme:
@@ -68,6 +68,16 @@ A list of characters used as list bullets. When you're using a Unicode encoding 
 When you change the nesting level (indentation) of a line containing a bullet point using one of the mappings `Tab`, `Shift-Tab`, `Alt-Left` and `Alt-Right` the bullet point will be automatically changed to correspond to the new nesting level.
 
 The first level of list items gets the first bullet point in `g:notes_list_bullets`, the second level gets the second, etc. When you're indenting a list item to a level where the `g:notes_list_bullets` doesn't have enough bullets, the plug-in starts again at the first bullet in the list (in other words the selection of bullets wraps around).
+
+### The `g:notes_checkboxes` option
+
+A list of strings used as check boxes. The first and second elements of this list are used for the unchecked and checked check boxes, respectively.
+
+    :let g:notes_checkboxes = ['×','✓']
+    :let g:notes_checkboxes = ['☐','☑']
+    :let g:notes_checkboxes = ['[ ]', '[x]']
+
+To disable check boxes all together, set `g:notes_checkboxes` to `[]`.
 
 ### The `g:notes_shadowdir` option
 
@@ -175,6 +185,20 @@ The notes plug-in defines an omni completion function that can be used to comple
 The completion menu is populated from a text file listing all your tags, one on each line. The first time omni completion triggers, an index of tag names is generated and saved to the location set by `g:notes_tagsindex`. After this file is created, it will be updated automatically as you edit notes and add/remove tags.
 
 If for any reason you want to recreate the list of tags you can execute the `:IndexTaggedNotes` command.
+
+### The `:NoteToggleCheckbox` command
+
+If the current line starts with a check box, toggle among its states. Check box characters are set by `g:notes_checkboxes`
+
+### The `:NoteToggleCheckboxTimestamp` command
+
+Similar to `:NoteToggleCheckbox`, but also add a timestamp to checked check boxes. Example:
+
+    [ ] a checkbox item
+    :NoteToggleCheckboxTimestamp
+    [x] (2012-11-10 09:08)  a checkbox item
+    :NoteToggleCheckboxTimestamp
+    [ ] a checkbox item
 
 ## Mappings
 

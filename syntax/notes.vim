@@ -37,6 +37,15 @@ highlight def link notesListBullet Comment
 syntax match notesListNumber /^\s*\zs\d\+[[:punct:]]\?\ze\s/
 highlight def link notesListNumber Comment
 
+" Highlight checkboxes. {{{2
+execute 'syntax match notesCheckbox /'   . escape(xolox#notes#leading_checkbox_pattern(), '/') . '/' 
+execute 'syntax match notesCheckedbox /' . escape(xolox#notes#leading_checkedbox_pattern(), '/') . '/ nextgroup=notesCheckboxTimestamp'
+syntax match notesCheckboxTimestamp / (\d\d\d\d-\d\d-\d\d\s\d\d:\d\d\(:\d\d\)\?)/ contained
+
+highlight def link notesCheckbox Special
+highlight def link notesCheckedbox Question
+highlight def link notesCheckboxTimestamp Comment
+
 " Highlight quoted fragments. {{{2
 if xolox#notes#unicode_enabled()
   syntax match notesDoubleQuoted /“.\{-}”/
