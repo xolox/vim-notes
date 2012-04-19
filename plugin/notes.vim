@@ -23,6 +23,10 @@ command! -bar -bang -nargs=? RecentNotes call xolox#notes#recent(<q-bang>, <q-ar
 command! -bar -count=1 ShowTaggedNotes call xolox#notes#tags#show_tags(<count>)
 command! -bar IndexTaggedNotes call xolox#notes#tags#create_index()
 
+" Checkbox toggling commands
+command! -bar NoteToggleCheckbox call xolox#notes#toggle_checkbox()
+command! -bar NoteToggleCheckboxTimestamp call xolox#notes#toggle_checkbox_timestamp()
+
 " TODO Generalize this so we have one command + modifiers (like :tab)?
 command! -bar -bang -range NoteFromSelectedText call xolox#notes#from_selection(<q-bang>, 'edit')
 command! -bar -bang -range SplitNoteFromSelectedText call xolox#notes#from_selection(<q-bang>, 'vsplit')

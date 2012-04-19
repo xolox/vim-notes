@@ -69,6 +69,12 @@ function! xolox#notes#init() " {{{1
       let g:notes_list_bullets = ['*', '-', '+']
     endif
   endif
+  " Symbols used to denote checkboxes (set to [] to disable)
+  if !exists('g:notes_checkboxes')
+    let g:notes_checkboxes = ['×','✓']
+    " let g:notes_checkboxes = ['☐','☑']
+    " let g:notes_checkboxes = ['[ ]', '[x]']
+  endif
 endfunction
 
 function! xolox#notes#shortcut() " {{{1
@@ -887,10 +893,26 @@ function! xolox#notes#insert_bullet(chr) " {{{3
   return a:chr
 endfunction
 
+function! xolox#notes#insert_checkbox(chr) " {{{3
+  " Insert a UTF-8 checkbox when the user types "[]"
+  if getline('.')[0 : max([0, col('.') - 2])] =~ '^\s*$'
+    return  xolox#notes#get_checkbox(a:chr)
+  endif
+  return a:chr
+endfunction
+
 function! xolox#notes#get_bullet(chr)
   return xolox#notes#unicode_enabled() ? '•' : a:chr
 endfunction
 
+function! xolox#notes#get_checkbox(chr)
+  return xolox#notes#unicode_enabled() ? g:notes_checkboxes[0] : a:chr
+endfunction
+
+function! xolox#notes#get_checkedbox(chr)
+  return xolox#notes#unicode_enabled() ? g:notes_checkboxes[1] : a:chr
+endfunction
+                                            
 function! xolox#notes#indent_list(direction, line1, line2) " {{{3
   " Change indent of list items from {line1} to {line2} using {command}.
   let indentstr = repeat(' ', &tabstop)
@@ -923,6 +945,28 @@ function! xolox#notes#indent_list(direction, line1, line2) " {{{3
   normal $
 endfunction
 
+function! xolox#notes#toggle_checkbox(...)
+  let current_line = getline('.')
+
+  let time = a:0 == 2 ? a:1 : ''
+  let re_time = a:0 == 2 ? a:2 : ''
+
+  if current_line =~ xolox#notes#leading_checkbox_pattern()
+    let check = xolox#notes#leading_checkbox_pattern()
+    exe 's,' . check . ',' . g:notes_checkboxes[1] . time . ',e'
+  elseif current_line =~ xolox#notes#leading_checkedbox_pattern()
+    let checked = xolox#notes#leading_checkedbox_pattern()
+    exe 's,' . checked . re_time . ',' . g:notes_checkboxes[0] . ',e'
+  endif
+endfunction
+
+function! xolox#notes#toggle_checkbox_timestamp()
+  let time = ' (' . strftime("%Y-%m-%d %H:%M") . ') '
+  let re_time = '\( (\d\d\d\d-\d\d-\d\d\s\d\d:\d\d) \)\?'
+
+  call xolox#notes#toggle_checkbox(time, re_time)
+endfunction
+
 function! xolox#notes#leading_bullet_pattern()
   " Return a regular expression pattern that matches any leading list bullet.
   let escaped_bullets = copy(g:notes_list_bullets)
@@ -935,6 +979,16 @@ function! xolox#notes#trailing_bullet_pattern()
   let escaped_bullets = copy(g:notes_list_bullets)
   call map(escaped_bullets, 'xolox#misc#escape#pattern(v:val)')
   return '\(' . join(escaped_bullets, '\|') . '\|\*\)$'
+endfunction
+
+function! xolox#notes#leading_checkbox_pattern()
+  " Return a regular expression pattern that matches any unchecked checkbox
+  return  '\(\_^\s*\)\@<=\(' . g:notes_checkboxes[0] . '\)'
+endfunction
+
+function! xolox#notes#leading_checkedbox_pattern()
+  " Return a regular expression pattern that matches any checked checkbox
+  return  '\(\_^\s*\)\@<=\(' . g:notes_checkboxes[1] . '\)'
 endfunction
 
 function! xolox#notes#get_comments_option()
@@ -953,9 +1007,16 @@ function! xolox#notes#get_list_level(line)
   return (len(matchstr(a:line, '^\s*')) - 1) / 3
 endfunction
 
-function! xolox#notes#cleanup_list() " {{{3
-  " Automatically remove empty list items on Enter.
-  if getline('.') =~ (xolox#notes#leading_bullet_pattern() . '\s*$')
+function! xolox#notes#cleanup_redundant() " {{{3
+  " Automatically remove empty list and checkbox items on Enter.
+
+  let re = xolox#notes#leading_bullet_pattern() . '\s*$'
+
+  if len(g:notes_checkboxes)
+    let re = '\(' . re . '\)\|\(' . xolox#notes#leading_checkbox_pattern() . '\s*$' . '\)'
+  endif
+
+  if getline('.') =~ re
     let s:sol_save = &startofline
     setlocal nostartofline " <- so that <C-u> clears the complete line
     return "\<C-o>0\<C-o>d$\<C-o>o"

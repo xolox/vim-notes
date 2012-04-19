@@ -87,6 +87,11 @@ if g:notes_smart_quotes
   let b:undo_ftplugin .= ' | execute "iunmap <buffer> +"'
 endif
 
+if len(g:notes_checkboxes)
+    imap <buffer> <expr> [] xolox#notes#insert_checkbox('[]')
+    let b:undo_ftplugin .= ' | execute "iunmap <buffer> []"'
+endif
+
 " Format three asterisks as a horizontal ruler. {{{1
 inoremap <buffer> *** <C-o>:call xolox#notes#insert_ruler()<CR>
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> ***"'
@@ -111,8 +116,8 @@ smap <buffer> <silent> <A-Left> <C-o>:<C-u>call xolox#notes#indent_list(-1, line
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> <A-Left>"'
 let b:undo_ftplugin .= ' | execute "sunmap <buffer> <A-Left>"'
 
-" Automatically remove empty list items on Enter. {{{1
-inoremap <buffer> <silent> <expr> <CR> xolox#notes#cleanup_list()
+" Automatically remove empty list and checkbox items on Enter. {{{1
+inoremap <buffer> <silent> <expr> <CR> xolox#notes#cleanup_redundant()
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> <CR>"'
 
 " Shortcuts to create new notes from the selected text. {{{1

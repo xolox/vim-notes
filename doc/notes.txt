@@ -13,10 +13,11 @@ Contents ~
   4. The |g:notes_smart_quotes| option
   5. The |g:notes_ruler_text| option
   6. The |g:notes_list_bullets| option
-  7. The |g:notes_shadowdir| option
-  8. The |g:notes_indexfile| option
-  9. The |g:notes_indexscript| option
-  10. The |g:notes_tagsindex| option
+  7. The |g:notes_checkboxes| option
+  8. The |g:notes_shadowdir| option
+  9. The |g:notes_indexfile| option
+  10. The |g:notes_indexscript| option
+  11. The |g:notes_tagsindex| option
  4. Commands                                                    |notes-commands|
   1. The |:Note| command
   2. The |:NoteFromSelectedText| command
@@ -30,6 +31,9 @@ Contents ~
   8. The |:RecentNotes| command
   9. The |:ShowTaggedNotes| command
   10. The |:IndexTaggedNotes| command
+  11. The |:NoteToggleCheckbox| command
+  12. The |:NoteToggleCheckboxTimestamp| command
+
  5. Mappings                                                    |notes-mappings|
   1. Insert mode mappings                           |notes-insert-mode-mappings|
  6. Customizing the syntax highlighting of notes
@@ -99,10 +103,10 @@ notes in Vim:
    and the Control-w gf (see |CTRL-W_gf|) mapping to jump to a note in a new tab
    page also work)
 
- - Writing aids: The included file type plug-in contains mappings for automatic
-   curly quotes, arrows and list bullets and supports completion of note
-   titles using Control-X Control-U and completion of tags using Control-X
-   Control-O
+ - Writing aids: The included file type plug-in contains mappings for
+   automatic curly quotes, arrows, list bullets and check boxes and supports
+   completion of note titles using Control-X Control-U and completion of tags
+   using Control-X Control-O
 
  - Embedded file types: The included syntax script supports embedded
    highlighting using blocks marked with '{{{type … }}}' which allows you to
@@ -204,6 +208,18 @@ The first level of list items gets the first bullet point in
 indenting a list item to a level where the |g:notes_list_bullets| doesn't have
 enough bullets, the plug-in starts again at the first bullet in the list (in
 other words the selection of bullets wraps around).
+
+-------------------------------------------------------------------------------
+The *g:notes_checkboxes* option
+
+A list of strings used as check boxes. The first and second elements of this
+list are used for the unchecked and checked check boxes, respectively.
+>
+    :let g:notes_checkboxes = ['×','✓']
+    :let g:notes_checkboxes = ['☐','☑']
+    :let g:notes_checkboxes = ['[ ]', '[x]']
+<
+To disable check boxes all together, set |g:notes_checkboxes| to [].
 
 -------------------------------------------------------------------------------
 The *g:notes_shadowdir* option
@@ -392,6 +408,24 @@ add/remove tags.
 If for any reason you want to recreate the list of tags you can execute the
 |:IndexTaggedNotes| command.
 
+-------------------------------------------------------------------------------
+The *:NoteToggleCheckbox* command
+
+If the current line starts with a check box, toggle among its states. Check
+box characters are set by |g:notes_checkboxes|
+
+-------------------------------------------------------------------------------
+The *:NoteToggleCheckboxTimestamp* command
+
+Similar to |:NoteToggleCheckbox|, but also add a timestamp to checked check
+boxes. Example:
+>
+    [ ] a checkbox item
+    :NoteToggleCheckboxTimestamp
+    [x] (2012-11-10 09:08)  a checkbox item
+    :NoteToggleCheckboxTimestamp
+    [ ] a checkbox item
+<
 ===============================================================================
                                                                 *notes-mappings*
 Mappings ~
@@ -433,6 +467,7 @@ Insert mode mappings ~
 
  - '\tn' executes |:TabNoteFromSelectedText|
 
+
 ===============================================================================
 Customizing the syntax highlighting of notes ~
 
@@ -460,6 +495,12 @@ are the names of the syntax items defined by the notes syntax mode:
  - 'notesDoubleQuoted' - double quoted strings
 
  - 'notesSingleQuoted' - single quoted strings
+
+ - 'notesCheckbox' - unchecked check boxes
+
+ - 'notesCheckedbox' - checked check boxes
+
+ - 'notesCheckboxTimestamp' - the (optional) timestamp following a checked check box
 
  - 'notesItalic' - strings between two '_' characters
 
