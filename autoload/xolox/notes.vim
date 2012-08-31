@@ -804,7 +804,11 @@ endfunction
 
 function! xolox#notes#title_to_fname(title) " {{{3
   " Convert note {title} to absolute filename.
-  let filename = xolox#misc#path#encode(a:title)
+  let filename = a:title
+  if has('macunix')
+    let filename = substitute(filename, ':', '', 'g')   " strip colon for osx
+  endif
+  let filename = xolox#misc#path#encode(filename)
   if filename != ''
     let pathname = xolox#misc#path#merge(g:notes_directory, filename . g:notes_suffix)
     return xolox#misc#path#absolute(pathname)

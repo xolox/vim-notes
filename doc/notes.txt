@@ -141,7 +141,8 @@ Vim for the changes to take effect.
 The *g:notes_directory* option
 
 All your notes are stored together in one directory. This option defines the
-path of this directory.
+path of this directory. This defaults to 'misc/notes/user' in your Vim profile
+directory.
 
 -------------------------------------------------------------------------------
 The *g:notes_suffix* option
