@@ -56,7 +56,7 @@ else
   syntax match notesItalic /\<_\k[^_]*\k_\>/
 endif
 syntax cluster notesInline add=notesItalic
-highlight notesItalic gui=italic
+highlight notesItalic gui=italic cterm=italic
 
 " Highlight text emphasized in bold font. {{{2
 if has('conceal')
@@ -66,7 +66,7 @@ else
   syntax match notesBold /\*\k[^*]*\k\*/
 endif
 syntax cluster notesInline add=notesBold
-highlight notesBold gui=bold
+highlight notesBold gui=bold cterm=bold
 
 " Highlight domain names, URLs, e-mail addresses and filenames. {{{2
 
