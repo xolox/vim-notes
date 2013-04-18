@@ -3,7 +3,7 @@
 # Python script for fast text file searching using keyword index on disk.
 #
 # Author: Peter Odding <peter@peterodding.com>
-# Last Change: January 18, 2012
+# Last Change: April 18, 2013
 # URL: http://peterodding.com/code/vim/notes/
 # License: MIT
 #
@@ -15,6 +15,24 @@
 #  - Hundreds of notes can be searched in less than a second.
 # 
 # For more information about the Vim plug-in see http://peterodding.com/code/vim/notes/.
+
+"""
+Usage: search-notes.py [OPTIONS] KEYWORD...
+
+Search a directory of plain text files using a full text index,
+updated automatically during each invocation of the program.
+
+Valid options include:
+
+  -l, --list=SUBSTR    list keywords matching substring
+  -d, --database=FILE  set path to keywords index file
+  -n, --notes=DIR      set directory with user notes
+  -e, --encoding=NAME  set character encoding of notes
+  -v, --verbose        make more noise
+  -h, --help           show this message and exit
+
+For more information see http://peterodding.com/code/vim/notes/
+"""
 
 # Standard library modules.
 import fnmatch
@@ -156,7 +174,7 @@ class NotesIndex:
     self.message("Forgetting %s ..", filename)
     del self.index['files'][filename]
     for kw in self.index['keywords']:
-      filter(lambda x: x != filename, self.index['keywords'][kw])
+      self.index['keywords'][kw] = [x for x in self.index['keywords'][kw] if x != filename]
     self.dirty = True
 
   def search_index(self, keywords):
@@ -217,23 +235,7 @@ class NotesIndex:
       sys.stderr.write((msg + "\n") % args)
 
   def usage(self):
-    print '''
-search-notes [OPTIONS] KEYWORD...
-
-Search a directory of plain text files using a full text index,
-updated automatically during each invocation of the program.
-
-Valid options include:
-
-  -l, --list=SUBSTR    list keywords matching substring
-  -d, --database=FILE  set path to keywords index file
-  -n, --notes=DIR      set directory with user notes
-  -e, --encoding=NAME  set character encoding of notes
-  -v, --verbose        make more noise
-  -h, --help           show this message and exit
-
-For more information see http://peterodding.com/code/vim/notes/
-'''.strip()
+    print __doc__.strip()
 
 if __name__ == '__main__':
   NotesIndex()

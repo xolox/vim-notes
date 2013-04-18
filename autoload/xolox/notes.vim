@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.17'
+let g:xolox#notes#version = '0.17.1'
 let s:scriptdir = expand('<sfile>:p:h')
 
 function! xolox#notes#init() " {{{1
