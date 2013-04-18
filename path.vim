@@ -1,9 +1,10 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: September 26, 2011
+" Last Change: April 18, 2013
 " URL: http://peterodding.com/code/vim/misc/
 
 let s:windows_compatible = has('win32') || has('win64')
+let s:mac_os_x_compatible = has('macunix')
 
 function! xolox#misc#path#which(...)
   let extensions = s:windows_compatible ? split($PATHEXT, ';') : ['']
@@ -129,7 +130,13 @@ endfunction
 " Encode a pathname so it can be used as a filename.
 
 function! xolox#misc#path#encode(path)
-  let mask = s:windows_compatible ? '[*|\\/:"<>?%]' : '[\\/%]'
+  if s:windows_compatible
+    let mask = '[*|\\/:"<>?%]'
+  elseif s:mac_os_x_compatible
+    let mask = '[\\/%:]'
+  else
+    let mask = '[\\/%]'
+  endif
   return substitute(a:path, mask, '\=printf("%%%x", char2nr(submatch(0)))', 'g')
 endfunction
 
