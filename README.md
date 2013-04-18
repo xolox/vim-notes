@@ -37,7 +37,11 @@ Note that after changing an option in your [vimrc script] [vimrc] you have to re
 
 ### The `g:notes_directory` option
 
-All your notes are stored together in one directory. This option defines the path of this directory.
+All your notes are stored together in one directory. This option defines the path of this directory. The default value depends on circumstances but should work for most people:
+
+ * If the profile directory where the plug-in is installed is writable, the directory `misc/notes/user` under the profile directory is used. This is for compatibility with [Pathogen] [pathogen]; the notes will be stored inside the plug-in's bundle.
+
+ * If the above doesn't work out, the default depends on the platform: `~/vimfiles/misc/notes/user` on Windows and `~/.vim/misc/notes/user` on other platforms.
 
 ### The `g:notes_suffix` option
 
@@ -267,7 +271,7 @@ If you have questions, bug reports, suggestions, etc. the author can be contacte
 ## License
 
 This software is licensed under the [MIT license] [mit].  
-© 2011 Peter Odding &lt;<peter@peterodding.com>&gt;.
+© 2013 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
 
 [ctrlwf]: http://vimdoc.sourceforge.net/htmldoc/windows.html#CTRL-W_f
@@ -280,6 +284,7 @@ This software is licensed under the [MIT license] [mit].
 [mapleader]: http://vimdoc.sourceforge.net/htmldoc/map.html#mapleader
 [mit]: http://en.wikipedia.org/wiki/MIT_License
 [modeline]: http://vimdoc.sourceforge.net/htmldoc/options.html#modeline
+[pathogen]: http://www.vim.org/scripts/script.php?script_id=2332
 [python]: http://python.org/
 [shell]: http://www.vim.org/scripts/script.php?script_id=3123
 [slate]: http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim

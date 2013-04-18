@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: January 18, 2012
+" Last Change: April 18, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.16.17'
+let g:xolox#notes#version = '0.17'
 let s:scriptdir = expand('<sfile>:p:h')
 
 function! xolox#notes#init() " {{{1
@@ -28,6 +28,7 @@ function! xolox#notes#init() " {{{1
   if !exists('g:notes_directory')
     let g:notes_directory = xolox#misc#path#merge(localdir, 'user')
   endif
+  call s:create_notes_directory()
   " Define the default location of the shadow directory with predefined notes?
   if !exists('g:notes_shadowdir')
     let g:notes_shadowdir = xolox#misc#path#merge(systemdir, 'shadow')
@@ -68,6 +69,17 @@ function! xolox#notes#init() " {{{1
     else
       let g:notes_list_bullets = ['*', '-', '+']
     endif
+  endif
+endfunction
+
+function! s:create_notes_directory()
+  let notes_directory = expand(g:notes_directory)
+  if !isdirectory(notes_directory)
+    call xolox#misc#msg#info("notes.vim %s: Creating notes directory (first run?) ..", g:xolox#notes#version)
+    call mkdir(notes_directory, 'p')
+  endif
+  if filewritable(notes_directory) != 2
+    call xolox#misc#msg#warn("notes.vim %s: The notes directory (%s) is not writable!", g:xolox#notes#version, notes_directory)
   endif
 endfunction
 
@@ -412,6 +424,7 @@ function! xolox#notes#search(bang, input) " {{{1
 endfunction
 
 function! s:tag_under_cursor() " {{{2
+  " Get the word or @tag under the text cursor.
   try
     let isk_save = &isk
     set iskeyword+=@-@
@@ -428,7 +441,7 @@ function! s:match_all_keywords(keywords) " {{{2
   return '/' . escape(join(results, '\&'), '/') . '/'
 endfunction
 
-function! s:match_any_keyword(keywords)
+function! s:match_any_keyword(keywords) " {{{2
   " Create a regex that matches every occurrence of all {keywords}.
   let results = copy(a:keywords)
   call map(results, 'xolox#misc#escape#pattern(v:val)')

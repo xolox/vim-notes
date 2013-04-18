@@ -141,7 +141,17 @@ Vim for the changes to take effect.
 The *g:notes_directory* option
 
 All your notes are stored together in one directory. This option defines the
-path of this directory.
+path of this directory. The default value depends on circumstances but should
+work for most people:
+
+ - If the profile directory where the plug-in is installed is writable, the
+   directory 'misc/notes/user' under the profile directory is used. This is
+   for compatibility with Pathogen [6]; the notes will be stored inside the
+   plug-in's bundle.
+
+ - If the above doesn't work out, the default depends on the platform:
+   '~/vimfiles/misc/notes/user' on Windows and '~/.vim/misc/notes/user' on
+   other platforms.
 
 -------------------------------------------------------------------------------
 The *g:notes_suffix* option
@@ -516,14 +526,14 @@ Other plug-ins that work well with the notes plug-in ~
                                                                  *notes-utl.vim*
 utl.vim ~
 
-The utl.vim [6] universal text linking plug-in enables links between your
+The utl.vim [7] universal text linking plug-in enables links between your
 notes, other local files and remote resources like web pages.
 
 -------------------------------------------------------------------------------
                                                                *notes-shell.vim*
 shell.vim ~
 
-My shell.vim [7] plug-in also enables easy navigation between your notes and
+My shell.vim [8] plug-in also enables easy navigation between your notes and
 environment like local files and directories, web pages and e-mail addresses
 by providing key mappings and commands to e.g. open the file/URL under the
 text cursor. This plug-in can also change Vim to full screen which can be
@@ -533,7 +543,7 @@ really nice for large notes.
                                                                     *notes-voom*
 VOoM ~
 
-The VOoM [8] outlining plug-in should work well for notes if you use the
+The VOoM [9] outlining plug-in should work well for notes if you use the
 Markdown style headers starting with '#', however it has been reported that
 this combination may not always work so well in practice (sometimes losing
 notes!)
@@ -543,7 +553,7 @@ notes!)
 Txtfmt ~
 
 If the text formatting supported by the notes plug-in is not enough for you,
-consider trying the Txtfmt [9] (The Vim Highlighter) plug-in. To use the two
+consider trying the Txtfmt [10] (The Vim Highlighter) plug-in. To use the two
 plug-ins together, create the file 'after/ftplugin/notes.vim' inside your Vim
 profile with the following contents:
 >
@@ -557,13 +567,13 @@ Contact ~
 If you have questions, bug reports, suggestions, etc. the author can be
 contacted at peter@peterodding.com. The latest version is available at
 http://peterodding.com/code/vim/notes/ and http://github.com/xolox/vim-notes.
-If you like the script please vote for it on Vim Online [10].
+If you like the script please vote for it on Vim Online [11].
 
 ===============================================================================
                                                                  *notes-license*
 License ~
 
-This software is licensed under the MIT license [11]. Copyright 2011 Peter
+This software is licensed under the MIT license [12]. Copyright 2013 Peter
 Odding <peter@peterodding.com>.
 
 ===============================================================================
@@ -575,11 +585,12 @@ References ~
 [3] http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
 [4] http://peterodding.com/code/vim/notes/syntax.png
 [5] http://peterodding.com/code/vim/downloads/notes.zip
-[6] http://www.vim.org/scripts/script.php?script_id=293
-[7] http://www.vim.org/scripts/script.php?script_id=3123
-[8] http://www.vim.org/scripts/script.php?script_id=2657
-[9] http://www.vim.org/scripts/script.php?script_id=2208
-[10] http://www.vim.org/scripts/script.php?script_id=3375
-[11] http://en.wikipedia.org/wiki/MIT_License
+[6] http://www.vim.org/scripts/script.php?script_id=2332
+[7] http://www.vim.org/scripts/script.php?script_id=293
+[8] http://www.vim.org/scripts/script.php?script_id=3123
+[9] http://www.vim.org/scripts/script.php?script_id=2657
+[10] http://www.vim.org/scripts/script.php?script_id=2208
+[11] http://www.vim.org/scripts/script.php?script_id=3375
+[12] http://en.wikipedia.org/wiki/MIT_License
 
 vim: ft=help
