@@ -27,6 +27,8 @@ Regardless of the inclusion strategies discussed above, my current scheme has a 
 
 This means that when I break compatibility in the miscellaneous scripts, I have to make sure to merge the changes into all of my plug-ins. Even then, if a user has more than one of my plug-ins installed but updates only one of them, the other plug-ins (that are not yet up to date) can break (because of the backwards incompatible change).
 
+The `xolox#misc#compat#check()` function makes sure that incompatibilities are detected early so that the user knows which plug-in to update if incompatibilities arise.
+
 ## Contact
 
 If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/misc> and <http://github.com/xolox/vim-misc>.
