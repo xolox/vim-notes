@@ -44,9 +44,15 @@ For more information see http://peterodding.com/code/vim/notes/
 import fnmatch
 import getopt
 import os
-import pickle
 import re
 import sys
+
+# Load the faster C variant of the pickle module where possible, but
+# fall back to the Python implementation that's always available.
+try:
+  import cPickle as pickle
+except ImportError:
+  import pickle
 
 try:
   import Levenshtein
