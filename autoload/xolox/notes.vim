@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.17.5'
+let g:xolox#notes#version = '0.17.6'
 let s:scriptdir = expand('<sfile>:p:h')
 
 call xolox#misc#compat#check('notes', 1)
@@ -667,7 +667,7 @@ function! s:internal_search(bang, pattern, keywords, phase2) " {{{2
   endif
   silent cwindow
   if &buftype == 'quickfix'
-    execute 'match IncSearch' substitute(pattern, '^/', '/\\c', '')
+    execute 'match IncSearch' (&ignorecase ? substitute(pattern, '^/', '/\\c', '') : pattern)
   endif
 endfunction
 
