@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.17.4'
+let g:xolox#notes#version = '0.17.5'
 let s:scriptdir = expand('<sfile>:p:h')
 
 call xolox#misc#compat#check('notes', 1)
@@ -398,16 +398,13 @@ function! xolox#notes#search(bang, input) " {{{1
   endif
   if input =~ '^/.\+/$'
     call s:internal_search(a:bang, input, '', '')
-    if &buftype == 'quickfix'
-      let w:quickfix_title = 'Notes matching the pattern ' . input
-    endif
+    call s:set_quickfix_title([], input)
   else
     let keywords = split(input)
     let all_keywords = s:match_all_keywords(keywords)
     let any_keyword = s:match_any_keyword(keywords)
     call s:internal_search(a:bang, all_keywords, input, any_keyword)
     if &buftype == 'quickfix'
-      call map(keywords, '"`" . v:val . "''"')
       " Enable line wrapping in the quick-fix window.
       setlocal wrap
       " Resize the quick-fix window to 1/3 of the screen height.
@@ -418,8 +415,7 @@ function! xolox#notes#search(bang, input) " {{{1
       let preferred_height = winline()
       execute 'resize' min([max_height, preferred_height])
       normal gg
-      let w:quickfix_title = printf('Notes containing the word%s %s', len(keywords) == 1 ? '' : 's',
-          \ len(keywords) > 1 ? (join(keywords[0:-2], ', ') . ' and ' . keywords[-1]) : keywords[0])
+      call s:set_quickfix_title(keywords, '')
     endif
   endif
   call xolox#misc#timer#stop("notes.vim %s: Searched notes in %s.", g:xolox#notes#version, starttime)
@@ -448,6 +444,24 @@ function! s:match_any_keyword(keywords) " {{{2
   let results = copy(a:keywords)
   call map(results, 'xolox#misc#escape#pattern(v:val)')
   return '/' . escape(join(results, '\|'), '/') . '/'
+endfunction
+
+function! s:set_quickfix_title(keywords, pattern) " {{{2
+  " Set the title of the quick-fix window.
+  if &buftype == 'quickfix'
+    let num_notes = len(xolox#misc#list#unique(map(getqflist(), 'v:val["bufnr"]')))
+    if len(a:keywords) > 0
+      let keywords = map(copy(a:keywords), '"`" . v:val . "''"')
+      let w:quickfix_title = printf('Found %i note%s containing the word%s %s',
+            \ num_notes, num_notes == 1 ? '' : 's',
+            \ len(keywords) == 1 ? '' : 's',
+            \ len(keywords) > 1 ? (join(keywords[0:-2], ', ') . ' and ' . keywords[-1]) : keywords[0])
+    else
+      let w:quickfix_title = printf('Found %i note%s containing the pattern %s',
+            \ num_notes, num_notes == 1 ? '' : 's',
+            \ a:pattern)
+    endif
+  endif
 endfunction
 
 function! xolox#notes#related(bang) " {{{1
