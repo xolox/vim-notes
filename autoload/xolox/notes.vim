@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.17.3'
+let g:xolox#notes#version = '0.17.4'
 let s:scriptdir = expand('<sfile>:p:h')
 
 call xolox#misc#compat#check('notes', 1)
@@ -707,6 +707,9 @@ function! s:python_command(...) " {{{2
     call xolox#misc#msg#debug("notes.vim %s: The %s script isn't executable.", g:xolox#notes#version, script)
   else
     let options = ['--database', g:notes_indexfile, '--notes', g:notes_directory]
+    if &ignorecase
+      call add(options, '--ignore-case')
+    endif
     let arguments = map([script] + options + a:000, 'xolox#misc#escape#shell(v:val)')
     let command = join([python] + arguments)
     call xolox#misc#msg#debug("notes.vim %s: Executing external command %s", g:xolox#notes#version, command)

@@ -3,16 +3,21 @@
 # Python script for fast text file searching using keyword index on disk.
 #
 # Author: Peter Odding <peter@peterodding.com>
-# Last Change: April 18, 2013
+# Last Change: April 21, 2013
 # URL: http://peterodding.com/code/vim/notes/
 # License: MIT
 #
 # This Python script can be used by the notes.vim plug-in to perform fast
-# keyword searches in the user's notes. It has two advantages over just using
-# Vim's internal :vimgrep command to search all of the user's notes:
+# keyword searches in the user's notes. It has two advantages over just
+# using Vim's internal :vimgrep command to search all of the user's notes:
 # 
 #  - Very large notes don't slow searching down so much;
 #  - Hundreds of notes can be searched in less than a second.
+#
+# The keyword index is a Python dictionary that's persisted using the pickle
+# module. The structure of the dictionary may seem very naive but it's quite
+# fast. Also the pickle protocol makes sure repeating strings are stored only
+# once, so it's not as bad as it may appear at first sight :-).
 # 
 # For more information about the Vim plug-in see http://peterodding.com/code/vim/notes/.
 
@@ -24,6 +29,7 @@ updated automatically during each invocation of the program.
 
 Valid options include:
 
+  -i, --ignore-case    ignore case of keyword(s)
   -l, --list=SUBSTR    list keywords matching substring
   -d, --database=FILE  set path to keywords index file
   -n, --notes=DIR      set directory with user notes
@@ -67,8 +73,8 @@ class NotesIndex:
   def parse_args(self):
     ''' Parse the command line arguments. '''
     try:
-      opts, keywords = getopt.getopt(sys.argv[1:], 'l:d:n:e:vh',
-          ['list=', 'database=', 'notes=', 'encoding=', 'verbose', 'help'])
+      opts, keywords = getopt.getopt(sys.argv[1:], 'il:d:n:e:vh',
+          ['ignore-case', 'list=', 'database=', 'notes=', 'encoding=', 'verbose', 'help'])
     except getopt.GetoptError, error:
       print str(error)
       self.usage()
@@ -77,11 +83,14 @@ class NotesIndex:
     self.database_file = '~/.vim/misc/notes/index.pickle'
     self.user_directory = '~/.vim/misc/notes/user/'
     self.character_encoding = 'UTF-8'
+    self.case_sensitive = True
     self.keyword_filter = None
     self.verbose = False
     # Map command line options to variables.
     for opt, arg in opts:
-      if opt in ('-l', '--list'):
+      if opt in ('-i', '--ignore-case'):
+        self.case_sensitive = False
+      elif opt in ('-l', '--list'):
         self.keyword_filter = arg.strip().lower()
       elif opt in ('-d', '--database'):
         self.database_file = arg
@@ -105,21 +114,21 @@ class NotesIndex:
       sys.stderr.write("Notes directory %s doesn't exist!\n" % self.user_directory)
       sys.exit(1)
     # Return tokenized keyword arguments.
-    return self.tokenize(' '.join(keywords))
+    return [self.normalize(k) for k in self.tokenize(' '.join(keywords))]
 
   def load_index(self):
     ''' Load the keyword index or start with an empty one. '''
     try:
       with open(self.database_file) as handle:
         self.index = pickle.load(handle)
-        assert self.index['version'] == 1
+        assert self.index['version'] == 2
         self.first_use = False
         self.dirty = False
         self.message("Found %i notes in %s ..", len(self.index['files']), self.database_file)
     except:
       self.first_use = True
       self.dirty = True
-      self.index = {'keywords': {}, 'files': {}, 'version': 1}
+      self.index = {'keywords': {}, 'files': {}, 'version': 2}
 
   def save_index(self):
     ''' Save the keyword index to disk. '''
@@ -180,15 +189,16 @@ class NotesIndex:
   def search_index(self, keywords):
     ''' Return names of files containing all of the given keywords. '''
     matches = None
+    normalized_db_keywords = [(k, self.normalize(k)) for k in self.index['keywords']]
     for usr_kw in keywords:
       submatches = set()
-      for db_kw in self.index['keywords']:
+      for original_db_kw, normalized_db_kw in normalized_db_keywords:
         # Yes I'm using a nested for loop over all keywords in the index. If
         # I really have to I'll probably come up with something more
         # efficient, but really it doesn't seem to be needed -- I have over
         # 850 notes (about 8 MB) and 25000 keywords and it's plenty fast.
-        if usr_kw in db_kw:
-          submatches.update(self.index['keywords'][db_kw])
+        if usr_kw in normalized_db_kw:
+          submatches.update(self.index['keywords'][original_db_kw])
       if matches is None:
         matches = submatches
       else:
@@ -198,10 +208,12 @@ class NotesIndex:
   def list_keywords(self, substring, limit=25):
     ''' Print all (matching) keywords to standard output. '''
     decorated = []
+    substring = self.normalize(substring)
     for kw, filenames in self.index['keywords'].iteritems():
-      if substring in kw.lower():
+      normalized_kw = self.normalize(kw)
+      if substring in normalized_kw:
         if levenshtein_supported:
-          decorated.append((Levenshtein.distance(kw.lower(), substring), -len(filenames), kw))
+          decorated.append((Levenshtein.distance(normalized_kw, substring), -len(filenames), kw))
         else:
           decorated.append((-len(filenames), kw))
     decorated.sort()
@@ -211,12 +223,16 @@ class NotesIndex:
   def tokenize(self, text):
     ''' Tokenize a string into a list of normalized, unique keywords. '''
     words = set()
-    text = self.decode(text).lower()
+    text = self.decode(text)
     for word in re.findall(r'\w+', text, re.UNICODE):
       word = word.strip()
       if word != '' and not word.isspace() and len(word) >= 2:
         words.add(word)
     return words
+
+  def normalize(self, keyword):
+    ''' Normalize the case of a keyword if configured to do so. '''
+    return keyword if self.case_sensitive else keyword.lower()
 
   def encode(self, text):
     ''' Encode a string in the user's preferred character encoding. '''
