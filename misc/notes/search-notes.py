@@ -43,9 +43,11 @@ For more information see http://peterodding.com/code/vim/notes/
 # Standard library modules.
 import fnmatch
 import getopt
+import logging
 import os
 import re
 import sys
+import time
 
 # Load the faster C variant of the pickle module where possible, but
 # fall back to the Python implementation that's always available.
@@ -64,6 +66,8 @@ class NotesIndex:
 
   def __init__(self):
     ''' Entry point to the notes search. '''
+    global_timer = Timer()
+    self.init_logging()
     keywords = self.parse_args()
     self.load_index()
     self.update_index()
@@ -72,9 +76,18 @@ class NotesIndex:
     print "Python works fine!"
     if self.keyword_filter is not None:
       self.list_keywords(self.keyword_filter)
+      self.logger.debug("Finished listing keywords in %s", global_timer)
     else:
       matches = self.search_index(keywords)
       print '\n'.join(sorted(matches))
+      self.logger.debug("Finished searching index in %s", global_timer)
+
+  def init_logging(self):
+    ''' Initialize the logging subsystem. '''
+    self.logger = logging.getLogger('search-notes')
+    self.logger.addHandler(logging.StreamHandler(sys.stderr))
+    if os.isatty(0):
+      self.logger.setLevel(logging.INFO)
 
   def parse_args(self):
     ''' Parse the command line arguments. '''
@@ -91,11 +104,11 @@ class NotesIndex:
     self.character_encoding = 'UTF-8'
     self.case_sensitive = True
     self.keyword_filter = None
-    self.verbose = False
     # Map command line options to variables.
     for opt, arg in opts:
       if opt in ('-i', '--ignore-case'):
         self.case_sensitive = False
+        self.logger.debug("Disabling case sensitivity")
       elif opt in ('-l', '--list'):
         self.keyword_filter = arg.strip().lower()
       elif opt in ('-d', '--database'):
@@ -105,12 +118,15 @@ class NotesIndex:
       elif opt in ('-e', '--encoding'):
         self.character_encoding = arg
       elif opt in ('-v', '--verbose'):
-        self.verbose = True
+        self.logger.setLevel(logging.DEBUG)
       elif opt in ('-h', '--help'):
         self.usage()
         sys.exit(0)
       else:
         assert False, "Unhandled option"
+    self.logger.debug("Index file: %s", self.database_file)
+    self.logger.debug("Notes directory: %s", self.user_directory)
+    self.logger.debug("Character encoding: %s", self.character_encoding)
     if self.keyword_filter is not None:
       self.keyword_filter = self.decode(self.keyword_filter)
     # Canonicalize pathnames, check validity.
@@ -125,24 +141,31 @@ class NotesIndex:
   def load_index(self):
     ''' Load the keyword index or start with an empty one. '''
     try:
+      load_timer = Timer()
+      self.logger.debug("Loading index from %s ..", self.database_file)
       with open(self.database_file) as handle:
         self.index = pickle.load(handle)
-        assert self.index['version'] == 2
+        self.logger.debug("Format version of index loaded from disk: %i", self.index['version'])
+        assert self.index['version'] == 2, "Incompatible index format detected!"
         self.first_use = False
         self.dirty = False
-        self.message("Found %i notes in %s ..", len(self.index['files']), self.database_file)
-    except:
+        self.logger.debug("Loaded %i notes from index in %s", len(self.index['files']), load_timer)
+    except Exception, e:
+      self.logger.warn("Failed to load index from file: %s", e)
       self.first_use = True
       self.dirty = True
       self.index = {'keywords': {}, 'files': {}, 'version': 2}
 
   def save_index(self):
     ''' Save the keyword index to disk. '''
+    save_timer = Timer()
     with open(self.database_file, 'w') as handle:
       pickle.dump(self.index, handle)
+    self.logger.debug("Saved index to disk in %s", save_timer)
 
   def update_index(self):
     ''' Update the keyword index by scanning the notes directory. '''
+    update_timer = Timer()
     # First we find the filenames and last modified times of the notes on disk.
     notes_on_disk = {}
     for filename in os.listdir(self.user_directory):
@@ -152,7 +175,7 @@ class NotesIndex:
         abspath = os.path.join(self.user_directory, filename)
         if os.path.isfile(abspath):
           notes_on_disk[abspath] = os.path.getmtime(abspath)
-    self.message("Found %i notes in %s ..", len(notes_on_disk), self.user_directory)
+    self.logger.info("Found %i notes in %s ..", len(notes_on_disk), self.user_directory)
     # Check for updated and/or deleted notes since the last run?
     if not self.first_use:
       for filename in self.index['files'].keys():
@@ -171,10 +194,11 @@ class NotesIndex:
     # Add new notes to index.
     for filename, last_modified in notes_on_disk.iteritems():
       self.add_note(filename, last_modified)
+    self.logger.debug("Updated index in %s", update_timer)
 
   def add_note(self, filename, last_modified):
     ''' Add a note to the index (assumes the note is not already indexed). '''
-    self.message("Indexing %s ..", filename)
+    self.logger.info("Adding file to index: %s", filename)
     self.index['files'][filename] = last_modified
     with open(filename) as handle:
       for kw in self.tokenize(handle.read()):
@@ -186,7 +210,7 @@ class NotesIndex:
 
   def delete_note(self, filename):
     ''' Remove a note from the index. '''
-    self.message("Forgetting %s ..", filename)
+    self.logger.info("Removing file from index: %s", filename)
     del self.index['files'][filename]
     for kw in self.index['keywords']:
       self.index['keywords'][kw] = [x for x in self.index['keywords'][kw] if x != filename]
@@ -252,12 +276,24 @@ class NotesIndex:
     ''' Canonicalize user-defined path, making it absolute. '''
     return os.path.abspath(os.path.expanduser(path))
 
-  def message(self, msg, *args):
-    if self.verbose:
-      sys.stderr.write((msg + "\n") % args)
-
   def usage(self):
     print __doc__.strip()
+
+class Timer:
+
+    """
+    Easy to use timer to keep track of long during operations.
+    """
+
+    def __init__(self):
+        self.start_time = time.time()
+
+    def __str__(self):
+        return "%.2f seconds" % self.elapsed_time
+
+    @property
+    def elapsed_time(self):
+        return time.time() - self.start_time
 
 if __name__ == '__main__':
   NotesIndex()
