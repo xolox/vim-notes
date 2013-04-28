@@ -1,6 +1,6 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: April 22, 2013
+" Last Change: April 28, 2013
 " URL: http://peterodding.com/code/vim/misc/
 
 let s:windows_compatible = has('win32') || has('win64')
@@ -34,8 +34,20 @@ function! xolox#misc#path#split(path) " {{{1
   " Split a pathname into a list of path components.
   if type(a:path) == type('')
     if s:windows_compatible
-      return split(a:path, '[\/]\+')
+      if a:path =~ '^[\/][\/]'
+        " On Windows, pathnames starting with two slashes or backslashes are
+        " UNC paths where the leading slashes are significant... In this case
+        " we split like this:
+        "   '//server/share/directory' -> ['//server', 'share', 'directory']
+        return split(a:path, '\%>2c[\/]\+')
+      else
+        " If it's not a UNC path we can simply split on slashes & backslashes.
+        return split(a:path, '[\/]\+')
+      endif
     else
+      " Everything except Windows is treated like UNIX until someone
+      " has a better suggestion :-). In this case we split like this:
+      "   '/foo/bar/baz' -> ['/', 'foo', 'bar', 'baz']
       let absolute = (a:path =~ '^/')
       let segments = split(a:path, '/\+')
       return absolute ? insert(segments, '/') : segments
@@ -45,15 +57,24 @@ function! xolox#misc#path#split(path) " {{{1
 endfunction
 
 function! xolox#misc#path#join(parts) " {{{1
-  " Join a list of path components into a pathname.
+  " Join a list of pathname components into a single pathname.
   if type(a:parts) == type([])
-    if !s:windows_compatible && a:parts[0] == '/'
-      return join(a:parts, '/')[1 : -1]
+    if s:windows_compatible
+      return join(a:parts, xolox#misc#path#directory_separator())
+    elseif a:parts[0] == '/'
+      " Absolute path on UNIX (non-Windows).
+      return '/' . join(a:parts[1:], '/')
     else
+      " Relative path on UNIX (non-Windows).
       return join(a:parts, '/')
     endif
   endif
   return ''
+endfunction
+
+function! xolox#misc#path#directory_separator() " {{{1
+  " Find the preferred directory separator for the platform and settings.
+  return exists('+shellslash') && &shellslash ? '/' : '\'
 endfunction
 
 function! xolox#misc#path#absolute(path) " {{{1
@@ -61,18 +82,29 @@ function! xolox#misc#path#absolute(path) " {{{1
   " is intended to support string comparison to determine whether two pathnames
   " point to the same directory or file.
   if type(a:path) == type('')
-    let path = fnamemodify(a:path, ':p')
-    " resolve() doesn't work when there's a trailing path separator.
-    if path =~ '/$'
-      let stripped_slash = 1
-      let path = substitute(path, '/$', '', '')
+    let path = a:path
+    " Make the pathname absolute.
+    if path =~ '^\~'
+      " Expand ~ to $HOME.
+      let path = $HOME . '/' . path[1:]
+    elseif xolox#misc#path#is_relative(path)
+      " Make relative pathnames absolute.
+      let path = getcwd() . '/' . path
     endif
-    let path = resolve(path)
-    " Restore the path separator after calling resolve().
-    if exists('stripped_slash') && path !~ '/$'
-      let path .= '/'
+    " Resolve symbolic links to find the canonical pathname. In my tests this
+    " also removes all symbolic pathname segments (`.' and `..'), even when
+    " the pathname does not exist. Also there used to be a bug in resolve()
+    " where it wouldn't resolve pathnames ending in a directory separator.
+    " Since it's not much trouble to work around, that's what we do.
+    let path = resolve(substitute(path, s:windows_compatible ? '[\/]\+$' : '/\+$', '', ''))
+    " Normalize directory separators (especially relevant on Windows).
+    let parts = xolox#misc#path#split(path)
+    if s:windows_compatible && parts[0] =~ '^[\/][\/]'
+      " Also normalize the two leading "directory separators" (I'm not
+      " sure what else to call them :-) in Windows UNC pathnames.
+      let parts[0] = repeat(xolox#misc#path#directory_separator(), 2) . parts[0][2:]
     endif
-    return path
+    return xolox#misc#path#join(parts)
   endif
   return ''
 endfunction
@@ -143,8 +175,7 @@ function! xolox#misc#path#decode(encoded_path) " {{{1
   return substitute(a:encoded_path, '%\(\x\x\?\)', '\=nr2char("0x" . submatch(1))', 'g')
 endfunction
 
-" xolox#misc#path#equals(a, b) {{{1
-" Check whether two pathnames point to the same file.
+" xolox#misc#path#equals(a, b) - Check whether two pathnames point to the same file. {{{1
 
 if s:windows_compatible
   function! xolox#misc#path#equals(a, b)
