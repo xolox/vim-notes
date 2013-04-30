@@ -1,15 +1,15 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: April 28, 2013
+" Last Change: April 30, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.17.9'
+let g:xolox#notes#version = '0.17.10'
 let s:scriptdir = expand('<sfile>:p:h')
 
-call xolox#misc#compat#check('notes', 1)
+call xolox#misc#compat#check('notes', 2)
 
 function! xolox#notes#init() " {{{1
   " Initialize the configuration of the notes plug-in. This is a bit tricky:
