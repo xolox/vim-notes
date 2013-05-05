@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.18'
+let g:xolox#notes#version = '0.18.1'
 let s:scriptdir = expand('<sfile>:p:h')
 
 call xolox#misc#compat#check('notes', 2)
@@ -59,6 +59,14 @@ function! xolox#notes#init() " {{{1
   " Smart quotes and such are enabled by default.
   if !exists('g:notes_smart_quotes')
     let g:notes_smart_quotes = 1
+  endif
+  " Tab/Shift-Tab is used to indent/dedent list items by default.
+  if !exists('g:notes_tab_indents')
+    let g:notes_tab_indents = 1
+  endif
+  " Alt-Left/Alt-Right is used to indent/dedent list items by default.
+  if !exists('g:notes_alt_indents')
+    let g:notes_alt_indents = 1
   endif
   " Text used for horizontal rulers.
   if !exists('g:notes_ruler_text')

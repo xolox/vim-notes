@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 1, 2011
+" Last Change: May 5, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -91,25 +91,29 @@ endif
 inoremap <buffer> *** <C-o>:call xolox#notes#insert_ruler()<CR>
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> ***"'
 
-" Indent list items using <Tab> and <Shift-Tab>. {{{1
-inoremap <buffer> <silent> <Tab> <C-o>:call xolox#notes#indent_list(1, line('.'), line('.'))<CR>
-snoremap <buffer> <silent> <Tab> <C-o>:<C-u>call xolox#notes#indent_list(1, line("'<"), line("'>"))<CR><C-o>gv
-let b:undo_ftplugin .= ' | execute "iunmap <buffer> <Tab>"'
-let b:undo_ftplugin .= ' | execute "sunmap <buffer> <Tab>"'
-inoremap <buffer> <silent> <S-Tab> <C-o>:call xolox#notes#indent_list(-1, line('.'), line('.'))<CR>
-snoremap <buffer> <silent> <S-Tab> <C-o>:<C-u>call xolox#notes#indent_list(-1, line("'<"), line("'>"))<CR><C-o>gv
-let b:undo_ftplugin .= ' | execute "iunmap <buffer> <S-Tab>"'
-let b:undo_ftplugin .= ' | execute "sunmap <buffer> <S-Tab>"'
+" Indent list items using <Tab> and <Shift-Tab>? {{{1
+if g:notes_tab_indents
+  inoremap <buffer> <silent> <Tab> <C-o>:call xolox#notes#indent_list(1, line('.'), line('.'))<CR>
+  snoremap <buffer> <silent> <Tab> <C-o>:<C-u>call xolox#notes#indent_list(1, line("'<"), line("'>"))<CR><C-o>gv
+  let b:undo_ftplugin .= ' | execute "iunmap <buffer> <Tab>"'
+  let b:undo_ftplugin .= ' | execute "sunmap <buffer> <Tab>"'
+  inoremap <buffer> <silent> <S-Tab> <C-o>:call xolox#notes#indent_list(-1, line('.'), line('.'))<CR>
+  snoremap <buffer> <silent> <S-Tab> <C-o>:<C-u>call xolox#notes#indent_list(-1, line("'<"), line("'>"))<CR><C-o>gv
+  let b:undo_ftplugin .= ' | execute "iunmap <buffer> <S-Tab>"'
+  let b:undo_ftplugin .= ' | execute "sunmap <buffer> <S-Tab>"'
+endif
 
-" Indent list items using <Alt-Left> and <Alt-Right>. {{{1
-inoremap <buffer> <silent> <A-Right> <C-o>:call xolox#notes#indent_list(1, line('.'), line('.'))<CR>
-snoremap <buffer> <silent> <A-Right> <C-o>:<C-u>call xolox#notes#indent_list(1, line("'<"), line("'>"))<CR><C-o>gv
-let b:undo_ftplugin .= ' | execute "iunmap <buffer> <A-Right>"'
-let b:undo_ftplugin .= ' | execute "sunmap <buffer> <A-Right>"'
-inoremap <buffer> <silent> <A-Left> <C-o>:call xolox#notes#indent_list(-1, line('.'), line('.'))<CR>
-snoremap <buffer> <silent> <A-Left> <C-o>:<C-u>call xolox#notes#indent_list(-1, line("'<"), line("'>"))<CR><C-o>gv
-let b:undo_ftplugin .= ' | execute "iunmap <buffer> <A-Left>"'
-let b:undo_ftplugin .= ' | execute "sunmap <buffer> <A-Left>"'
+" Indent list items using <Alt-Left> and <Alt-Right>? {{{1
+if g:notes_alt_indents
+  inoremap <buffer> <silent> <A-Right> <C-o>:call xolox#notes#indent_list(1, line('.'), line('.'))<CR>
+  snoremap <buffer> <silent> <A-Right> <C-o>:<C-u>call xolox#notes#indent_list(1, line("'<"), line("'>"))<CR><C-o>gv
+  let b:undo_ftplugin .= ' | execute "iunmap <buffer> <A-Right>"'
+  let b:undo_ftplugin .= ' | execute "sunmap <buffer> <A-Right>"'
+  inoremap <buffer> <silent> <A-Left> <C-o>:call xolox#notes#indent_list(-1, line('.'), line('.'))<CR>
+  snoremap <buffer> <silent> <A-Left> <C-o>:<C-u>call xolox#notes#indent_list(-1, line("'<"), line("'>"))<CR><C-o>gv
+  let b:undo_ftplugin .= ' | execute "iunmap <buffer> <A-Left>"'
+  let b:undo_ftplugin .= ' | execute "sunmap <buffer> <A-Left>"'
+endif
 
 " Automatically remove empty list items on Enter. {{{1
 inoremap <buffer> <silent> <expr> <CR> xolox#notes#cleanup_list()

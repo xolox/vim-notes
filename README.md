@@ -73,6 +73,18 @@ When you change the nesting level (indentation) of a line containing a bullet po
 
 The first level of list items gets the first bullet point in `g:notes_list_bullets`, the second level gets the second, etc. When you're indenting a list item to a level where the `g:notes_list_bullets` doesn't have enough bullets, the plug-in starts again at the first bullet in the list (in other words the selection of bullets wraps around).
 
+### The `g:notes_tab_indents` option
+
+By default `Tab` is mapped to indent list items and `Shift-Tab` is mapped to dedent list items. You can disable these mappings by adding the following to your [vimrc script] [vimrc]:
+
+    :let g:notes_tab_indents = 0
+
+### The `g:notes_alt_indents` option
+
+By default `Alt-Right` is mapped to indent list items and `Alt-Left` is mapped to dedent list items. You can disable these mappings by adding the following to your [vimrc script] [vimrc]:
+
+    :let g:notes_alt_indents = 0
+
 ### The `g:notes_shadowdir` option
 
 The notes plug-in comes with some default notes containing documentation about the plug-in. This option defines the path of the directory containing these notes.

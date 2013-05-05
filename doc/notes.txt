@@ -13,10 +13,12 @@ Contents ~
   4. The |g:notes_smart_quotes| option
   5. The |g:notes_ruler_text| option
   6. The |g:notes_list_bullets| option
-  7. The |g:notes_shadowdir| option
-  8. The |g:notes_indexfile| option
-  9. The |g:notes_indexscript| option
-  10. The |g:notes_tagsindex| option
+  7. The |g:notes_tab_indents| option
+  8. The |g:notes_alt_indents| option
+  9. The |g:notes_shadowdir| option
+  10. The |g:notes_indexfile| option
+  11. The |g:notes_indexscript| option
+  12. The |g:notes_tagsindex| option
  4. Commands                                                    |notes-commands|
   1. The |:Note| command
   2. The |:NoteFromSelectedText| command
@@ -214,6 +216,24 @@ The first level of list items gets the first bullet point in
 indenting a list item to a level where the |g:notes_list_bullets| doesn't have
 enough bullets, the plug-in starts again at the first bullet in the list (in
 other words the selection of bullets wraps around).
+
+-------------------------------------------------------------------------------
+The *g:notes_tab_indents* option
+
+By default 'Tab' is mapped to indent list items and 'Shift-Tab' is mapped to
+dedent list items. You can disable these mappings by adding the following to
+your |vimrc| script:
+>
+    :let g:notes_tab_indents = 0
+
+-------------------------------------------------------------------------------
+The *g:notes_alt_indents* option
+
+By default 'Alt-Right' is mapped to indent list items and 'Alt-Left' is mapped
+to dedent list items. You can disable these mappings by adding the following
+to your |vimrc| script:
+>
+    :let g:notes_alt_indents = 0
 
 -------------------------------------------------------------------------------
 The *g:notes_shadowdir* option
