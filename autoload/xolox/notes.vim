@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.18.1'
+let g:xolox#notes#version = '0.18.2'
 let s:scriptdir = expand('<sfile>:p:h')
 
 call xolox#misc#compat#check('notes', 2)
@@ -122,7 +122,7 @@ function! xolox#notes#edit(bang, title) abort " {{{1
       if !xolox#notes#unicode_enabled() && xolox#misc#path#equals(fnamemodify(fname, ':h'), g:notes_shadowdir)
         call s:transcode_utf8_latin1()
       endif
-      setlocal filetype=notes
+      call xolox#notes#set_filetype()
       call xolox#misc#timer#stop('notes.vim %s: Opened note in %s.', g:xolox#notes#version, starttime)
       return
     endif
@@ -144,7 +144,7 @@ function! xolox#notes#edit(bang, title) abort " {{{1
   if title != 'New note'
     call setline(1, title)
   endif
-  setlocal filetype=notes
+  call xolox#notes#set_filetype()
   doautocmd BufReadPost
   call xolox#misc#timer#stop('notes.vim %s: Started new note in %s.', g:xolox#notes#version, starttime)
 endfunction
@@ -191,7 +191,7 @@ function! xolox#notes#check_sync_title() " {{{1
         let new_fname = xolox#notes#title_to_fname(xolox#notes#current_title())
         if rename(name_on_disk, new_fname) == 0
           execute 'edit' fnameescape(new_fname)
-          setlocal filetype=notes
+          call xolox#notes#set_filetype()
           call xolox#misc#msg#info("notes.vim %s: Renamed file to match note title.", g:xolox#notes#version)
         else
           call xolox#misc#msg#warn("notes.vim %s: Failed to rename file to match note title?!", g:xolox#notes#version)
@@ -233,7 +233,7 @@ function! xolox#notes#edit_shadow() " {{{1
   if !xolox#notes#unicode_enabled()
     call s:transcode_utf8_latin1()
   endif
-  setlocal filetype=notes
+  call xolox#notes#set_filetype()
 endfunction
 
 function! xolox#notes#unicode_enabled()
@@ -584,7 +584,7 @@ function! xolox#notes#recent(bang, title_filter) " {{{1
   " Add the formatted list of notes to the buffer.
   call setline(line('$') + 1, lines)
   " Load the notes file type.
-  setlocal filetype=notes
+  call xolox#notes#set_filetype()
   let &l:statusline = bufname
   " Change the status line
   " Lock the buffer contents.
@@ -594,6 +594,21 @@ function! xolox#notes#recent(bang, title_filter) " {{{1
 endfunction
 
 " Miscellaneous functions. {{{1
+
+function! xolox#notes#set_filetype() " {{{2
+  " Load the notes file type if not already loaded.
+  if &filetype != 'notes'
+    " Change the file type.
+    setlocal filetype=notes
+  elseif synID(1, 1, 0) == 0
+    " Load the syntax. When you execute :RecentNotes, switch to a different
+    " buffer and then return to the buffer created by :RecentNotes, it will
+    " have lost its syntax highlighting. The following line of code solves
+    " this problem. We don't explicitly set the syntax to 'notes' so that we
+    " preserve dot separated composed values.
+    let &syntax = &syntax
+  endif
+endfunction
 
 function! xolox#notes#swaphack() " {{{2
   " Selectively ignore the dreaded E325 interactive prompt.
