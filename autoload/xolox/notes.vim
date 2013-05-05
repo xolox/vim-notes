@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.17.11'
+let g:xolox#notes#version = '0.18'
 let s:scriptdir = expand('<sfile>:p:h')
 
 call xolox#misc#compat#check('notes', 2)
@@ -87,8 +87,19 @@ endfunction
 
 function! xolox#notes#shortcut() " {{{1
   " The "note:" pseudo protocol is just a shortcut for the :Note command.
-  let name = matchstr(expand('<afile>'), 'note:\zs.*')
-  call xolox#notes#edit(v:cmdbang ? '!' : '', name)
+  let expression = expand('<afile>')
+  let bufnr_save = bufnr('%')
+  call xolox#misc#msg#debug("notes.vim %s: Expanding shortcut %s ..", g:xolox#notes#version, string(expression))
+  let substring = matchstr(expression, 'note:\zs.*')
+  call xolox#misc#msg#debug("notes.vim %s: Editing note based on title substring %s ..", g:xolox#notes#version, string(substring))
+  call xolox#notes#edit(v:cmdbang ? '!' : '', substring)
+  " Clean up the buffer with the name "note:..."?
+  let pathname = fnamemodify(bufname(bufnr_save), ':p')
+  let basename = fnamemodify(pathname, ':t')
+  if basename =~ '^note:'
+    call xolox#misc#msg#debug("notes.vim %s: Cleaning up buffer #%i - %s", g:xolox#notes#version, bufnr_save, pathname)
+    execute 'bwipeout' bufnr_save
+  endif
 endfunction
 
 function! xolox#notes#edit(bang, title) abort " {{{1
@@ -98,6 +109,7 @@ function! xolox#notes#edit(bang, title) abort " {{{1
   if title != ''
     let fname = xolox#notes#select(title)
     if fname != ''
+      call xolox#misc#msg#debug("notes.vim %s: Editing existing note: %s", g:xolox#notes#version, fname)
       execute 'edit' . a:bang fnameescape(fname)
       if !xolox#notes#unicode_enabled() && xolox#misc#path#equals(fnamemodify(fname, ':h'), g:notes_shadowdir)
         call s:transcode_utf8_latin1()
@@ -236,14 +248,18 @@ function! xolox#notes#select(filter) " {{{1
   let filter = xolox#misc#str#trim(a:filter)
   for [fname, title] in items(xolox#notes#get_fnames_and_titles(1))
     if title ==? filter
+      call xolox#misc#msg#debug("notes.vim %s: Filter %s exactly matches note: %s", g:xolox#notes#version, string(filter), title)
       return fname
     elseif title =~? filter
       let notes[fname] = title
     endif
   endfor
   if len(notes) == 1
-    return keys(notes)[0]
+    let fname = keys(notes)[0]
+    call xolox#misc#msg#debug("notes.vim %s: Filter %s matched one note: %s", g:xolox#notes#version, string(filter), fname)
+    return fname
   elseif !empty(notes)
+    call xolox#misc#msg#debug("notes.vim %s: Filter %s matched %i notes.", g:xolox#notes#version, string(filter), len(notes))
     let choices = ['Please select a note:']
     let values = ['']
     for fname in sort(keys(notes), 1)
@@ -252,7 +268,9 @@ function! xolox#notes#select(filter) " {{{1
     endfor
     let choice = inputlist(choices)
     if choice > 0 && choice < len(choices)
-      return values[choice]
+      let fname = values[choice]
+      call xolox#misc#msg#debug("notes.vim %s: User selected note: %s", g:xolox#notes#version, string(filter), fname)
+      return fname
     endif
   endif
   return ''
