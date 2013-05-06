@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 5, 2013
+" Last Change: May 6, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.18.2'
+let g:xolox#notes#version = '0.18.3'
 let s:scriptdir = expand('<sfile>:p:h')
 
 call xolox#misc#compat#check('notes', 2)
@@ -220,7 +220,7 @@ function! s:get_visual_selection()
   let [lnum1, col1] = getpos("'<")[1:2]
   let [lnum2, col2] = getpos("'>")[1:2]
   let lines = getline(lnum1, lnum2)
-  let lines[-1] = lines[-1][: col2 - 2]
+  let lines[-1] = lines[-1][: col2 - (&selection == 'inclusive' ? 1 : 2)]
   let lines[0] = lines[0][col1 - 1:]
   return join(lines, ' ')
 endfunction
