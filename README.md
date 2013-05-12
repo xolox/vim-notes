@@ -31,17 +31,23 @@ Unzip the most recent [ZIP archive] [download] file inside your Vim profile dire
 
 All options have reasonable defaults so if the plug-in works after installation you don't need to change any options. They're available for people who like to customize their directory layout. These options can be configured in your [vimrc script] [vimrc] by including a line like this:
 
-    :let g:notes_directory = '~/Documents/Notes'
+    :let g:notes_directories = ['~/Documents/Notes', '~/Dropbox/Shared Notes']
 
 Note that after changing an option in your [vimrc script] [vimrc] you have to restart Vim for the changes to take effect.
 
-### The `g:notes_directory` option
+### The `g:notes_directories` option
 
-All your notes are stored together in one directory. This option defines the path of this directory. The default value depends on circumstances but should work for most people:
+Your notes are stored in one or more directories. This option defines where you want to store your notes. Its value should be a list (there's an example above) with one or more pathnames. The default is a single value which depends on circumstances but should work for most people:
 
  * If the profile directory where the plug-in is installed is writable, the directory `misc/notes/user` under the profile directory is used. This is for compatibility with [Pathogen] [pathogen]; the notes will be stored inside the plug-in's bundle.
 
  * If the above doesn't work out, the default depends on the platform: `~/vimfiles/misc/notes/user` on Windows and `~/.vim/misc/notes/user` on other platforms.
+
+#### Backwards compatibility
+
+In the past the notes plug-in only supported a single directory and the corresponding option was called `g:notes_directory`. When support for multiple notes directories was introduced the option was renamed to `g:notes_directories` to reflect that the value is now a list of directory pathnames.
+
+For backwards compatibility with old configurations (all of them as of this writing :-) the notes plug-in still uses `g:notes_directory` when it is defined (its no longer defined by the plug-in). However when the plug-in warns you to change your configuration you probably should because this compatibility will be removed at some point.
 
 ### The `g:notes_suffix` option
 
@@ -103,7 +109,7 @@ This option defines the pathname of the text file that stores the list of known 
 
 ## Commands
 
-To edit one of your existing notes you can use Vim commands such as [:edit] [edit], [:split] [split] and [:tabedit] [tabedit] with a filename that starts with *note:* followed by (part of) the title of one of your notes, e.g.:
+To edit one of your existing notes (or create a new one) you can use Vim commands such as [:edit] [edit], [:split] [split] and [:tabedit] [tabedit] with a filename that starts with *note:* followed by (part of) the title of one of your notes, e.g.:
 
     :edit note:todo
 
@@ -111,7 +117,7 @@ This shortcut also works from the command line:
 
     $ gvim note:todo
 
-When you don't follow *note:* with anything a new note is created.
+When you don't follow *note:* with anything a new note is created like when you execute `:Note` without any arguments.
 
 ### The `:Note` command
 
@@ -119,11 +125,15 @@ When executed without any arguments this command starts a new note in the curren
 
 This command will fail when changes have been made to the current buffer, unless you use `:Note!` which discards any changes.
 
+When you are using multiple directories to store your notes and you run `:Note` while editing an existing note, a new note will inherit the directory of the note from which you started. Otherwise the note is created in the first directory in `g:notes_directories`.
+
 *This command supports tab completion:* If you complete one word, all existing notes containing the given word somewhere in their title are suggested. If you type more than one word separated by spaces, the plug-in will complete only the missing words so that the resulting command line contains the complete note title and nothing more.
 
 ### The `:NoteFromSelectedText` command
 
 Start a new note in the current window with the selected text as the title of the note. The name of this command isn't very well suited to daily use, that's because it's intended to be executed from a mapping. The default mapping for this command is `\en` (the backslash is actually the character defined by the [mapleader] [mapleader] variable).
+
+When you are using multiple directories to store your notes and you run `:NoteFromSelectedText` while editing an existing note, the new note will inherit the directory of the note from which it was created.
 
 ### The `:SplitNoteFromSelectedText` command
 

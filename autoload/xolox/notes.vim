@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 6, 2013
+" Last Change: May 12, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.18.3'
+let g:xolox#notes#version = '0.19'
 let s:scriptdir = expand('<sfile>:p:h')
 
 call xolox#misc#compat#check('notes', 2)
@@ -26,11 +26,17 @@ function! xolox#notes#init() " {{{1
   else
     let localdir = xolox#misc#path#absolute('~/.vim/misc/notes')
   endif
-  " Define the default location where the user's notes are saved?
-  if !exists('g:notes_directory')
-    let g:notes_directory = xolox#misc#path#merge(localdir, 'user')
+  " Backwards compatibility with old configurations.
+  if exists('g:notes_directory')
+    call xolox#misc#msg#warn("notes.vim %s: Please upgrade your configuration, see :help notes-backwards-compatibility", g:xolox#notes#version)
+    let g:notes_directories = [g:notes_directory]
+    unlet g:notes_directory
   endif
-  call s:create_notes_directory()
+  " Define the default location where the user's notes are saved?
+  if !exists('g:notes_directories')
+    let g:notes_directories = [xolox#misc#path#merge(localdir, 'user')]
+  endif
+  call s:create_notes_directories()
   " Define the default location of the shadow directory with predefined notes?
   if !exists('g:notes_shadowdir')
     let g:notes_shadowdir = xolox#misc#path#merge(systemdir, 'shadow')
@@ -82,15 +88,16 @@ function! xolox#notes#init() " {{{1
   endif
 endfunction
 
-function! s:create_notes_directory()
-  let notes_directory = expand(g:notes_directory)
-  if !isdirectory(notes_directory)
-    call xolox#misc#msg#info("notes.vim %s: Creating notes directory (first run?) ..", g:xolox#notes#version)
-    call mkdir(notes_directory, 'p')
-  endif
-  if filewritable(notes_directory) != 2
-    call xolox#misc#msg#warn("notes.vim %s: The notes directory (%s) is not writable!", g:xolox#notes#version, notes_directory)
-  endif
+function! s:create_notes_directories()
+  for directory in xolox#notes#find_directories(0)
+    if !isdirectory(directory)
+      call xolox#misc#msg#info("notes.vim %s: Creating notes directory %s (first run?) ..", g:xolox#notes#version, directory)
+      call mkdir(directory, 'p')
+    endif
+    if filewritable(directory) != 2
+      call xolox#misc#msg#warn("notes.vim %s: The notes directory %s is not writable!", g:xolox#notes#version, directory)
+    endif
+  endfor
 endfunction
 
 function! xolox#notes#shortcut() " {{{1
@@ -595,6 +602,17 @@ endfunction
 
 " Miscellaneous functions. {{{1
 
+function! xolox#notes#find_directories(include_shadow_directory) " {{{2
+  " Generate a list of absolute pathnames of all notes directories.
+  let directories = copy(g:notes_directories)
+  " Add the shadow directory?
+  if a:include_shadow_directory
+    call add(directories, g:notes_shadowdir)
+  endif
+  " Return the expanded directory pathnames.
+  return map(directories, 'expand(v:val)')
+endfunction
+
 function! xolox#notes#set_filetype() " {{{2
   " Load the notes file type if not already loaded.
   if &filetype != 'notes'
@@ -646,7 +664,14 @@ endfunction
 
 function! xolox#notes#buffer_is_note() " {{{2
   " Check whether the current buffer is a note (with the correct file type and path).
-  return xolox#notes#filetype_is_note(&ft) && xolox#misc#path#equals(expand('%:p:h'), g:notes_directory)
+  let bufpath = expand('%:p:h')
+  if xolox#notes#filetype_is_note(&ft)
+    for directory in xolox#notes#find_directories(1)
+      if xolox#misc#path#equals(bufpath, directory)
+        return 1
+      endif
+    endfor
+  endif
 endfunction
 
 function! xolox#notes#current_title() " {{{2
@@ -771,10 +796,13 @@ function! s:python_command(...) " {{{2
   if !(executable(python) && filereadable(script))
     call xolox#misc#msg#debug("notes.vim %s: We can't execute the %s script!", g:xolox#notes#version, script)
   else
-    let options = ['--database', g:notes_indexfile, '--notes', g:notes_directory]
+    let options = ['--database', g:notes_indexfile]
     if &ignorecase
       call add(options, '--ignore-case')
     endif
+    for directory in xolox#notes#find_directories(0)
+      call extend(options, ['--notes', directory])
+    endfor
     let arguments = map([script] + options + a:000, 'xolox#misc#escape#shell(v:val)')
     let command = join([python] + arguments)
     call xolox#misc#msg#debug("notes.vim %s: Executing external command %s", g:xolox#notes#version, command)
@@ -812,9 +840,11 @@ function! xolox#notes#get_fnames(include_shadow_notes) " {{{3
   " Get list with filenames of all existing notes.
   if !s:have_cached_names
     let starttime = xolox#misc#timer#start()
-    let pattern = xolox#misc#path#merge(g:notes_directory, '*')
-    let listing = glob(xolox#misc#path#absolute(pattern))
-    call extend(s:cached_fnames, filter(split(listing, '\n'), 'filereadable(v:val)'))
+    for directory in xolox#notes#find_directories(0)
+      let pattern = xolox#misc#path#merge(directory, '*')
+      let listing = glob(xolox#misc#path#absolute(pattern))
+      call extend(s:cached_fnames, filter(split(listing, '\n'), 'filereadable(v:val)'))
+    endfor
     let s:have_cached_names = 1
     call xolox#misc#timer#stop('notes.vim %s: Cached note filenames in %s.', g:xolox#notes#version, starttime)
   endif
@@ -891,10 +921,23 @@ function! xolox#notes#title_to_fname(title) " {{{3
   " Convert note {title} to absolute filename.
   let filename = xolox#misc#path#encode(a:title)
   if filename != ''
-    let pathname = xolox#misc#path#merge(g:notes_directory, filename . g:notes_suffix)
+    let directory = xolox#notes#select_directory()
+    let pathname = xolox#misc#path#merge(directory, filename . g:notes_suffix)
     return xolox#misc#path#absolute(pathname)
   endif
   return ''
+endfunction
+
+function! xolox#notes#select_directory() " {{{3
+  " Pick the best suited directory for creating a new note.
+  let bufdir = expand('%:p:h')
+  let notes_directories = xolox#notes#find_directories(0)
+  for directory in notes_directories
+    if xolox#misc#path#equals(bufdir, directory)
+      return directory
+    endif
+  endfor
+  return notes_directories[0]
 endfunction
 
 function! xolox#notes#cache_add(filename, title) " {{{3

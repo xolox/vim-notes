@@ -3,7 +3,7 @@
 # Python script for fast text file searching using keyword index on disk.
 #
 # Author: Peter Odding <peter@peterodding.com>
-# Last Change: April 21, 2013
+# Last Change: May 12, 2013
 # URL: http://peterodding.com/code/vim/notes/
 # License: MIT
 #
@@ -24,7 +24,7 @@
 """
 Usage: search-notes.py [OPTIONS] KEYWORD...
 
-Search a directory of plain text files using a full text index,
+Search one or more directories of plain text files using a full text index,
 updated automatically during each invocation of the program.
 
 Valid options include:
@@ -32,7 +32,7 @@ Valid options include:
   -i, --ignore-case    ignore case of keyword(s)
   -l, --list=SUBSTR    list keywords matching substring
   -d, --database=FILE  set path to keywords index file
-  -n, --notes=DIR      set directory with user notes
+  -n, --notes=DIR      set directory with user notes (can be repeated)
   -e, --encoding=NAME  set character encoding of notes
   -v, --verbose        make more noise
   -h, --help           show this message and exit
@@ -100,7 +100,7 @@ class NotesIndex:
       sys.exit(2)
     # Define the command line option defaults.
     self.database_file = '~/.vim/misc/notes/index.pickle'
-    self.user_directory = '~/.vim/misc/notes/user/'
+    self.user_directories = ['~/.vim/misc/notes/user/']
     self.character_encoding = 'UTF-8'
     self.case_sensitive = True
     self.keyword_filter = None
@@ -114,7 +114,7 @@ class NotesIndex:
       elif opt in ('-d', '--database'):
         self.database_file = arg
       elif opt in ('-n', '--notes'):
-        self.user_directory = arg
+        self.user_directories.append(arg)
       elif opt in ('-e', '--encoding'):
         self.character_encoding = arg
       elif opt in ('-v', '--verbose'):
@@ -125,15 +125,16 @@ class NotesIndex:
       else:
         assert False, "Unhandled option"
     self.logger.debug("Index file: %s", self.database_file)
-    self.logger.debug("Notes directory: %s", self.user_directory)
+    self.logger.debug("Notes directories: %r", self.user_directories)
     self.logger.debug("Character encoding: %s", self.character_encoding)
     if self.keyword_filter is not None:
       self.keyword_filter = self.decode(self.keyword_filter)
     # Canonicalize pathnames, check validity.
     self.database_file = self.munge_path(self.database_file)
-    self.user_directory = self.munge_path(self.user_directory)
-    if not os.path.isdir(self.user_directory):
-      sys.stderr.write("Notes directory %s doesn't exist!\n" % self.user_directory)
+    self.user_directories = map(self.munge_path, self.user_directories)
+    self.user_directories = filter(os.path.isdir, self.user_directories)
+    if not any(os.path.isdir(p) for p in self.user_directories):
+      sys.stderr.write("None of the notes directories exist!\n")
       sys.exit(1)
     # Return tokenized keyword arguments.
     return [self.normalize(k) for k in self.tokenize(' '.join(keywords))]
@@ -168,14 +169,17 @@ class NotesIndex:
     update_timer = Timer()
     # First we find the filenames and last modified times of the notes on disk.
     notes_on_disk = {}
-    for filename in os.listdir(self.user_directory):
-      # Vim swap files are ignored.
-      if (filename != '.swp' and not fnmatch.fnmatch(filename, '.s??')
-          and not fnmatch.fnmatch(filename, '.*.s??')):
-        abspath = os.path.join(self.user_directory, filename)
-        if os.path.isfile(abspath):
-          notes_on_disk[abspath] = os.path.getmtime(abspath)
-    self.logger.info("Found %i notes in %s ..", len(notes_on_disk), self.user_directory)
+    last_count = 0
+    for directory in self.user_directories:
+      for filename in os.listdir(directory):
+        # Vim swap files are ignored.
+        if (filename != '.swp' and not fnmatch.fnmatch(filename, '.s??')
+            and not fnmatch.fnmatch(filename, '.*.s??')):
+          abspath = os.path.join(directory, filename)
+          if os.path.isfile(abspath):
+            notes_on_disk[abspath] = os.path.getmtime(abspath)
+      self.logger.info("Found %i notes in %s ..", len(notes_on_disk) - last_count, directory)
+      last_count = len(notes_on_disk)
     # Check for updated and/or deleted notes since the last run?
     if not self.first_use:
       for filename in self.index['files'].keys():
