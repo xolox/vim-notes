@@ -1,13 +1,13 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: April 28, 2013
+" Last Change: May 13, 2013
 " URL: http://peterodding.com/code/vim/misc/
 
 " The following integer will be bumped whenever a change in the miscellaneous
 " scripts breaks backwards compatibility. This enables my Vim plug-ins to fail
 " early when they detect an incompatible version, instead of breaking at the
 " worst possible moments :-).
-let g:xolox#misc#compat#version = 2
+let g:xolox#misc#compat#version = 3
 
 " Remember the directory where the miscellaneous scripts are loaded from
 " so the user knows which plug-in to update if incompatibilities arise.
