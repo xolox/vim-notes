@@ -1,15 +1,15 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 12, 2013
+" Last Change: May 13, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.19'
+let g:xolox#notes#version = '0.20'
 let s:scriptdir = expand('<sfile>:p:h')
 
-call xolox#misc#compat#check('notes', 2)
+call xolox#misc#compat#check('notes', 3)
 
 function! xolox#notes#init() " {{{1
   " Initialize the configuration of the notes plug-in. This is a bit tricky:
@@ -809,16 +809,16 @@ function! s:python_command(...) " {{{2
     if !filereadable(xolox#misc#path#absolute(g:notes_indexfile))
       call xolox#misc#msg#info("notes.vim %s: Building keyword index (this might take a while) ..", g:xolox#notes#version)
     endif
-    let output = xolox#misc#str#trim(system(command))
-    if v:shell_error
-      call xolox#misc#msg#warn("notes.vim %s: Search script failed with output: %s", g:xolox#notes#version, output)
+    let result = xolox#misc#os#exec({'command': command, 'check': 0})
+    if result['exit_code'] != 0
+      call xolox#misc#msg#warn("notes.vim %s: Search script failed!", g:xolox#notes#version)
     else
-      let lines = split(output, "\n")
+      let lines = result['stdout']
       call xolox#misc#msg#debug("notes.vim %s: Search script output: %s", g:xolox#notes#version, string(lines))
       if !empty(lines) && lines[0] == 'Python works fine!'
         return lines[1:]
       endif
-      call xolox#misc#msg#debug("notes.vim %s: Search script returned invalid output :-(", g:xolox#notes#version)
+      call xolox#misc#msg#warn("notes.vim %s: Search script returned invalid output :-(", g:xolox#notes#version)
     endif
   endif
 endfunction
