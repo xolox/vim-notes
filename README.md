@@ -187,6 +187,10 @@ This command makes it easy to find all notes related to the current file: If you
 
 If you execute the `:RecentNotes` command it will open a Vim buffer that lists all your notes grouped by the day they were edited, starting with your most recently edited note. If you pass an argument to `:RecentNotes` it will filter the list of notes by matching the title of each note against the argument which is interpreted as a Vim pattern.
 
+### The `:MostRecentNote` command
+
+This command edits your most recently edited note (whether you just opened the note or made changes to it). The plug-in will remember the most recent note between restarts of Vim and is shared between all instances of Vim.
+
 ### The `:ShowTaggedNotes` command
 
 To show a list of all notes that contains *@tags* you can use the `:ShowTaggedNotes` command. If you pass a count to this command it will limit the list of tags to those that have been used at least this many times. For example the following two commands show tags that have been used at least ten times:

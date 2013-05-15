@@ -31,8 +31,9 @@ Contents ~
    2. Accelerated searching with Python |notes-accelerated-searching-with-python|
   7. The |:RelatedNotes| command
   8. The |:RecentNotes| command
-  9. The |:ShowTaggedNotes| command
-  10. The |:IndexTaggedNotes| command
+  9. The |:MostRecentNote| command
+  10. The |:ShowTaggedNotes| command
+  11. The |:IndexTaggedNotes| command
  5. Mappings                                                    |notes-mappings|
   1. Insert mode mappings                           |notes-insert-mode-mappings|
  6. Customizing the syntax highlighting of notes
@@ -420,6 +421,13 @@ all your notes grouped by the day they were edited, starting with your most
 recently edited note. If you pass an argument to |:RecentNotes| it will filter
 the list of notes by matching the title of each note against the argument
 which is interpreted as a Vim pattern.
+
+-------------------------------------------------------------------------------
+The *:MostRecentNote* command
+
+This command edits your most recently edited note (whether you just opened the
+note or made changes to it). The plug-in will remember the most recent note
+between restarts of Vim and is shared between all instances of Vim.
 
 -------------------------------------------------------------------------------
 The *:ShowTaggedNotes* command

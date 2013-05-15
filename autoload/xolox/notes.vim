@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 14, 2013
+" Last Change: May 16, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.20.1'
+let g:xolox#notes#version = '0.21'
 let s:scriptdir = expand('<sfile>:p:h')
 
 call xolox#misc#compat#check('notes', 3)
@@ -56,6 +56,11 @@ function! xolox#notes#init() " {{{1
   " Define the default location for the tag name index (used for completion).
   if !exists('g:notes_tagsindex')
     let g:notes_tagsindex = xolox#misc#path#merge(localdir, 'tags.txt')
+  endif
+  " Define the default location for the file containing the most recent note's
+  " filename.
+  if !exists('g:notes_recentindex')
+    let g:notes_recentindex = xolox#misc#path#merge(localdir, 'recent.txt')
   endif
   " Define the default action when a note's filename and title are out of sync.
   if !exists('g:notes_title_sync')
@@ -529,75 +534,6 @@ function! xolox#notes#related(bang) " {{{1
     endtry
   endif
   call xolox#misc#timer#stop("notes.vim %s: Found related notes in %s.", g:xolox#notes#version, starttime)
-endfunction
-
-function! xolox#notes#recent(bang, title_filter) " {{{1
-  call xolox#misc#msg#info("notes.vim %s: Generating overview of recent notes ..", g:xolox#notes#version)
-  " Show generated note listing all notes by last modified time.
-  let starttime = xolox#misc#timer#start()
-  let bufname = '[Recent Notes]'
-  " Prepare a buffer to hold the list of recent notes.
-  call xolox#misc#buffer#prepare({
-        \ 'name': bufname,
-        \ 'path': xolox#misc#path#merge($HOME, bufname)})
-  " Filter notes by pattern (argument)?
-  let notes = []
-  let title_filter = '\v' . a:title_filter
-  for [fname, title] in items(xolox#notes#get_fnames_and_titles(0))
-    if title =~? title_filter
-      call add(notes, [getftime(fname), title])
-    endif
-  endfor
-  " Start note with "You have N note(s) [matching filter]".
-  let readme = "You have "
-  if empty(notes)
-    let readme .= "no notes"
-  elseif len(notes) == 1
-    let readme .= "one note"
-  else
-    let readme .= len(notes) . " notes"
-  endif
-  if a:title_filter != ''
-    let quote_format = xolox#notes#unicode_enabled() ? '‘%s’' : "`%s'"
-    let readme .= " matching " . printf(quote_format, a:title_filter)
-  endif
-  " Explain the sorting of the notes.
-  if empty(notes)
-    let readme .= "."
-  elseif len(notes) == 1
-    let readme .= ", it's listed below."
-  else
-    let readme .= ". They're listed below grouped by the day they were edited, starting with your most recently edited note."
-  endif
-  " Add the generated text to the buffer.
-  call setline(1, ["Recent notes", "", readme])
-  " Reformat the text in the buffer to auto-wrap.
-  normal Ggqq
-  " Sort, group and format the list of (matching) notes.
-  let last_date = ''
-  let list_item_format = xolox#notes#unicode_enabled() ? ' • %s' : ' * %s'
-  call sort(notes)
-  call reverse(notes)
-  let lines = []
-  for [ftime, title] in notes
-    let date = xolox#notes#friendly_date(ftime)
-    if date != last_date
-      call add(lines, '')
-      call add(lines, substitute(date, '^\w', '\u\0', '') . ':')
-      let last_date = date
-    endif
-    call add(lines, printf(list_item_format, title))
-  endfor
-  " Add the formatted list of notes to the buffer.
-  call setline(line('$') + 1, lines)
-  " Load the notes file type.
-  call xolox#notes#set_filetype()
-  let &l:statusline = bufname
-  " Change the status line
-  " Lock the buffer contents.
-  call xolox#misc#buffer#lock()
-  " And we're done!
-  call xolox#misc#timer#stop("notes.vim %s: Generated %s in %s.", g:xolox#notes#version, bufname, starttime)
 endfunction
 
 " Miscellaneous functions. {{{1

@@ -1,6 +1,6 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 12, 2013
+" Last Change: May 16, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 " Support for automatic update using the GLVS plug-in.
@@ -19,7 +19,8 @@ command! -bar -bang -nargs=? -complete=customlist,xolox#notes#cmd_complete Note 
 command! -bar -bang -nargs=? -complete=customlist,xolox#notes#cmd_complete DeleteNote call xolox#notes#delete(<q-bang>, <q-args>)
 command! -bang -nargs=? -complete=customlist,xolox#notes#keyword_complete SearchNotes call xolox#notes#search(<q-bang>, <q-args>)
 command! -bar -bang RelatedNotes call xolox#notes#related(<q-bang>)
-command! -bar -bang -nargs=? RecentNotes call xolox#notes#recent(<q-bang>, <q-args>)
+command! -bar -bang -nargs=? RecentNotes call xolox#notes#recent#show(<q-bang>, <q-args>)
+command! -bar -bang MostRecentNote call xolox#notes#recent#edit(<q-bang>)
 command! -bar -count=1 ShowTaggedNotes call xolox#notes#tags#show_tags(<count>)
 command! -bar IndexTaggedNotes call xolox#notes#tags#create_index()
 
