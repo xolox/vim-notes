@@ -1,11 +1,15 @@
-" Vim auto-load script
+" Tab completion for user defined commands.
+"
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: March 15, 2011
+" Last Change: May 19, 2013
 " URL: http://peterodding.com/code/vim/misc/
 
-" Keyword completion from the current buffer for user defined commands.
-
 function! xolox#misc#complete#keywords(arglead, cmdline, cursorpos)
+  " This function can be used to perform keyword completion for user defined
+  " Vim commands based on the contents of the current buffer. Here's an
+  " example of how you would use it:
+  "
+  "     :command -nargs=* -complete=customlist,xolox#misc#complete#keywords MyCmd call s:MyCmd(<f-args>)
   let words = {}
   for line in getline(1, '$')
     for word in split(line, '\W\+')

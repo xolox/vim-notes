@@ -1,4 +1,5 @@
-" Vim auto-load script
+" Operating system interfaces.
+"
 " Author: Peter Odding <peter@peterodding.com>
 " Last Change: May 19, 2013
 " URL: http://peterodding.com/code/vim/misc/
@@ -6,14 +7,38 @@
 let g:xolox#misc#os#version = '0.3'
 
 function! xolox#misc#os#is_win() " {{{1
-  " Check whether Vim is running on Microsoft Windows.
+  " Returns 1 (true) when on Microsoft Windows, 0 (false) otherwise.
   return has('win16') || has('win32') || has('win64')
 endfunction
 
 function! xolox#misc#os#exec(options) " {{{1
-  " Execute an external command (hiding the console on Windows when possible).
-  " NB: Everything below is wrapped in a try/finally block to guarantee
-  " cleanup of temporary files.
+  " Execute an external command (hiding the console on Microsoft Windows when
+  " my [vim-shell plug-in] [vim-shell] is installed).
+  "
+  " Expects a dictionary with the following key/value pairs as the first
+  " argument:
+  "
+  " - **command** (required): The command line to execute
+  " - **async** (optional): set this to 1 (true) to execute the command in the
+  "   background (asynchronously)
+  " - **stdin** (optional): a string or list of strings with the input for the
+  "   external command
+  " - **check** (optional): set this to 0 (false) to disable checking of the
+  "   exit code of the external command (by default an exception will be
+  "   raised when the command fails)
+  "
+  " Returns a dictionary with one or more of the following key/value pairs:
+  "
+  " - **command** (always available): the generated command line that was used
+  "   to run the external command
+  " - **exit_code** (only in synchronous mode): the exit status of the
+  "   external command (an integer, zero on success)
+  " - **stdout** (only in synchronous mode): the output of the command on the
+  "   standard output stream (a list of strings, one for each line)
+  " - **stderr** (only in synchronous mode): the output of the command on the
+  "   standard error stream (as a list of strings, one for each line)
+  "
+  " [vim-shell]: http://peterodding.com/code/vim/shell/
   try
 
     " Unpack the options.
