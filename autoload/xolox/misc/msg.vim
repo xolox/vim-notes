@@ -1,6 +1,6 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: March 15, 2011
+" Last Change: May 19, 2013
 " URL: http://peterodding.com/code/vim/misc/
 
 if !exists('g:xolox_message_buffer')
@@ -56,7 +56,10 @@ function! s:show_message(hlgroup, args)
       augroup END
       execute 'echohl' a:hlgroup
       " Redraw to avoid |hit-enter| prompt.
-      redraw | echomsg message
+      redraw
+      for line in split(message, "\n")
+        echomsg line
+      endfor
       if g:xolox_message_buffer > 0
         call add(g:xolox_messages, message)
         if len(g:xolox_messages) > g:xolox_message_buffer
