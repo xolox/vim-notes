@@ -1,7 +1,7 @@
 " Compatibility checking.
 "
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 19, 2013
+" Last Change: May 20, 2013
 " URL: http://peterodding.com/code/vim/misc/
 "
 " This Vim script defines a version number for the miscellaneous scripts. Each
@@ -12,20 +12,25 @@
 " scripts breaks backwards compatibility. This enables my Vim plug-ins to fail
 " early when they detect an incompatible version, instead of breaking at the
 " worst possible moments :-).
-let g:xolox#misc#compat#version = 6
+let g:xolox#misc#compat#version = 7
 
 " Remember the directory where the miscellaneous scripts are loaded from
 " so the user knows which plug-in to update if incompatibilities arise.
-let s:misc_directory = fnamemodify(expand('<sfile>'), ':p:h')
+let s:misc_directory = fnamemodify(expand('<sfile>'), ':~:h')
 
-function! xolox#misc#compat#check(plugin_name, required_version)
-  " Expects two arguments: The name of a Vim plug-in and the version of the
-  " miscellaneous scripts expected by the plug-in. When the active version of
-  " the miscellaneous scripts has a different version, this will raise an
-  " error message that explains what went wrong.
+function! xolox#misc#compat#check(plugin_name, plugin_version, required_version)
+  " Expects three arguments:
+  "
+  " 1. The name of the Vim plug-in that is using the miscellaneous scripts
+  " 2. The version of the Vim plug-in that is using the miscellaneous scripts
+  " 3. The version of the miscellaneous scripts expected by the plug-in
+  "
+  " When the loaded version of the miscellaneous scripts is different from the
+  " version expected by the plug-in, this function will raise an error message
+  " that explains what went wrong.
   if a:required_version != g:xolox#misc#compat#version
-    let msg = "The %s plug-in requires version %i of the miscellaneous scripts, however version %i was loaded from %s!"
-    throw printf(msg, a:plugin_name, a:required_version, g:xolox#misc#compat#version, s:misc_directory)
+    let msg = "The %s %s plug-in expects version %i of the miscellaneous scripts, however version %i was loaded from the directory %s! Please upgrade your plug-ins to the latest releases to resolve this problem."
+    throw printf(msg, a:plugin_name, a:plugin_version, a:required_version, g:xolox#misc#compat#version, s:misc_directory)
   endif
 endfunction
 
