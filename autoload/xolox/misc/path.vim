@@ -1,53 +1,72 @@
-" Vim auto-load script
+" Pathname manipulation functions.
+"
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: April 28, 2013
+" Last Change: May 19, 2013
 " URL: http://peterodding.com/code/vim/misc/
 
 let s:windows_compatible = has('win32') || has('win64')
 let s:mac_os_x_compatible = has('macunix')
 
 function! xolox#misc#path#which(...) " {{{1
-  " Scan the executable search path for programs.
+  " Scan the executable search path (`$PATH`) for one or more external
+  " programs. Expects one or more string arguments with program names. Returns
+  " a list with the absolute pathnames of all found programs. Here's an
+  " example:
+  "
+  "     :echo xolox#misc#path#which('gvim', 'vim')
+  "     ['/usr/local/bin/gvim',
+  "      '/usr/bin/gvim',
+  "      '/usr/local/bin/vim',
+  "      '/usr/bin/vim']
   let extensions = s:windows_compatible ? split($PATHEXT, ';') : ['']
   let matches = []
   let checked = {}
-  for directory in split($PATH, s:windows_compatible ? ';' : ':')
-    let directory = xolox#misc#path#absolute(directory)
-    if !has_key(checked, directory)
-      if isdirectory(directory)
-        for program in a:000
-          for extension in extensions
-            let path = xolox#misc#path#merge(directory, program . extension)
-            if executable(path)
-              call add(matches, path)
-            endif
-          endfor
-        endfor
-      endif
-      let checked[directory] = 1
-    endif
+  for program in a:000
+    for extension in extensions
+      for directory in split($PATH, s:windows_compatible ? ';' : ':')
+        let directory = xolox#misc#path#absolute(directory)
+        if isdirectory(directory)
+          let path = xolox#misc#path#merge(directory, program . extension)
+          if executable(path)
+            call add(matches, path)
+          endif
+        endif
+      endfor
+    endfor
   endfor
   return matches
 endfunction
 
 function! xolox#misc#path#split(path) " {{{1
-  " Split a pathname into a list of path components.
+  " Split a pathname (the first and only argument) into a list of pathname
+  " components.
+  "
+  " On Windows, pathnames starting with two slashes or backslashes are UNC
+  " paths where the leading slashes are significant... In this case we split
+  " like this:
+  "
+  " - Input: `'//server/share/directory'`
+  " - Result: `['//server', 'share', 'directory']`
+  "
+  " Everything except Windows is treated like UNIX until someone has a better
+  " suggestion :-). In this case we split like this:
+  "
+  " - Input: `'/foo/bar/baz'`
+  " - Result: `['/', 'foo', 'bar', 'baz']`
+  "
+  " To join a list of pathname components back into a single pathname string,
+  " use the `xolox#misc#path#join()` function.
   if type(a:path) == type('')
     if s:windows_compatible
       if a:path =~ '^[\/][\/]'
-        " On Windows, pathnames starting with two slashes or backslashes are
-        " UNC paths where the leading slashes are significant... In this case
-        " we split like this:
-        "   '//server/share/directory' -> ['//server', 'share', 'directory']
+        " UNC pathname.
         return split(a:path, '\%>2c[\/]\+')
       else
         " If it's not a UNC path we can simply split on slashes & backslashes.
         return split(a:path, '[\/]\+')
       endif
     else
-      " Everything except Windows is treated like UNIX until someone
-      " has a better suggestion :-). In this case we split like this:
-      "   '/foo/bar/baz' -> ['/', 'foo', 'bar', 'baz']
+      " Everything else is treated as UNIX.
       let absolute = (a:path =~ '^/')
       let segments = split(a:path, '/\+')
       return absolute ? insert(segments, '/') : segments
@@ -57,7 +76,10 @@ function! xolox#misc#path#split(path) " {{{1
 endfunction
 
 function! xolox#misc#path#join(parts) " {{{1
-  " Join a list of pathname components into a single pathname.
+  " Join a list of pathname components (the first and only argument) into a
+  " single pathname string. This is the counterpart to the
+  " `xolox#misc#path#split()` function and it expects a list of pathname
+  " components as returned by `xolox#misc#path#split()`.
   if type(a:parts) == type([])
     if s:windows_compatible
       return join(a:parts, xolox#misc#path#directory_separator())
@@ -78,9 +100,9 @@ function! xolox#misc#path#directory_separator() " {{{1
 endfunction
 
 function! xolox#misc#path#absolute(path) " {{{1
-  " Canonicalize and resolve a pathname, regardless of whether it exists. This
-  " is intended to support string comparison to determine whether two pathnames
-  " point to the same directory or file.
+  " Canonicalize and resolve a pathname, *regardless of whether it exists*.
+  " This is intended to support string comparison to determine whether two
+  " pathnames point to the same directory or file.
   if type(a:path) == type('')
     let path = a:path
     " Make the pathname absolute.
@@ -110,7 +132,8 @@ function! xolox#misc#path#absolute(path) " {{{1
 endfunction
 
 function! xolox#misc#path#relative(path, base) " {{{1
-  " Make an absolute pathname relative.
+  " Make an absolute pathname (the first argument) relative to a directory
+  " (the second argument).
   let path = xolox#misc#path#split(a:path)
   let base = xolox#misc#path#split(a:base)
   while path != [] && base != [] && path[0] == base[0]
@@ -123,9 +146,9 @@ endfunction
 
 
 function! xolox#misc#path#merge(parent, child, ...) " {{{1
-  " Join a directory and filename into a single pathname.
-  " TODO Use isabs()!
+  " Join a directory pathname and filename into a single pathname.
   if type(a:parent) == type('') && type(a:child) == type('')
+    " TODO Use xolox#misc#path#is_relative()?
     if s:windows_compatible
       let parent = substitute(a:parent, '[\\/]\+$', '', '')
       let child = substitute(a:child, '^[\\/]\+', '', '')
@@ -158,7 +181,8 @@ function! xolox#misc#path#commonprefix(paths) " {{{1
 endfunction
 
 function! xolox#misc#path#encode(path) " {{{1
-  " Encode a pathname so it can be used as a filename.
+  " Encode a pathname so it can be used as a filename. This uses URL encoding
+  " to encode special characters.
   if s:windows_compatible
     let mask = '[*|\\/:"<>?%]'
   elseif s:mac_os_x_compatible
@@ -171,7 +195,7 @@ endfunction
 
 
 function! xolox#misc#path#decode(encoded_path) " {{{1
-  " Decode a pathname previously encoded with xolox#misc#path#encode().
+  " Decode a pathname previously encoded with `xolox#misc#path#encode()`.
   return substitute(a:encoded_path, '%\(\x\x\?\)', '\=nr2char("0x" . submatch(1))', 'g')
 endfunction
 
@@ -188,7 +212,8 @@ else
 endif
 
 function! xolox#misc#path#is_relative(path) " {{{1
-  " Check whether a path is relative.
+  " Returns true (1) when the pathname given as the first argument is
+  " relative, false (0) otherwise.
   if a:path =~ '^\w\+://'
     return 0
   elseif s:windows_compatible
@@ -199,7 +224,7 @@ function! xolox#misc#path#is_relative(path) " {{{1
 endfunction
 
 function! xolox#misc#path#tempdir() " {{{1
-  " Create a temporary directory and return the path.
+  " Create a temporary directory and return the pathname of the directory.
   if !exists('s:tempdir_counter')
     let s:tempdir_counter = 1
   endif

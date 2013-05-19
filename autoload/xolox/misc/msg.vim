@@ -1,6 +1,7 @@
-" Vim auto-load script
+" Functions to interact with the user.
+"
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: March 15, 2011
+" Last Change: May 19, 2013
 " URL: http://peterodding.com/code/vim/misc/
 
 if !exists('g:xolox_message_buffer')
@@ -12,29 +13,34 @@ if !exists('g:xolox_messages')
   let g:xolox_messages = []
 endif
 
-" Show a formatted informational message to the user.
-
-function! xolox#misc#msg#info(...)
+function! xolox#misc#msg#info(...) " {{{1
+  " Show a formatted informational message to the user. This function has the
+  " same argument handling as Vim's [printf()] [printf] function.
+  "
+  " [printf]: http://vimdoc.sourceforge.net/htmldoc/eval.html#printf()
   call s:show_message('title', a:000)
 endfunction
 
-" Show a formatted warning message to the user.
-
-function! xolox#misc#msg#warn(...)
+function! xolox#misc#msg#warn(...) " {{{1
+  " Show a formatted warning message to the user. This function has the same
+  " argument handling as Vim's [printf()] [printf] function.
   call s:show_message('warningmsg', a:000)
 endfunction
 
-" Show a formatted debugging message to the user?
-
-function! xolox#misc#msg#debug(...)
+function! xolox#misc#msg#debug(...) " {{{1
+  " Show a formatted debugging message to the user, if the user has enabled
+  " increased verbosity by setting Vim's ['verbose'] [verbose] option to one
+  " (1) or higher. This function has the same argument handling as Vim's
+  " [printf()] [printf] function.
+  "
+  " [verbose]: http://vimdoc.sourceforge.net/htmldoc/options.html#'verbose'
   if &vbs >= 1
     call s:show_message('question', a:000)
   endif
 endfunction
 
-" The implementation of info() and warn().
-
-function! s:show_message(hlgroup, args)
+function! s:show_message(hlgroup, args) " {{{1
+  " The implementation of info() and warn().
   let nargs = len(a:args)
   if nargs == 1
     let message = a:args[0]
@@ -56,7 +62,10 @@ function! s:show_message(hlgroup, args)
       augroup END
       execute 'echohl' a:hlgroup
       " Redraw to avoid |hit-enter| prompt.
-      redraw | echomsg message
+      redraw
+      for line in split(message, "\n")
+        echomsg line
+      endfor
       if g:xolox_message_buffer > 0
         call add(g:xolox_messages, message)
         if len(g:xolox_messages) > g:xolox_message_buffer
@@ -70,7 +79,8 @@ function! s:show_message(hlgroup, args)
   endif
 endfunction
 
-function! s:clear_message()
+function! s:clear_message() " {{{1
+  " Callback to clear message after some time has passed.
   echo ''
   let &more = s:more_save
   let &showmode = s:smd_save
