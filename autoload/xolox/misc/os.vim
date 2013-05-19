@@ -1,9 +1,9 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 13, 2013
+" Last Change: May 19, 2013
 " URL: http://peterodding.com/code/vim/misc/
 
-let g:xolox#misc#os#version = '0.2'
+let g:xolox#misc#os#version = '0.3'
 
 function! xolox#misc#os#is_win() " {{{1
   " Check whether Vim is running on Microsoft Windows.
@@ -70,6 +70,14 @@ function! xolox#misc#os#exec(options) " {{{1
         else
           call xolox#misc#msg#warn("os.vim %s: I don't know how to run commands asynchronously on your platform! Falling back to synchronous mode.", g:xolox#misc#os#version)
         endif
+      endif
+
+      " Execute the command line using 'sh' instead of the default shell,
+      " because we assume that standard output and standard error can be
+      " redirected separately, but (t)csh does not support this.
+      if has('unix')
+        call xolox#misc#msg#debug("os.vim %s: Generated shell expression: %s", g:xolox#misc#os#version, cmd)
+        let cmd = printf('sh -c %s', xolox#misc#escape#shell(cmd))
       endif
 
       " Let the user know what's happening (in case they're interested).
