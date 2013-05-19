@@ -87,19 +87,29 @@ function! xolox#misc#os#exec(options) " {{{1
 
     endif
 
-    let result = {}
+    " Return the results as a dictionary with one or more key/value pairs.
+    let result = {'command': cmd}
     if !async
+      let result['exit_code'] = exit_code
+      let result['stdout'] = s:readfile(tempout)
+      let result['stderr'] = s:readfile(temperr)
       " If we just executed a synchronous command and the caller didn't
       " specifically ask us *not* to check the exit code of the external
       " command, we'll do so now.
       if get(a:options, 'check', 1) && exit_code != 0
-        let msg = "os.vim %s: External command failed with exit code %d: %s"
-        throw printf(msg, g:xolox#misc#os#version, result['exit_code'], result['command'])
+        " Prepare an error message with enough details so the user can investigate.
+        let msg = printf("os.vim %s: External command failed with exit code %d!", g:xolox#misc#os#version, result['exit_code'])
+        let msg .= printf("\nCommand line: %s", result['command'])
+        " If the external command reported an error, we'll include it in our message.
+        if !empty(result['stderr'])
+          " This is where we would normally expect to find an error message.
+          let msg .= printf("\nOutput on standard output stream:\n%s", join(result['stderr'], "\n"))
+        elseif !empty(result['stdout'])
+          " Exuberant Ctags on Windows XP reports errors on standard output :-x.
+          let msg .= printf("\nOutput on standard error stream:\n%s", join(result['stdout'], "\n"))
+        endif
+        throw msg
       endif
-      " Return the results as a dictionary with three key/value pairs.
-      let result['exit_code'] = exit_code
-      let result['stdout'] = s:readfile(tempout)
-      let result['stderr'] = s:readfile(temperr)
     endif
     return result
 
