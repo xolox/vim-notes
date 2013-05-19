@@ -58,7 +58,7 @@ endfunction
 
 function! xolox#misc#option#eval_tags(value, ...)
   let pathnames = []
-  let first_only = exists('a:1') && a:1
+  let first_only = exists('a:1') ? a:1 : 0
   for pattern in xolox#misc#option#split_tags(a:value)
     " Make buffer relative pathnames absolute.
     if pattern =~ '^\./'
@@ -78,7 +78,7 @@ function! xolox#misc#option#eval_tags(value, ...)
       return pathnames[0]
     endif
   endfor
-  return firstonly ? '' : pathnames
+  return first_only ? '' : pathnames
 endfunction
 
 " vim: ts=2 sw=2 et
