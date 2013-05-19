@@ -1,6 +1,6 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: April 28, 2013
+" Last Change: May 19, 2013
 " URL: http://peterodding.com/code/vim/misc/
 
 let s:windows_compatible = has('win32') || has('win64')
@@ -11,21 +11,18 @@ function! xolox#misc#path#which(...) " {{{1
   let extensions = s:windows_compatible ? split($PATHEXT, ';') : ['']
   let matches = []
   let checked = {}
-  for directory in split($PATH, s:windows_compatible ? ';' : ':')
-    let directory = xolox#misc#path#absolute(directory)
-    if !has_key(checked, directory)
-      if isdirectory(directory)
-        for program in a:000
-          for extension in extensions
-            let path = xolox#misc#path#merge(directory, program . extension)
-            if executable(path)
-              call add(matches, path)
-            endif
-          endfor
-        endfor
-      endif
-      let checked[directory] = 1
-    endif
+  for program in a:000
+    for extension in extensions
+      for directory in split($PATH, s:windows_compatible ? ';' : ':')
+        let directory = xolox#misc#path#absolute(directory)
+        if isdirectory(directory)
+          let path = xolox#misc#path#merge(directory, program . extension)
+          if executable(path)
+            call add(matches, path)
+          endif
+        endif
+      endfor
+    endfor
   endfor
   return matches
 endfunction
