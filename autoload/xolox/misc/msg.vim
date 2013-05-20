@@ -1,7 +1,7 @@
 " Functions to interact with the user.
 "
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 19, 2013
+" Last Change: May 20, 2013
 " URL: http://peterodding.com/code/vim/misc/
 
 if !exists('g:xolox_message_buffer')
@@ -32,8 +32,6 @@ function! xolox#misc#msg#debug(...) " {{{1
   " increased verbosity by setting Vim's ['verbose'] [verbose] option to one
   " (1) or higher. This function has the same argument handling as Vim's
   " [printf()] [printf] function.
-  "
-  " [verbose]: http://vimdoc.sourceforge.net/htmldoc/options.html#'verbose'
   if &vbs >= 1
     call s:show_message('question', a:000)
   endif

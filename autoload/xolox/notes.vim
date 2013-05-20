@@ -6,10 +6,10 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.21.2'
+let g:xolox#notes#version = '0.21.3'
 let s:scriptdir = expand('<sfile>:p:h')
 
-call xolox#misc#compat#check('notes.vim', g:xolox#notes#version, 7)
+call xolox#misc#compat#check('notes.vim', g:xolox#notes#version, 9)
 
 function! xolox#notes#init() " {{{1
   " Initialize the configuration of the notes plug-in. This is a bit tricky:

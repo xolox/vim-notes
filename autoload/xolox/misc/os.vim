@@ -1,14 +1,43 @@
 " Operating system interfaces.
 "
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 19, 2013
+" Last Change: May 20, 2013
 " URL: http://peterodding.com/code/vim/misc/
 
-let g:xolox#misc#os#version = '0.3'
+let g:xolox#misc#os#version = '0.4'
 
 function! xolox#misc#os#is_win() " {{{1
   " Returns 1 (true) when on Microsoft Windows, 0 (false) otherwise.
   return has('win16') || has('win32') || has('win64')
+endfunction
+
+function! xolox#misc#os#find_vim() " {{{1
+  " Returns the program name of Vim as a string. On Windows and UNIX this
+  " simply returns [v:progname] [progname] while on Mac OS X there is some
+  " special magic to find MacVim's executable even though it's usually not on
+  " the executable search path.
+  "
+  " [progname]: http://vimdoc.sourceforge.net/htmldoc/eval.html#v:progname
+  let progname = ''
+  if has('macunix')
+    " Special handling for Mac OS X where MacVim is usually not on the $PATH.
+    call xolox#misc#msg#debug("os.vim %s: Trying MacVim workaround to find Vim executable ..", g:xolox#misc#os#version)
+    let segments = xolox#misc#path#split($VIMRUNTIME)
+    if segments[-3:] == ['Resources', 'vim', 'runtime']
+      let progname = xolox#misc#path#join(segments[0:-4] + ['MacOS', 'Vim'])
+      call xolox#misc#msg#debug("os.vim %s: The MacVim workaround resulted in the Vim executable %s.", g:xolox#misc#os#version, string(progname))
+    endif
+  endif
+  if empty(progname)
+    call xolox#misc#msg#debug("os.vim %s: Looking for Vim executable named %s on search path ..", g:xolox#misc#os#version, string(v:progname))
+    let candidates = xolox#misc#path#which(v:progname)
+    if !empty(candidates)
+      call xolox#misc#msg#debug("os.vim %s: Found %i candidate(s) on search path: %s.", g:xolox#misc#os#version, len(candidates), string(candidates))
+      let progname = candidates[0]
+    endif
+  endif
+  call xolox#misc#msg#debug("os.vim %s: Reporting Vim executable %s.", g:xolox#misc#os#version, string(progname))
+  return progname
 endfunction
 
 function! xolox#misc#os#exec(options) " {{{1
@@ -63,9 +92,7 @@ function! xolox#misc#os#exec(options) " {{{1
     if !async
       let tempout = tempname()
       let temperr = tempname()
-      let cmd = printf('(%s) 1>%s 2>%s', cmd,
-            \ xolox#misc#escape#shell(tempout),
-            \ xolox#misc#escape#shell(temperr))
+      let cmd = printf('(%s) 1>%s 2>%s', cmd, xolox#misc#escape#shell(tempout), xolox#misc#escape#shell(temperr))
     endif
 
     " If A) we're on Windows, B) the vim-shell plug-in is installed and C) the

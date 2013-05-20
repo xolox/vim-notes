@@ -12,7 +12,7 @@
 " scripts breaks backwards compatibility. This enables my Vim plug-ins to fail
 " early when they detect an incompatible version, instead of breaking at the
 " worst possible moments :-).
-let g:xolox#misc#compat#version = 7
+let g:xolox#misc#compat#version = 9
 
 " Remember the directory where the miscellaneous scripts are loaded from
 " so the user knows which plug-in to update if incompatibilities arise.
