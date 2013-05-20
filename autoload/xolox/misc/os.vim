@@ -63,9 +63,7 @@ function! xolox#misc#os#exec(options) " {{{1
     if !async
       let tempout = tempname()
       let temperr = tempname()
-      let cmd = printf('(%s) 1>%s 2>%s', cmd,
-            \ xolox#misc#escape#shell(tempout),
-            \ xolox#misc#escape#shell(temperr))
+      let cmd = printf('(%s) 1>%s 2>%s', cmd, xolox#misc#escape#shell(tempout), xolox#misc#escape#shell(temperr))
     endif
 
     " If A) we're on Windows, B) the vim-shell plug-in is installed and C) the
