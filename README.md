@@ -11,10 +11,16 @@ merges, so that a repository checkout of a plug-in contains everything that's
 needed to get started. This means the git repository of the miscellaneous
 scripts is only used to track changes in a central, public place.
 
-## Documentation for the included functions
+## Function documentation
 
-The documentation of the 41 functions below was extracted from 12 Vim scripts
-on May 19, 2013 at 23:27.
+Below is the documentation for the functions included in the miscellaneous
+scripts. The function descriptions given below were extracted from the source
+code using a bit of Python code.
+
+<!-- Start of generated documentation -->
+
+The documentation of the 43 functions below was extracted from
+12 Vim scripts on May 20, 2013 at 14:42.
 
 ### Handling of special buffers
 
@@ -75,10 +81,15 @@ worst possible moments :-).
 
 #### The `xolox#misc#compat#check()` function
 
-Expects two arguments: The name of a Vim plug-in and the version of the
-miscellaneous scripts expected by the plug-in. When the active version of
-the miscellaneous scripts has a different version, this will raise an
-error message that explains what went wrong.
+Expects three arguments:
+
+1. The name of the Vim plug-in that is using the miscellaneous scripts
+2. The version of the Vim plug-in that is using the miscellaneous scripts
+3. The version of the miscellaneous scripts expected by the plug-in
+
+When the loaded version of the miscellaneous scripts is different from the
+version expected by the plug-in, this function will raise an error message
+that explains what went wrong.
 
 ### Tab completion for user defined commands
 
@@ -159,8 +170,6 @@ Show a formatted debugging message to the user, if the user has enabled
 increased verbosity by setting Vim's ['verbose'] [verbose] option to one
 (1) or higher. This function has the same argument handling as Vim's
 [printf()] [printf] function.
-
-[verbose]: http://vimdoc.sourceforge.net/htmldoc/options.html#'verbose'
 
 ### Integration between Vim and its environment
 
@@ -248,6 +257,15 @@ otherwise (so by default) a list with all matches is returned.
 #### The `xolox#misc#os#is_win()` function
 
 Returns 1 (true) when on Microsoft Windows, 0 (false) otherwise.
+
+#### The `xolox#misc#os#find_vim()` function
+
+Returns the program name of Vim as a string. On Windows and UNIX this
+simply returns [v:progname] [progname] while on Mac OS X there is some
+special magic to find MacVim's executable even though it's usually not on
+the executable search path.
+
+[progname]: http://vimdoc.sourceforge.net/htmldoc/eval.html#v:progname
 
 #### The `xolox#misc#os#exec()` function
 
@@ -395,11 +413,20 @@ to be embedded, you write `%s` and you pass the list returned by
 [verbose]: http://vimdoc.sourceforge.net/htmldoc/options.html#'verbose'
 [printf]: http://vimdoc.sourceforge.net/htmldoc/eval.html#printf()
 
+#### The `xolox#misc#timer#force()` function
+
+Show a formatted message to the user. This function has the same argument
+handling as Vim's [printf()] [printf] function with one difference: At the
+point where you want the elapsed time to be embedded, you write `%s` and
+you pass the list returned by `xolox#misc#timer#start()` as an argument.
+
 #### The `xolox#misc#timer#format_timespan()` function
 
 Format a time stamp (a string containing a formatted floating point
 number) into a human friendly format, for example 70 seconds is phrased as
 "1 minute and 10 seconds".
+
+<!-- End of generated documentation -->
 
 ## Management of changes to the miscellaneous scripts
 
