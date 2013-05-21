@@ -1,3 +1,9 @@
+" This Vim script was modified by a Python script that I use to manage the
+" inclusion of miscellaneous functions in the plug-ins that I publish to Vim
+" Online and GitHub. Please don't edit this file, instead make your changes on
+" the 'dev' branch of the git repository (thanks!). This file was generated on
+" May 21, 2013 at 03:00.
+
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
 " Last Change: May 5, 2013
@@ -16,7 +22,7 @@ function! xolox#notes#tags#load_index() " {{{1
     " Guard against recursive calls.
     return s:currently_tagged_notes
   endif
-  let starttime = xolox#misc#timer#start()
+  let starttime = xolox#notes#misc#timer#start()
   let indexfile = expand(g:notes_tagsindex)
   let lastmodified = getftime(indexfile)
   if lastmodified == -1
@@ -34,28 +40,28 @@ function! xolox#notes#tags#load_index() " {{{1
     endfor
     let s:previously_tagged_notes = deepcopy(s:currently_tagged_notes)
     let s:last_disk_sync = lastmodified
-    call xolox#misc#timer#stop("notes.vim %s: Loaded tags index in %s.", g:xolox#notes#version, starttime)
+    call xolox#notes#misc#timer#stop("notes.vim %s: Loaded tags index in %s.", g:xolox#notes#version, starttime)
   endif
   return s:currently_tagged_notes
 endfunction
 
 function! xolox#notes#tags#create_index() " {{{1
   let exists = filereadable(expand(g:notes_tagsindex))
-  let starttime = xolox#misc#timer#start()
+  let starttime = xolox#notes#misc#timer#start()
   let filenames = xolox#notes#get_fnames(0)
   let s:currently_tagged_notes = {}
   for idx in range(len(filenames))
     if filereadable(filenames[idx])
       let title = xolox#notes#fname_to_title(filenames[idx])
-      call xolox#misc#msg#info("notes.vim %s: Scanning note %i/%i: %s", g:xolox#notes#version, idx + 1, len(filenames), title)
+      call xolox#notes#misc#msg#info("notes.vim %s: Scanning note %i/%i: %s", g:xolox#notes#version, idx + 1, len(filenames), title)
       call xolox#notes#tags#scan_note(title, join(readfile(filenames[idx]), "\n"))
     endif
   endfor
   if xolox#notes#tags#save_index()
     let s:previously_tagged_notes = deepcopy(s:currently_tagged_notes)
-    call xolox#misc#timer#stop('notes.vim %s: %s tags index in %s.', g:xolox#notes#version, exists ? "Updated" : "Created", starttime)
+    call xolox#notes#misc#timer#stop('notes.vim %s: %s tags index in %s.', g:xolox#notes#version, exists ? "Updated" : "Created", starttime)
   else
-    call xolox#misc#msg#warn("notes.vim %s: Failed to save tags index as %s!", g:xolox#notes#version, g:notes_tagsindex)
+    call xolox#notes#misc#msg#warn("notes.vim %s: Failed to save tags index as %s!", g:xolox#notes#version, g:notes_tagsindex)
   endif
 endfunction
 
@@ -64,7 +70,7 @@ function! xolox#notes#tags#save_index() " {{{1
   let existingfile = filereadable(indexfile)
   let nothingchanged = (s:currently_tagged_notes == s:previously_tagged_notes)
   if existingfile && nothingchanged
-    call xolox#misc#msg#debug("notes.vim %s: Index not dirty so not saved.", g:xolox#notes#version)
+    call xolox#notes#misc#msg#debug("notes.vim %s: Index not dirty so not saved.", g:xolox#notes#version)
     return 1 " Nothing to be done
   else
     let lines = []
@@ -73,10 +79,10 @@ function! xolox#notes#tags#save_index() " {{{1
     endfor
     let status = writefile(lines, indexfile) == 0
     if status
-      call xolox#misc#msg#debug("notes.vim %s: Index saved to %s.", g:xolox#notes#version, g:notes_tagsindex)
+      call xolox#notes#misc#msg#debug("notes.vim %s: Index saved to %s.", g:xolox#notes#version, g:notes_tagsindex)
       let s:last_disk_sync = getftime(indexfile)
     else
-      call xolox#misc#msg#debug("notes.vim %s: Failed to save index to %s.", g:xolox#notes#version, g:notes_tagsindex)
+      call xolox#notes#misc#msg#debug("notes.vim %s: Failed to save index to %s.", g:xolox#notes#version, g:notes_tagsindex)
     endif
     return status
   endif
@@ -98,7 +104,7 @@ function! xolox#notes#tags#scan_note(title, text) " {{{1
           let s:currently_tagged_notes[token] = [a:title]
         elseif index(s:currently_tagged_notes[token], a:title) == -1
           " Keep the tags sorted.
-          call xolox#misc#list#binsert(s:currently_tagged_notes[token], a:title, 1)
+          call xolox#notes#misc#list#binsert(s:currently_tagged_notes[token], a:title, 1)
         endif
       endif
     endif
@@ -118,7 +124,7 @@ endfunction
 
 function! xolox#notes#tags#show_tags(minsize) " {{{1
   " TODO Mappings to "zoom" in/out (show only big tags).
-  let starttime = xolox#misc#timer#start()
+  let starttime = xolox#notes#misc#timer#start()
   call xolox#notes#tags#load_index()
   let lines = [s:buffer_name, '']
   if empty(s:currently_tagged_notes)
@@ -188,12 +194,12 @@ function! xolox#notes#tags#show_tags(minsize) " {{{1
     endif
     call insert(lines, message, 2)
   endif
-  call xolox#misc#buffer#prepare(s:buffer_name)
+  call xolox#notes#misc#buffer#prepare(s:buffer_name)
   call setline(1, lines)
-  call xolox#misc#buffer#lock()
+  call xolox#notes#misc#buffer#lock()
   call xolox#notes#set_filetype()
   setlocal nospell wrap
-  call xolox#misc#timer#stop('notes.vim %s: Generated [%s] in %s.', g:xolox#notes#version, s:buffer_name, starttime)
+  call xolox#notes#misc#timer#stop('notes.vim %s: Generated [%s] in %s.', g:xolox#notes#version, s:buffer_name, starttime)
 endfunction
 
 function! xolox#notes#tags#friendly_name(tagname) " {{{1
