@@ -1,6 +1,6 @@
 # Easy note taking in Vim
 
-The notes.vim plug-in for the [Vim text editor] [vim] makes it easy to manage your notes in Vim:
+The vim-notes plug-in for the [Vim text editor] [vim] makes it easy to manage your notes in Vim:
 
  * **Starting a new note:** Execute the `:Note` command to create a new buffer and load the appropriate file type and syntax
    * You can also start a note with Vim commands like `:edit`, `:tabedit` and `:split` by starting the filename with `note:`, as in `:edit note:todo` (the part after `note:` doesn't have to be the complete note title and if it's empty a new note will be created)
@@ -19,13 +19,17 @@ The notes.vim plug-in for the [Vim text editor] [vim] makes it easy to manage yo
  * **Writing aids:** The included file type plug-in contains mappings for automatic curly quotes, arrows and list bullets and supports completion of note titles using Control-X Control-U and completion of tags using Control-X Control-O
  * **Embedded file types:** The included syntax script supports embedded highlighting using blocks marked with `{{{type … }}}` which allows you to embed highlighted code and configuration snippets in your notes
 
-Here's a screen shot of the syntax mode using the [slate] [slate] color scheme:
+Here's a screen shot of the syntax mode using the [Slate] [slate] color scheme and the font [Monaco] [monaco]:
 
 ![Syntax mode screen shot](http://peterodding.com/code/vim/notes/syntax.png)
 
 ## Install & usage
 
-Unzip the most recent [ZIP archive] [download] file inside your Vim profile directory (usually this is `~/.vim` on UNIX and `%USERPROFILE%\vimfiles` on Windows), restart Vim and execute the command `:helptags ~/.vim/doc` (use `:helptags ~\vimfiles\doc` instead on Windows). To get started execute `:Note` or `:edit note:`, this will start a new note that contains instructions on how to continue from there (and how to use the plug-in in general).
+*Please note that the vim-notes plug-in requires my vim-misc plug-in which is separately distributed.*
+
+Unzip the most recent ZIP archives of the [vim-notes] [download-notes] and [vim-misc] [download-misc] plug-ins inside your Vim profile directory (usually this is `~/.vim` on UNIX and `%USERPROFILE%\vimfiles` on Windows), restart Vim and execute the command `:helptags ~/.vim/doc` (use `:helptags ~\vimfiles\doc` instead on Windows). To get started execute `:Note` or `:edit note:`, this will start a new note that contains instructions on how to continue from there (and how to use the plug-in in general).
+
+If you prefer you can also use [Pathogen] [pathogen], [Vundle] [vundle] or a similar tool to install & update the [vim-notes] [github-notes] and [vim-misc] [github-misc] plug-ins using a local clone of the git repository.
 
 ## Options
 
@@ -302,14 +306,19 @@ This software is licensed under the [MIT license] [mit].
 
 [ctrlwf]: http://vimdoc.sourceforge.net/htmldoc/windows.html#CTRL-W_f
 [ctrlwgf]: http://vimdoc.sourceforge.net/htmldoc/windows.html#CTRL-W_gf
-[download]: http://peterodding.com/code/vim/downloads/notes.zip
+[download-misc]: http://peterodding.com/code/vim/downloads/misc.zip
+[download-notes]: http://peterodding.com/code/vim/downloads/notes.zip
 [edit]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:edit
 [gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
+[github-misc]: http://github.com/xolox/vim-misc
+[github-notes]: http://github.com/xolox/vim-notes
 [highlight]: http://vimdoc.sourceforge.net/htmldoc/syntax.html#:highlight
 [levenshtein]: http://en.wikipedia.org/wiki/Levenshtein_distance
 [mapleader]: http://vimdoc.sourceforge.net/htmldoc/map.html#mapleader
 [mit]: http://en.wikipedia.org/wiki/MIT_License
 [modeline]: http://vimdoc.sourceforge.net/htmldoc/options.html#modeline
+[monaco]: http://en.wikipedia.org/wiki/Monaco_(typeface)
+[pathogen]: http://www.vim.org/scripts/script.php?script_id=2332
 [pathogen]: http://www.vim.org/scripts/script.php?script_id=2332
 [python]: http://python.org/
 [shell]: http://www.vim.org/scripts/script.php?script_id=3123
@@ -324,4 +333,5 @@ This software is licensed under the [MIT license] [mit].
 [vimgrep]: http://vimdoc.sourceforge.net/htmldoc/quickfix.html#:vimgrep
 [vimrc]: http://vimdoc.sourceforge.net/htmldoc/starting.html#vimrc
 [voom]: http://www.vim.org/scripts/script.php?script_id=2657
+[vundle]: https://github.com/gmarik/vundle
 [write]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:write

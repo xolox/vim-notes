@@ -49,7 +49,7 @@ Contents ~
                                                             *notes-introduction*
 Introduction ~
 
-The notes.vim plug-in for the Vim text editor makes it easy to manage your
+The vim-notes plug-in for the Vim text editor makes it easy to manage your
 notes in Vim:
 
  - Starting a new note: Execute the |:Note| command to create a new buffer and
@@ -112,20 +112,29 @@ notes in Vim:
    highlighting using blocks marked with '{{{type … }}}' which allows you to
    embed highlighted code and configuration snippets in your notes
 
-Here's a screen shot of the syntax mode using the slate [3] color scheme:
+Here's a screen shot of the syntax mode using the Slate [3] color scheme and
+the font Monaco [4]:
 
-    Syntax mode screen shot, see reference [4]
+    Syntax mode screen shot, see reference [5]
 
 ===============================================================================
                                                            *notes-install-usage*
 Install & usage ~
 
-Unzip the most recent ZIP archive [5] file inside your Vim profile directory
-(usually this is '~/.vim' on UNIX and '%USERPROFILE%\vimfiles' on Windows),
-restart Vim and execute the command ':helptags ~/.vim/doc' (use ':helptags
-~\vimfiles\doc' instead on Windows). To get started execute |:Note| or ':edit
-note:', this will start a new note that contains instructions on how to
-continue from there (and how to use the plug-in in general).
+Please note that the vim-notes plug-in requires my vim-misc plug-in which is
+separately distributed.
+
+Unzip the most recent ZIP archives of the vim-notes [6] and vim-misc [7]
+plug-ins inside your Vim profile directory (usually this is '~/.vim' on UNIX
+and '%USERPROFILE%\vimfiles' on Windows), restart Vim and execute the command
+':helptags ~/.vim/doc' (use ':helptags ~\vimfiles\doc' instead on Windows). To
+get started execute |:Note| or ':edit note:', this will start a new note that
+contains instructions on how to continue from there (and how to use the
+plug-in in general).
+
+If you prefer you can also use Pathogen [8], Vundle [9] or a similar tool to
+install & update the vim-notes [10] and vim-misc [11] plug-ins using a local
+clone of the git repository.
 
 ===============================================================================
                                                                  *notes-options*
@@ -151,7 +160,7 @@ on circumstances but should work for most people:
 
  - If the profile directory where the plug-in is installed is writable, the
    directory 'misc/notes/user' under the profile directory is used. This is
-   for compatibility with Pathogen [6]; the notes will be stored inside the
+   for compatibility with Pathogen [8]; the notes will be stored inside the
    plug-in's bundle.
 
  - If the above doesn't work out, the default depends on the platform:
@@ -582,14 +591,14 @@ Other plug-ins that work well with the notes plug-in ~
                                                                  *notes-utl.vim*
 utl.vim ~
 
-The utl.vim [7] universal text linking plug-in enables links between your
+The utl.vim [12] universal text linking plug-in enables links between your
 notes, other local files and remote resources like web pages.
 
 -------------------------------------------------------------------------------
                                                                *notes-shell.vim*
 shell.vim ~
 
-My shell.vim [8] plug-in also enables easy navigation between your notes and
+My shell.vim [13] plug-in also enables easy navigation between your notes and
 environment like local files and directories, web pages and e-mail addresses
 by providing key mappings and commands to e.g. open the file/URL under the
 text cursor. This plug-in can also change Vim to full screen which can be
@@ -599,7 +608,7 @@ really nice for large notes.
                                                                     *notes-voom*
 VOoM ~
 
-The VOoM [9] outlining plug-in should work well for notes if you use the
+The VOoM [14] outlining plug-in should work well for notes if you use the
 Markdown style headers starting with '#', however it has been reported that
 this combination may not always work so well in practice (sometimes losing
 notes!)
@@ -609,7 +618,7 @@ notes!)
 Txtfmt ~
 
 If the text formatting supported by the notes plug-in is not enough for you,
-consider trying the Txtfmt [10] (The Vim Highlighter) plug-in. To use the two
+consider trying the Txtfmt [15] (The Vim Highlighter) plug-in. To use the two
 plug-ins together, create the file 'after/ftplugin/notes.vim' inside your Vim
 profile with the following contents:
 >
@@ -623,13 +632,13 @@ Contact ~
 If you have questions, bug reports, suggestions, etc. the author can be
 contacted at peter@peterodding.com. The latest version is available at
 http://peterodding.com/code/vim/notes/ and http://github.com/xolox/vim-notes.
-If you like the script please vote for it on Vim Online [11].
+If you like the script please vote for it on Vim Online [16].
 
 ===============================================================================
                                                                  *notes-license*
 License ~
 
-This software is licensed under the MIT license [12]. Copyright 2013 Peter
+This software is licensed under the MIT license [17]. Copyright 2013 Peter
 Odding <peter@peterodding.com>.
 
 ===============================================================================
@@ -639,14 +648,19 @@ References ~
 [1] http://en.wikipedia.org/wiki/Levenshtein_distance
 [2] http://python.org/
 [3] http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
-[4] http://peterodding.com/code/vim/notes/syntax.png
-[5] http://peterodding.com/code/vim/downloads/notes.zip
-[6] http://www.vim.org/scripts/script.php?script_id=2332
-[7] http://www.vim.org/scripts/script.php?script_id=293
-[8] http://www.vim.org/scripts/script.php?script_id=3123
-[9] http://www.vim.org/scripts/script.php?script_id=2657
-[10] http://www.vim.org/scripts/script.php?script_id=2208
-[11] http://www.vim.org/scripts/script.php?script_id=3375
-[12] http://en.wikipedia.org/wiki/MIT_License
+[4] http://en.wikipedia.org/wiki/Monaco_(typeface)
+[5] http://peterodding.com/code/vim/notes/syntax.png
+[6] http://peterodding.com/code/vim/downloads/notes.zip
+[7] http://peterodding.com/code/vim/downloads/misc.zip
+[8] http://www.vim.org/scripts/script.php?script_id=2332
+[9] https://github.com/gmarik/vundle
+[10] http://github.com/xolox/vim-notes
+[11] http://github.com/xolox/vim-misc
+[12] http://www.vim.org/scripts/script.php?script_id=293
+[13] http://www.vim.org/scripts/script.php?script_id=3123
+[14] http://www.vim.org/scripts/script.php?script_id=2657
+[15] http://www.vim.org/scripts/script.php?script_id=2208
+[16] http://www.vim.org/scripts/script.php?script_id=3375
+[17] http://en.wikipedia.org/wiki/MIT_License
 
 vim: ft=help
