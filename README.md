@@ -319,7 +319,6 @@ This software is licensed under the [MIT license] [mit].
 [modeline]: http://vimdoc.sourceforge.net/htmldoc/options.html#modeline
 [monaco]: http://en.wikipedia.org/wiki/Monaco_(typeface)
 [pathogen]: http://www.vim.org/scripts/script.php?script_id=2332
-[pathogen]: http://www.vim.org/scripts/script.php?script_id=2332
 [python]: http://python.org/
 [shell]: http://www.vim.org/scripts/script.php?script_id=3123
 [slate]: http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
