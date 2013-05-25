@@ -33,7 +33,7 @@ If you prefer you can also use [Pathogen] [pathogen], [Vundle] [vundle] or a sim
 
 ## Options
 
-All options have reasonable defaults so if the plug-in works after installation you don't need to change any options. They options are available for people who like to customize how the plug-in works. These options can be configured in your [vimrc script] [vimrc] by including a line like this:
+All options have reasonable defaults so if the plug-in works after installation you don't need to change any options. The options are available for people who like to customize how the plug-in works. You can set these options in your [vimrc script] [vimrc] by including a line like this:
 
     :let g:notes_directories = ['~/Documents/Notes', '~/Dropbox/Shared Notes']
 
