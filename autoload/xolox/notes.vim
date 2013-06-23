@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 22, 2013
+" Last Change: June 23, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -86,11 +86,13 @@ function! xolox#notes#init() " {{{1
     let g:notes_ruler_text = repeat(' ', ((&tw > 0 ? &tw : 79) - 5) / 2) . '* * *'
   endif
   " Symbols used to denote list items with increasing nesting levels.
+  let g:notes_unicode_bullets = ['•', '◦', '▸', '▹', '▪', '▫']
+  let g:notes_ascii_bullets = ['*', '-', '+']
   if !exists('g:notes_list_bullets')
     if xolox#notes#unicode_enabled()
-      let g:notes_list_bullets = ['•', '◦', '▸', '▹', '▪', '▫']
+      let g:notes_list_bullets = g:notes_unicode_bullets
     else
-      let g:notes_list_bullets = ['*', '-', '+']
+      let g:notes_list_bullets = g:notes_ascii_bullets
     endif
   endif
 endfunction

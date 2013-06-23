@@ -1,18 +1,32 @@
 <!doctype html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset="{{ encoding }}">
+    <title>{{ title }}</title>
     <style type="text/css">
       body {
-        margin: 1em 25%% 10em 1em;
-        font-family: sans-serif;
+        margin: 1em auto 10em auto;
+        width: 50em;
+        max-width: 90%;
+        line-height: 1.5em;
       }
       h1 {
         text-align: center;
       }
+      h2, h3 {
+        border-bottom: 1px solid #eee;
+      }
+      h1, h2, h3, h4, h5, h6 {
+        font-family: sans-serif;
+        letter-spacing: 1px;
+        color: navy;
+      }
+      h2, h3, h4, h5, h6 {
+        margin: 2em 0 0 0;
+      }
     </style>
   </head>
   <body>
-    %s
+    {{ content }}
   </body>
 </html>

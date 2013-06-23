@@ -11,9 +11,12 @@ function! xolox#notes#markdown#convert_note(note_text)
   " and converts it to the Markdown format, returning a string.
   "
   " [markdown]: http://en.wikipedia.org/wiki/Markdown
+  let starttime = xolox#misc#timer#start()
   let blocks = xolox#notes#parser#parse_note(a:note_text)
   call map(blocks, 'xolox#notes#markdown#convert_block(v:val)')
-  return join(blocks, "\n\n")
+  let markdown = join(blocks, "\n\n")
+  call xolox#misc#timer#stop("notes.vim %s: Converted note to Markdown in %s.", g:xolox#notes#version, starttime)
+  return markdown
 endfunction
 
 function! xolox#notes#markdown#convert_block(block)
@@ -27,6 +30,20 @@ function! xolox#notes#markdown#convert_block(block)
   elseif a:block.type == 'code'
     let text = xolox#misc#str#dedent(a:block.text)
     return xolox#misc#str#indent(text, 4)
+  elseif a:block.type == 'list'
+    let items = []
+    if a:block.ordered
+      let counter = 1
+      for item in a:block.items
+        call add(items, printf("%d. %s", counter, item))
+        let counter += 1
+      endfor
+    else
+      for item in a:block.items
+        call add(items, printf("- %s", item))
+      endfor
+    endif
+    return join(items, "\n\n")
   elseif a:block.type == 'paragraph'
     return a:block.text
   else
