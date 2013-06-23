@@ -21,14 +21,16 @@ function! xolox#notes#parser#parse_note(text) " {{{1
     elseif chr == '{' && context.peek(3) == "\{\{\{"
       let block = s:parse_code_block(context)
     else
-      let lookahead = s:match_list_item(context, 0)
-      if lookahead =~ 'list'
-        let block = s:parse_list(context)
-      elseif lookahead == 'divider'
-        let block = s:parse_divider(context)
-      elseif !empty(lookahead)
-        let msg = "Programming error! Unsupported lookahead type: %s."
-        throw printf(msg, string(lookahead))
+      let lookahead = s:match_bullet_or_divider(context, 0)
+      if !empty(lookahead)
+        if lookahead.type =~ 'list'
+          let block = s:parse_list(context)
+        elseif lookahead.type == 'divider'
+          let block = s:parse_divider(context)
+        else
+          let msg = "Programming error! Unsupported lookahead: %s."
+          throw printf(msg, string(lookahead))
+        endif
       else
         let block = s:parse_paragraph(context)
       endif
@@ -90,8 +92,9 @@ function! s:create_parse_context(text) " {{{1
   return context
 endfunction
 
-function! s:match_list_item(context, consume_lookahead) " {{{1
+function! s:match_bullet_or_divider(context, consume_lookahead) " {{{1
   " Check whether the current line starts with a list bullet.
+  let result = {}
   let context = copy(a:context)
   let line = context.next_line()
   let bullet = matchstr(line, s:bullet_pattern)
@@ -99,16 +102,26 @@ function! s:match_list_item(context, consume_lookahead) " {{{1
     call xolox#misc#msg#debug("notes.vim %s: Matched list item bullet '%s' ..", g:xolox#notes#version, bullet)
     " Disambiguate list bullets from horizontal dividers.
     if line =~ '^\s\+\*\s\*\s\*$'
-      return 'divider'
+      let result.type = 'divider'
+    else
+      " We matched a bullet! Now we still need to distinguish ordered from
+      " unordered list items.
+      if bullet =~ '\d'
+        let result.type = 'ordered-list'
+      else
+        let result.type = 'unordered-list'
+      endif
+      let indent = matchstr(bullet, '^\s*')
+      let result.indent = len(indent)
+      call xolox#misc#msg#debug("notes.vim %s: Matched raw indent %s (%i).", g:xolox#notes#version, string(indent), result.indent)
+      " Since we already skipped the whitespace and matched the bullet, it's
+      " very little work to mark our position for the benefit of the caller.
+      if a:consume_lookahead
+        let a:context.index += len(bullet)
+      endif
     endif
-    " We matched a bullet! Now we still need to distinguish ordered from
-    " unordered list items.
-    if a:consume_lookahead
-      let a:context.index += len(bullet)
-    endif
-    return (bullet =~ '\d') ? 'ordered-list' : 'unordered-list'
   endif
-  return ''
+  return result
 endfunction
 
 function! s:match_line(context) " {{{1
@@ -180,22 +193,26 @@ function! s:parse_divider(context) " {{{1
 endfunction
 
 function! s:parse_list(context) " {{{1
+  call xolox#misc#msg#debug("notes.vim %s: Parsing list ..", g:xolox#notes#version)
   " Parse the upcoming sequence of list items in the input stream.
   let list_type = 'unknown'
   let items = []
   let lines = []
+  let indent = 0
   " Outer loop to consume one or more list items.
   while a:context.has_more()
-    let type = s:match_list_item(a:context, 1)
-    if !empty(type)
+    let lookahead = s:match_bullet_or_divider(a:context, 1)
+    if !empty(lookahead)
+      " Save the previous list item with the old indent level.
+      call s:save_item(items, lines, indent)
+      let lines = []
+      " Set the new indent level (three spaces -> one level).
+      let indent = lookahead.indent / 3
       " The current line starts with a list bullet.
       if list_type == 'unknown'
         " The first bullet determines the type of list.
-        let list_type = type
+        let list_type = lookahead.type
       endif
-      " Save the previous list item?
-      call s:save_item(items, lines)
-      let lines = []
     endif
     let line = s:match_line(a:context)
     if line[-1:] == "\n"
@@ -210,14 +227,16 @@ function! s:parse_list(context) " {{{1
       "          list item that contains multiple paragraphs...
     endif
   endwhile
-  call s:save_item(items, lines)
+  call s:save_item(items, lines, indent)
   return {'type': 'list', 'ordered': (list_type == 'ordered-list'), 'items': items}
 endfunction
 
-function! s:save_item(items, lines)
+function! s:save_item(items, lines, indent)
   let text = join(a:lines, "\n")
   if text =~ '\S'
-    call add(a:items, xolox#misc#str#compact(text))
+    let text = xolox#misc#str#compact(text)
+    call xolox#misc#msg#debug("notes.vim %s: Matched list item with indent of %i: %s", g:xolox#notes#version, a:indent, text)
+    call add(a:items, {'text': text, 'indent': a:indent})
   endif
 endfunction
 
@@ -290,7 +309,7 @@ function! xolox#notes#parser#test_parsing_of_code_blocks()
 endfunction
 
 function! xolox#notes#parser#test_parsing_of_list_items()
-  call xolox#misc#test#assert_equals([{'type': 'title', 'text': 'Just the title'}, {'type': 'list', 'ordered': 1, 'items': ['item one', 'item two', 'item three']}], xolox#notes#parser#parse_note("Just the title\n\n1. item one\n2. item two\n3. item three"))
+  call xolox#misc#test#assert_equals([{'type': 'title', 'text': 'Just the title'}, {'type': 'list', 'ordered': 1, 'items': [{'indent': 0, 'text': 'item one'}, {'indent': 0, 'text': 'item two'}, {'indent': 0, 'text': 'item three'}]}], xolox#notes#parser#parse_note("Just the title\n\n1. item one\n2. item two\n3. item three"))
 endfunction
 
 call xolox#notes#parser#run_tests()

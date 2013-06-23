@@ -46,12 +46,14 @@ function! xolox#notes#markdown#convert_block(block) " {{{1
     if a:block.ordered
       let counter = 1
       for item in a:block.items
-        call add(items, printf("%d. %s", counter, item))
+        let indent = repeat(' ', item.indent * 4)
+        call add(items, printf("%s%d. %s", indent, counter, item.text))
         let counter += 1
       endfor
     else
       for item in a:block.items
-        call add(items, printf("- %s", item))
+        let indent = repeat(' ', item.indent * 4)
+        call add(items, printf("%s- %s", indent, item.text))
       endfor
     endif
     return join(items, "\n\n")
