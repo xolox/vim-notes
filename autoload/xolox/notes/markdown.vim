@@ -63,6 +63,13 @@ function! xolox#notes#markdown#convert_block(block) " {{{1
       endfor
     endif
     return join(items, "\n\n")
+  elseif a:block.type == 'block-quote'
+    let lines = []
+    for line in a:block.lines
+      let prefix = repeat('>', line.level)
+      call add(lines, printf('%s %s', prefix, line.text))
+    endfor
+    return join(lines, "\n")
   elseif a:block.type == 'paragraph'
     let text = s:make_urls_explicit(a:block.text)
     if len(text) <= 50 && text =~ ':$'

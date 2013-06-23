@@ -20,6 +20,8 @@ function! xolox#notes#parser#parse_note(text) " {{{1
       continue
     elseif chr == '#'
       let block = s:parse_heading(context)
+    elseif chr == '>'
+      let block = s:parse_block_quote(context)
     elseif chr == '{' && context.peek(3) == "\{\{\{"
       let block = s:parse_code_block(context)
     else
@@ -161,6 +163,21 @@ function! s:parse_heading(context) " {{{1
   return {'type': 'heading', 'level': level, 'text': text}
 endfunction
 
+function! s:parse_block_quote(context) " {{{1
+  " Parse the upcoming block quote in the input stream.
+  let lines = []
+  while a:context.has_more()
+    if a:context.peek(1) != '>'
+      break
+    endif
+    let line = s:match_line(a:context)
+    let level = len(matchstr(line, '^>\+'))
+    let text = matchstr(line, '^>\+\s*\zs.\{-}\ze\_s*$')
+    call add(lines, {'level': level, 'text': text})
+  endwhile
+  return {'type': 'block-quote', 'lines': lines}
+endfunction
+
 function! s:parse_code_block(context) " {{{1
   " Parse the upcoming code block in the input stream.
   let language = ''
@@ -294,6 +311,7 @@ function! xolox#notes#parser#run_tests() " {{{1
   call xolox#misc#test#wrap('xolox#notes#parser#test_parsing_of_paragraphs')
   call xolox#misc#test#wrap('xolox#notes#parser#test_parsing_of_code_blocks')
   call xolox#misc#test#wrap('xolox#notes#parser#test_parsing_of_list_items')
+  call xolox#misc#test#wrap('xolox#notes#parser#test_parsing_of_block_quotes')
   call xolox#misc#test#summarize()
 endfunction
 
@@ -316,6 +334,10 @@ endfunction
 
 function! xolox#notes#parser#test_parsing_of_list_items()
   call xolox#misc#test#assert_equals([{'type': 'title', 'text': 'Just the title'}, {'type': 'list', 'ordered': 1, 'items': [{'indent': 0, 'text': 'item one'}, {'indent': 0, 'text': 'item two'}, {'indent': 0, 'text': 'item three'}]}], xolox#notes#parser#parse_note("Just the title\n\n1. item one\n2. item two\n3. item three"))
+endfunction
+
+function! xolox#notes#parser#test_parsing_of_block_quotes()
+  call xolox#misc#test#assert_equals([{'type': 'title', 'text': 'Just the title'}, {'type': 'block-quote', 'lines': [{'level': 1, 'text': 'block'}, {'level': 2, 'text': 'quoted'}, {'level': 1, 'text': 'text'}]}], xolox#notes#parser#parse_note("Just the title\n\n> block\n>> quoted\n> text"))
 endfunction
 
 call xolox#notes#parser#run_tests()
