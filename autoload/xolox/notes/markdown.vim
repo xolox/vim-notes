@@ -64,7 +64,11 @@ function! xolox#notes#markdown#convert_block(block) " {{{1
     endif
     return join(items, "\n\n")
   elseif a:block.type == 'paragraph'
-    return s:make_urls_explicit(a:block.text)
+    let text = s:make_urls_explicit(a:block.text)
+    if len(text) <= 50 && text =~ ':$'
+      let text = printf('**%s**', text)
+    endif
+    return text
   else
     let msg = "Encountered unsupported block: %s!"
     throw printf(msg, string(a:block))

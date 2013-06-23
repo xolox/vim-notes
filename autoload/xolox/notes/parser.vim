@@ -3,6 +3,8 @@
 " Last Change: June 23, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
+" TODO Support for block quotes!
+
 function! xolox#notes#parser#parse_note(text) " {{{1
   " Parser for the note taking syntax used by vim-notes.
   let starttime = xolox#misc#timer#start()
@@ -217,18 +219,19 @@ function! s:parse_list(context) " {{{1
       endif
     endif
     let line = s:match_line(a:context)
+    call xolox#misc#msg#debug("notes.vim %s: Matched line in list item: %s", g:xolox#notes#version, string(line))
     call add(lines, line)
     if line[-1:] != "\n"
       " XXX When match_line() returns a line that doesn't end in a newline
       " character, it means either we hit the end of the input or the current
       " line continues in a code block (which is not ours to parse :-).
+      call xolox#misc#msg#debug("notes.vim %s: List terminated by end of input / start of code block ..", g:xolox#notes#version)
+      break
+    elseif line =~ '^\_s*$'
+      " For now an empty line terminates the list item.
+      " TODO Add support for list items with multiple paragraphs of text.
       break
     endif
-    " FIXME What happens when we find an empty line? Here's what:
-    "       1. If the line after that starts without indentation, we found
-    "          the end of the list.
-    "       2. If the line starts with indentation, we are dealing with a
-    "          list item that contains multiple paragraphs...
   endwhile
   call s:save_item(items, lines, indent)
   return {'type': 'list', 'ordered': (list_type == 'ordered-list'), 'items': items}

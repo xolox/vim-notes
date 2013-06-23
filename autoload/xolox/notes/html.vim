@@ -15,10 +15,18 @@ function! xolox#notes#html#view() " {{{1
   " [markdown]: http://en.wikipedia.org/wiki/Markdown
   try
     " Convert the note's text to HTML using Markdown.
-    let note_title = getline(1)
+    let note_title = xolox#notes#current_title()
+    let filename = xolox#notes#title_to_fname(note_title)
     let note_text = join(getline(1, '$'), "\n")
     let raw_html = xolox#notes#html#convert_note(note_text)
-    let styled_html = xolox#notes#html#apply_template({'title': note_title, 'content': raw_html, 'encoding': &encoding})
+    let styled_html = xolox#notes#html#apply_template({
+          \ 'encoding': &encoding,
+          \ 'title': note_title,
+          \ 'content': raw_html,
+          \ 'version': g:xolox#notes#version,
+          \ 'date': strftime('%A %B %d, %Y at %H:%M'),
+          \ 'filename': fnamemodify(filename, ':~'),
+          \ })
     let filename = s:create_temporary_file(note_title)
     if writefile(split(styled_html, "\n"), filename) != 0
       throw printf("Failed to write HTML file! (%s)", filename)
