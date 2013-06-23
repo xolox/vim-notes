@@ -37,8 +37,9 @@ function! xolox#notes#markdown#convert_block(block) " {{{1
   elseif a:block.type == 'heading'
     return printf("%s %s", repeat('#', 1 + a:block.level), a:block.text)
   elseif a:block.type == 'code'
-    let text = xolox#misc#str#dedent(a:block.text)
-    return xolox#misc#str#indent(text, 4)
+    let comment = "<!-- An innocent comment to force Markdown out of list parsing mode. See also http://meta.stackoverflow.com/a/99637 -->"
+    let text = xolox#misc#str#indent(xolox#misc#str#dedent(a:block.text), 4)
+    return join([comment, text], "\n\n")
   elseif a:block.type == 'divider'
     return '* * *'
   elseif a:block.type == 'list'

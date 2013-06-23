@@ -21,6 +21,7 @@ function! xolox#notes#parser#parse_note(text) " {{{1
     elseif chr == '{' && context.peek(3) == "\{\{\{"
       let block = s:parse_code_block(context)
     else
+      call xolox#misc#msg#debug("notes.vim %s: Disambiguating list item from paragraph ..", g:xolox#notes#version)
       let lookahead = s:match_bullet_or_divider(context, 0)
       if !empty(lookahead)
         if lookahead.type =~ 'list'
@@ -37,6 +38,7 @@ function! xolox#notes#parser#parse_note(text) " {{{1
     endif
     " Don't include empty blocks in the output.
     if !empty(block)
+      call xolox#misc#msg#debug("notes.vim %s: Parsed block %s", g:xolox#notes#version, string(block))
       call add(blocks, block)
     endif
   endwhile
@@ -215,17 +217,18 @@ function! s:parse_list(context) " {{{1
       endif
     endif
     let line = s:match_line(a:context)
-    if line[-1:] == "\n"
-      call add(lines, line)
-    elseif !empty(line)
-      call add(lines, line)
-    else
-      " FIXME What happens when we find an empty line? Here's what:
-      "       1. If the line after that starts without indentation, we found
-      "          the end of the list.
-      "       2. If the line starts with indentation, we are dealing with a
-      "          list item that contains multiple paragraphs...
+    call add(lines, line)
+    if line[-1:] != "\n"
+      " XXX When match_line() returns a line that doesn't end in a newline
+      " character, it means either we hit the end of the input or the current
+      " line continues in a code block (which is not ours to parse :-).
+      break
     endif
+    " FIXME What happens when we find an empty line? Here's what:
+    "       1. If the line after that starts without indentation, we found
+    "          the end of the list.
+    "       2. If the line starts with indentation, we are dealing with a
+    "          list item that contains multiple paragraphs...
   endwhile
   call s:save_item(items, lines, indent)
   return {'type': 'list', 'ordered': (list_type == 'ordered-list'), 'items': items}
