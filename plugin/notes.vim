@@ -1,6 +1,6 @@
 " Vim plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 16, 2013
+" Last Change: June 22, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 " Support for automatic update using the GLVS plug-in.
@@ -23,6 +23,7 @@ command! -bar -bang -nargs=? RecentNotes call xolox#notes#recent#show(<q-bang>, 
 command! -bar -bang MostRecentNote call xolox#notes#recent#edit(<q-bang>)
 command! -bar -count=1 ShowTaggedNotes call xolox#notes#tags#show_tags(<count>)
 command! -bar IndexTaggedNotes call xolox#notes#tags#create_index()
+command! -bar NoteToHtml call xolox#notes#html#view()
 
 " TODO Generalize this so we have one command + modifiers (like :tab)?
 command! -bar -bang -range NoteFromSelectedText call xolox#notes#from_selection(<q-bang>, 'edit')

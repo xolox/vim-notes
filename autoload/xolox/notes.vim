@@ -1,6 +1,6 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 25, 2013
+" Last Change: June 22, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -59,6 +59,10 @@ function! xolox#notes#init() " {{{1
   " filename.
   if !exists('g:notes_recentindex')
     let g:notes_recentindex = xolox#misc#path#merge(localdir, 'recent.txt')
+  endif
+  " Define the default location of the template for HTML conversion.
+  if !exists('g:notes_html_template')
+    let g:notes_html_template = xolox#misc#path#merge(localdir, 'template.html')
   endif
   " Define the default action when a note's filename and title are out of sync.
   if !exists('g:notes_title_sync')
