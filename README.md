@@ -111,6 +111,10 @@ This option defines the pathname of the Python script that's used to perform acc
 
 This option defines the pathname of the text file that stores the list of known tags used for tag name completion and the `:ShowTaggedNotes` command. The text file is created automatically when it's first needed, after that you can recreate it manually by executing `:IndexTaggedNotes` (see below).
 
+### The `g:notes_markdown_program` option
+
+The `:NoteToHtml` command requires the [Markdown] [markdown] program. By default the name of this program is assumed to be simply `markdown`. If you want to use a different program for Markdown to HTML conversion, set this option to the name of the program.
+
 ## Commands
 
 To edit one of your existing notes (or create a new one) you can use Vim commands such as [:edit] [edit], [:split] [split] and [:tabedit] [tabedit] with a filename that starts with *note:* followed by (part of) the title of one of your notes, e.g.:
@@ -209,6 +213,24 @@ The notes plug-in defines an omni completion function that can be used to comple
 The completion menu is populated from a text file listing all your tags, one on each line. The first time omni completion triggers, an index of tag names is generated and saved to the location set by `g:notes_tagsindex`. After this file is created, it will be updated automatically as you edit notes and add/remove tags.
 
 If for any reason you want to recreate the list of tags you can execute the `:IndexTaggedNotes` command.
+
+### The `:NoteToHtml` command
+
+This command converts the current note to HTML. It works by first converting the current note to [Markdown] [markdown] and then using the `markdown` program to convert that to HTML. It requires an external program to convert Markdown to HTML. By default the program `markdown` is used, but you can change the name of the program using the `g:notes_markdown_program` option.
+
+Note that this command can be a bit slow, because the parser for the note taking syntax is written in Vim script (for portability) and has not been optimized for speed (yet).
+
+### The `:NoteToMarkdown` command
+
+Convert the current note to a [Markdown document] [markdown]. The vim-notes syntax shares a lot of similarities with the Markdown text format, but there are some notable differences, which this command takes care of:
+
+ * The first line of a note is an implicit document title. In Markdown format it has to be marked with `#`. This also implies that the remaining headings should be shifted by one level.
+
+ * Preformatted blocks are marked very differently in notes and Markdown (`{{{` and `}}}` markers versus 4 space indentation).
+
+ * The markers and indentation of list items differ between notes and Markdown (dumb bullets vs Unicode bullets and 3 vs 4 spaces).
+
+Note that this command can be a bit slow, because the parser for the note taking syntax is written in Vim script (for portability) and has not been optimized for speed (yet).
 
 ## Mappings
 
@@ -315,6 +337,7 @@ This software is licensed under the [MIT license] [mit].
 [highlight]: http://vimdoc.sourceforge.net/htmldoc/syntax.html#:highlight
 [levenshtein]: http://en.wikipedia.org/wiki/Levenshtein_distance
 [mapleader]: http://vimdoc.sourceforge.net/htmldoc/map.html#mapleader
+[markdown]: http://en.wikipedia.org/wiki/Markdown
 [mit]: http://en.wikipedia.org/wiki/MIT_License
 [modeline]: http://vimdoc.sourceforge.net/htmldoc/options.html#modeline
 [monaco]: http://en.wikipedia.org/wiki/Monaco_(typeface)

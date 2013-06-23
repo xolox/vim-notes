@@ -1,12 +1,13 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 25, 2013
+" Last Change: June 23, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.21.5'
+let g:xolox#notes#version = '0.22'
+let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
 function! xolox#notes#init() " {{{1
@@ -60,6 +61,10 @@ function! xolox#notes#init() " {{{1
   if !exists('g:notes_recentindex')
     let g:notes_recentindex = xolox#misc#path#merge(localdir, 'recent.txt')
   endif
+  " Define the default location of the template for HTML conversion.
+  if !exists('g:notes_html_template')
+    let g:notes_html_template = xolox#misc#path#merge(localdir, 'template.html')
+  endif
   " Define the default action when a note's filename and title are out of sync.
   if !exists('g:notes_title_sync')
     " Valid values are "no", "change_title", "rename_file" and "prompt".
@@ -82,11 +87,13 @@ function! xolox#notes#init() " {{{1
     let g:notes_ruler_text = repeat(' ', ((&tw > 0 ? &tw : 79) - 5) / 2) . '* * *'
   endif
   " Symbols used to denote list items with increasing nesting levels.
+  let g:notes_unicode_bullets = ['•', '◦', '▸', '▹', '▪', '▫']
+  let g:notes_ascii_bullets = ['*', '-', '+']
   if !exists('g:notes_list_bullets')
     if xolox#notes#unicode_enabled()
-      let g:notes_list_bullets = ['•', '◦', '▸', '▹', '▪', '▫']
+      let g:notes_list_bullets = g:notes_unicode_bullets
     else
-      let g:notes_list_bullets = ['*', '-', '+']
+      let g:notes_list_bullets = g:notes_ascii_bullets
     endif
   endif
 endfunction
