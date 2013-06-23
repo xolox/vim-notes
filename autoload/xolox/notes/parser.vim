@@ -3,8 +3,6 @@
 " Last Change: June 23, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
-" TODO Support for block quotes!
-
 function! xolox#notes#parser#parse_note(text) " {{{1
   " Parser for the note taking syntax used by vim-notes.
   let starttime = xolox#misc#timer#start()
@@ -13,7 +11,6 @@ function! xolox#notes#parser#parse_note(text) " {{{1
   let blocks = [{'type': 'title', 'text': note_title}]
   while context.has_more()
     let chr = context.peek(1)
-    call xolox#misc#msg#debug("notes.vim %s: Peeking at character %s ..", g:xolox#notes#version, string(chr))
     if chr == "\n"
       " Ignore empty lines.
       call context.next(1)
@@ -25,7 +22,6 @@ function! xolox#notes#parser#parse_note(text) " {{{1
     elseif chr == '{' && context.peek(3) == "\{\{\{"
       let block = s:parse_code_block(context)
     else
-      call xolox#misc#msg#debug("notes.vim %s: Disambiguating list item from paragraph ..", g:xolox#notes#version)
       let lookahead = s:match_bullet_or_divider(context, 0)
       if !empty(lookahead)
         if lookahead.type =~ 'list'
@@ -42,7 +38,6 @@ function! xolox#notes#parser#parse_note(text) " {{{1
     endif
     " Don't include empty blocks in the output.
     if !empty(block)
-      call xolox#misc#msg#debug("notes.vim %s: Parsed block %s", g:xolox#notes#version, string(block))
       call add(blocks, block)
     endif
   endwhile
@@ -105,7 +100,6 @@ function! s:match_bullet_or_divider(context, consume_lookahead) " {{{1
   let line = context.next_line()
   let bullet = matchstr(line, s:bullet_pattern)
   if !empty(bullet)
-    call xolox#misc#msg#debug("notes.vim %s: Matched list item bullet '%s' ..", g:xolox#notes#version, bullet)
     " Disambiguate list bullets from horizontal dividers.
     if line =~ '^\s\+\*\s\*\s\*$'
       let result.type = 'divider'
@@ -119,7 +113,6 @@ function! s:match_bullet_or_divider(context, consume_lookahead) " {{{1
       endif
       let indent = matchstr(bullet, '^\s*')
       let result.indent = len(indent)
-      call xolox#misc#msg#debug("notes.vim %s: Matched raw indent %s (%i).", g:xolox#notes#version, string(indent), result.indent)
       " Since we already skipped the whitespace and matched the bullet, it's
       " very little work to mark our position for the benefit of the caller.
       if a:consume_lookahead
@@ -214,7 +207,6 @@ function! s:parse_divider(context) " {{{1
 endfunction
 
 function! s:parse_list(context) " {{{1
-  call xolox#misc#msg#debug("notes.vim %s: Parsing list ..", g:xolox#notes#version)
   " Parse the upcoming sequence of list items in the input stream.
   let list_type = 'unknown'
   let items = []
@@ -236,13 +228,11 @@ function! s:parse_list(context) " {{{1
       endif
     endif
     let line = s:match_line(a:context)
-    call xolox#misc#msg#debug("notes.vim %s: Matched line in list item: %s", g:xolox#notes#version, string(line))
     call add(lines, line)
     if line[-1:] != "\n"
       " XXX When match_line() returns a line that doesn't end in a newline
       " character, it means either we hit the end of the input or the current
       " line continues in a code block (which is not ours to parse :-).
-      call xolox#misc#msg#debug("notes.vim %s: List terminated by end of input / start of code block ..", g:xolox#notes#version)
       break
     elseif line =~ '^\_s*$'
       " For now an empty line terminates the list item.
@@ -258,7 +248,6 @@ function! s:save_item(items, lines, indent)
   let text = join(a:lines, "\n")
   if text =~ '\S'
     let text = xolox#misc#str#compact(text)
-    call xolox#misc#msg#debug("notes.vim %s: Matched list item with indent of %i: %s", g:xolox#notes#version, a:indent, text)
     call add(a:items, {'text': text, 'indent': a:indent})
   endif
 endfunction
@@ -268,17 +257,14 @@ function! s:parse_paragraph(context) " {{{1
   let lines = []
   while a:context.has_more()
     let line = s:match_line(a:context)
-    call xolox#misc#msg#debug("notes.vim %s: Matched line in paragraph: %s.", g:xolox#notes#version, string(line))
     call add(lines, line)
     if line =~ '^\_s*$'
       " An empty line marks the end of the paragraph.
-      call xolox#misc#msg#debug("notes.vim %s: Paragraph ends in empty line.", g:xolox#notes#version)
       break
     elseif line[-1:] != "\n"
       " XXX When match_line() returns a line that doesn't end in a newline
       " character, it means either we hit the end of the input or the current
       " line continues in a code block (which is not ours to parse :-).
-      call xolox#misc#msg#debug("notes.vim %s: Paragraph ends in code block?", g:xolox#notes#version)
       break
     endif
   endwhile
@@ -339,5 +325,3 @@ endfunction
 function! xolox#notes#parser#test_parsing_of_block_quotes()
   call xolox#misc#test#assert_equals([{'type': 'title', 'text': 'Just the title'}, {'type': 'block-quote', 'lines': [{'level': 1, 'text': 'block'}, {'level': 2, 'text': 'quoted'}, {'level': 1, 'text': 'text'}]}], xolox#notes#parser#parse_note("Just the title\n\n> block\n>> quoted\n> text"))
 endfunction
-
-call xolox#notes#parser#run_tests()
