@@ -33,9 +33,12 @@ function! xolox#notes#markdown#convert_block(block) " {{{1
   " (the first argument, expected to be a dictionary) to the [Markdown text
   " format] [markdown]. Returns a string.
   if a:block.type == 'title'
-    return printf("# %s", a:block.text)
+    let text = s:make_urls_explicit(a:block.text)
+    return printf("# %s", text)
   elseif a:block.type == 'heading'
-    return printf("%s %s", repeat('#', 1 + a:block.level), a:block.text)
+    let marker = repeat('#', 1 + a:block.level)
+    let text = s:make_urls_explicit(a:block.text)
+    return printf("%s %s", marker, text)
   elseif a:block.type == 'code'
     let comment = "<!-- An innocent comment to force Markdown out of list parsing mode. See also http://meta.stackoverflow.com/a/99637 -->"
     let text = xolox#misc#str#indent(xolox#misc#str#dedent(a:block.text), 4)
@@ -48,20 +51,33 @@ function! xolox#notes#markdown#convert_block(block) " {{{1
       let counter = 1
       for item in a:block.items
         let indent = repeat(' ', item.indent * 4)
-        call add(items, printf("%s%d. %s", indent, counter, item.text))
+        let text = s:make_urls_explicit(item.text)
+        call add(items, printf("%s%d. %s", indent, counter, text))
         let counter += 1
       endfor
     else
       for item in a:block.items
         let indent = repeat(' ', item.indent * 4)
-        call add(items, printf("%s- %s", indent, item.text))
+        let text = s:make_urls_explicit(item.text)
+        call add(items, printf("%s- %s", indent, text))
       endfor
     endif
     return join(items, "\n\n")
   elseif a:block.type == 'paragraph'
-    return a:block.text
+    return s:make_urls_explicit(a:block.text)
   else
     let msg = "Encountered unsupported block: %s!"
     throw printf(msg, string(a:block))
   endif
+endfunction
+
+function! s:make_urls_explicit(text) " {{{1
+  " In the vim-notes syntax, URLs are implicitly hyperlinks.
+  " In Markdown syntax they have to be wrapped in <markers>.
+  return substitute(a:text, g:xolox#notes#url_pattern, '\= s:url_callback(submatch(0))', 'g')
+endfunction
+
+function! s:url_callback(url)
+  let label = substitute(a:url, '^\w\+:\(//\)\?', '', '')
+  return printf('[%s](%s)', label, a:url)
 endfunction

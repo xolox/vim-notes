@@ -76,7 +76,7 @@ highlight notesSubtleURL gui=underline guifg=fg
 syntax match notesTextURL @\<www\.\(\S*\w\)\+/\?@
 syntax cluster notesInline add=notesTextURL
 highlight def link notesTextURL notesSubtleURL
-syntax match notesRealURL @\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?@
+execute printf('syntax match notesRealURL @%s@', g:xolox#notes#url_pattern)
 syntax cluster notesInline add=notesRealURL
 highlight def link notesRealURL notesSubtleURL
 if has('conceal')

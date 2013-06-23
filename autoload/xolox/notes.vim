@@ -7,6 +7,7 @@
 " that Vim loads the script using the right encoding transparently.
 
 let g:xolox#notes#version = '0.21.5'
+let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
 function! xolox#notes#init() " {{{1
