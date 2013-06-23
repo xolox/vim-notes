@@ -3,7 +3,16 @@
 " Last Change: June 23, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
-function! xolox#notes#markdown#convert_note(note_text)
+function! xolox#notes#markdown#view() " {{{1
+  " Convert the current note to a Markdown document and show the converted text.
+  let note_text = join(getline(1, '$'), "\n")
+  let markdown_text = xolox#notes#markdown#convert_note(note_text)
+  vnew
+  call setline(1, split(markdown_text, "\n"))
+  setlocal filetype=markdown
+endfunction
+
+function! xolox#notes#markdown#convert_note(note_text) " {{{1
   " Convert a note's text to the [Markdown text format] [markdown]. The syntax
   " used by vim-notes has a lot of similarities with Markdown, but there are
   " some notable differences like the note title and the way code blocks are
@@ -19,7 +28,7 @@ function! xolox#notes#markdown#convert_note(note_text)
   return markdown
 endfunction
 
-function! xolox#notes#markdown#convert_block(block)
+function! xolox#notes#markdown#convert_block(block) " {{{1
   " Convert a single block produced by `xolox#misc#notes#parser#parse_note()`
   " (the first argument, expected to be a dictionary) to the [Markdown text
   " format] [markdown]. Returns a string.
@@ -30,6 +39,8 @@ function! xolox#notes#markdown#convert_block(block)
   elseif a:block.type == 'code'
     let text = xolox#misc#str#dedent(a:block.text)
     return xolox#misc#str#indent(text, 4)
+  elseif a:block.type == 'divider'
+    return '* * *'
   elseif a:block.type == 'list'
     let items = []
     if a:block.ordered

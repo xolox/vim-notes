@@ -11,14 +11,27 @@ function! xolox#notes#parser#parse_note(text) " {{{1
   let blocks = [{'type': 'title', 'text': note_title}]
   while context.has_more()
     let chr = context.peek(1)
-    if chr == '#'
+    call xolox#misc#msg#debug("notes.vim %s: Peeking at character %s ..", g:xolox#notes#version, string(chr))
+    if chr == "\n"
+      " Ignore empty lines.
+      call context.next(1)
+      continue
+    elseif chr == '#'
       let block = s:parse_heading(context)
     elseif chr == '{' && context.peek(3) == "\{\{\{"
       let block = s:parse_code_block(context)
-    elseif !empty(s:match_list_item(context, 0))
-      let block = s:parse_list(context)
     else
-      let block = s:parse_paragraph(context)
+      let lookahead = s:match_list_item(context, 0)
+      if lookahead =~ 'list'
+        let block = s:parse_list(context)
+      elseif lookahead == 'divider'
+        let block = s:parse_divider(context)
+      elseif !empty(lookahead)
+        let msg = "Programming error! Unsupported lookahead type: %s."
+        throw printf(msg, string(lookahead))
+      else
+        let block = s:parse_paragraph(context)
+      endif
     endif
     " Don't include empty blocks in the output.
     if !empty(block)
@@ -27,6 +40,15 @@ function! xolox#notes#parser#parse_note(text) " {{{1
   endwhile
   call xolox#misc#timer#stop("notes.vim %s: Parsed note into %i blocks in %s.", g:xolox#notes#version, len(blocks), starttime)
   return blocks
+endfunction
+
+function! xolox#notes#parser#view_parse_nodes() " {{{1
+  " Parse the current note and show the parse nodes in a temporary buffer.
+  let note_text = join(getline(1, '$'), "\n")
+  let parse_nodes = xolox#notes#parser#parse_note(note_text)
+  vnew
+  call setline(1, map(parse_nodes, 'string(v:val)'))
+  setlocal filetype=vim nomodified nowrap
 endfunction
 
 function! s:create_parse_context(text) " {{{1
@@ -70,34 +92,21 @@ endfunction
 
 function! s:match_list_item(context, consume_lookahead) " {{{1
   " Check whether the current line starts with a list bullet.
-  let lookahead = 0
-  " First we have to skip past any whitespace.
-  while 1
-    let new_lookahead = lookahead + 1
-    let input = a:context.peek(new_lookahead)
-    if input !~ '^\s\+' || len(input) < new_lookahead
-      break
+  let context = copy(a:context)
+  let line = context.next_line()
+  let bullet = matchstr(line, s:bullet_pattern)
+  if !empty(bullet)
+    call xolox#misc#msg#debug("notes.vim %s: Matched list item bullet '%s' ..", g:xolox#notes#version, bullet)
+    " Disambiguate list bullets from horizontal dividers.
+    if line =~ '^\s\+\*\s\*\s\*$'
+      return 'divider'
     endif
-    let lookahead = new_lookahead
-  endwhile
-  " Then we have to find the end of the bullet.
-  let anchored_pattern = s:bullet_pattern . '$'
-  while 1
-    let new_lookahead = lookahead + 1
-    let input = a:context.peek(new_lookahead)
-    if input !~ anchored_pattern || len(input) < new_lookahead
-      break
-    endif
-    let lookahead = new_lookahead
-  endwhile
-  if a:context.peek(lookahead) =~ anchored_pattern
     " We matched a bullet! Now we still need to distinguish ordered from
     " unordered list items.
-    let prefix = a:context.peek(lookahead)
     if a:consume_lookahead
-      call a:context.next(lookahead)
+      let a:context.index += len(bullet)
     endif
-    return (prefix =~ '\d') ? 'ordered' : 'unordered'
+    return (bullet =~ '\d') ? 'ordered-list' : 'unordered-list'
   endif
   return ''
 endfunction
@@ -164,6 +173,12 @@ function! s:parse_code_block(context) " {{{1
   return {'type': 'code', 'language': language, 'text': text}
 endfunction
 
+function! s:parse_divider(context) " {{{1
+  " Parse the upcoming horizontal divider in the input stream.
+  call a:context.next_line()
+  return {'type': 'divider'}
+endfunction
+
 function! s:parse_list(context) " {{{1
   " Parse the upcoming sequence of list items in the input stream.
   let list_type = 'unknown'
@@ -178,57 +193,57 @@ function! s:parse_list(context) " {{{1
         " The first bullet determines the type of list.
         let list_type = type
       endif
-      if !empty(lines)
-        " Save the previous list item.
-        call add(items, join(lines, "\n"))
-        let lines = []
-      endif
+      " Save the previous list item?
+      call s:save_item(items, lines)
+      let lines = []
     endif
     let line = s:match_line(a:context)
+    if line[-1:] == "\n"
+      call add(lines, line)
+    elseif !empty(line)
+      call add(lines, line)
+    else
+      " FIXME What happens when we find an empty line? Here's what:
+      "       1. If the line after that starts without indentation, we found
+      "          the end of the list.
+      "       2. If the line starts with indentation, we are dealing with a
+      "          list item that contains multiple paragraphs...
+    endif
   endwhile
-  if !empty(lines)
-    " Save the last list item.
-    call add(items, join(lines, "\n"))
+  call s:save_item(items, lines)
+  return {'type': 'list', 'ordered': (list_type == 'ordered-list'), 'items': items}
+endfunction
+
+function! s:save_item(items, lines)
+  let text = join(a:lines, "\n")
+  if text =~ '\S'
+    call add(a:items, xolox#misc#str#compact(text))
   endif
-  return {'type': 'list', 'ordered': (list_type == 'ordered'), 'items': items}
 endfunction
 
 function! s:parse_paragraph(context) " {{{1
   " Parse the upcoming paragraph in the input stream.
   let lines = []
-  let done = 0
-  " Outer loop to consume multiple lines.
   while a:context.has_more()
-    let line = ''
-    " Inner loop to consume the current line.
-    while a:context.has_more()
-      let chr = a:context.peek(1)
-      if chr == '{' && a:context.peek(3) == "\{\{\{"
-        " XXX The start of a code block implies the end of the paragraph. The
-        " marker above contains back slashes so that Vim doesn't apply folding
-        " because of the marker :-).
-        let done = 1
-        break
-      elseif chr == "\n"
-        call a:context.next(1)
-        break
-      else
-        let line .= a:context.next(1)
-      endif
-    endwhile
-    " An empty line finishes the paragraph.
-    if empty(line)
-      break
-    endif
+    let line = s:match_line(a:context)
+    call xolox#misc#msg#debug("notes.vim %s: Matched line in paragraph: %s.", g:xolox#notes#version, string(line))
     call add(lines, line)
-    if done
+    if line =~ '^\_s*$'
+      " An empty line marks the end of the paragraph.
+      call xolox#misc#msg#debug("notes.vim %s: Paragraph ends in empty line.", g:xolox#notes#version)
+      break
+    elseif line[-1:] != "\n"
+      " XXX When match_line() returns a line that doesn't end in a newline
+      " character, it means either we hit the end of the input or the current
+      " line continues in a code block (which is not ours to parse :-).
+      call xolox#misc#msg#debug("notes.vim %s: Paragraph ends in code block?", g:xolox#notes#version)
       break
     endif
   endwhile
   " Don't include empty paragraphs in the output.
   let text = join(lines, "\n")
   if text =~ '\S'
-    return {'type': 'paragraph', 'text': text}
+    return {'type': 'paragraph', 'text': xolox#misc#str#compact(text)}
   else
     return {}
   endif
@@ -244,7 +259,7 @@ function! s:generate_list_item_bullet_pattern() " {{{1
   return join(choices, '\|')
 endfunction
 
-let s:bullet_pattern = '^\s*' . s:generate_list_item_bullet_pattern() . '\s*'
+let s:bullet_pattern = '^\s*\(' . s:generate_list_item_bullet_pattern() . '\)\s\+'
 
 function! xolox#notes#parser#run_tests() " {{{1
   " Tests for the note taking syntax parser.
@@ -253,6 +268,7 @@ function! xolox#notes#parser#run_tests() " {{{1
   call xolox#misc#test#wrap('xolox#notes#parser#test_parsing_of_headings')
   call xolox#misc#test#wrap('xolox#notes#parser#test_parsing_of_paragraphs')
   call xolox#misc#test#wrap('xolox#notes#parser#test_parsing_of_code_blocks')
+  call xolox#misc#test#wrap('xolox#notes#parser#test_parsing_of_list_items')
   call xolox#misc#test#summarize()
 endfunction
 
@@ -271,6 +287,10 @@ endfunction
 
 function! xolox#notes#parser#test_parsing_of_code_blocks()
   call xolox#misc#test#assert_equals([{'type': 'title', 'text': 'Just the title'}, {'type': 'code', 'language': '', 'text': "This is a code block\nwith two lines"}], xolox#notes#parser#parse_note("Just the title\n\n{{{ This is a code block\nwith two lines }}}"))
+endfunction
+
+function! xolox#notes#parser#test_parsing_of_list_items()
+  call xolox#misc#test#assert_equals([{'type': 'title', 'text': 'Just the title'}, {'type': 'list', 'ordered': 1, 'items': ['item one', 'item two', 'item three']}], xolox#notes#parser#parse_note("Just the title\n\n1. item one\n2. item two\n3. item three"))
 endfunction
 
 call xolox#notes#parser#run_tests()

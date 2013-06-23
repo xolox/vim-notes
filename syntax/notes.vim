@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 25, 2011
+" Last Change: June 23, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -60,7 +60,7 @@ highlight notesItalic gui=italic cterm=italic
 
 " Highlight text emphasized in bold font. {{{2
 if has('conceal')
-  syntax region notesBold matchgroup=notesBoldMarker start=/\*\k\@=/ end=/\k\@<=\*/ contains=@Spell concealends
+  syntax region notesBold matchgroup=notesBoldMarker start=/\*\k\@=/ end=/\S\@<=\*/ contains=@Spell concealends
   highlight link notesBoldMarker notesHiddenMarker 
 else
   syntax match notesBold /\*\k[^*]*\k\*/
