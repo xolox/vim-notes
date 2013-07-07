@@ -51,7 +51,7 @@ highlight def link notesDoubleQuoted String
 " Highlight text emphasized in italic font. {{{2
 if has('conceal')
   syntax region notesItalic matchgroup=notesItalicMarker start=/\<_\k\@=/ end=/_\>\|\n/ contains=@Spell concealends
-  highlight link notesItalicMarker notesHiddenMarker 
+  highlight link notesItalicMarker notesHiddenMarker
 else
   syntax match notesItalic /\<_\k[^_]*\k_\>/
 endif
@@ -61,7 +61,7 @@ highlight notesItalic gui=italic cterm=italic
 " Highlight text emphasized in bold font. {{{2
 if has('conceal')
   syntax region notesBold matchgroup=notesBoldMarker start=/\*\k\@=/ end=/\S\@<=\*/ contains=@Spell concealends
-  highlight link notesBoldMarker notesHiddenMarker 
+  highlight link notesBoldMarker notesHiddenMarker
 else
   syntax match notesBold /\*\k[^*]*\k\*/
 endif
@@ -99,6 +99,9 @@ highlight def link notesWindowsPath Directory
 syntax match notesTodo /\<TODO\>/
 syntax match notesXXX /\<XXX\>/
 syntax match notesFixMe /\<FIXME\>/
+syntax match notesInProgress /\<INPROGRESS\>/
+syntax match notesInProgress /\<STARTED\>/
+syntax match notesInProgress /\<CURRENT\>/
 syntax match notesDoneItem /^\(\s\+\).*\<DONE\>.*\(\n\1\s.*\)*/ contains=@notesInline
 syntax match notesDoneMarker /\<DONE\>/ containedin=notesDoneItem
 highlight def link notesTodo WarningMsg
@@ -106,6 +109,7 @@ highlight def link notesXXX WarningMsg
 highlight def link notesFixMe WarningMsg
 highlight def link notesDoneItem Comment
 highlight def link notesDoneMarker Question
+highlight def link notesInProgress Directory
 
 " Highlight Vim command names in :this notation. {{{2
 syntax match notesVimCmd /:\w\+\(!\|\>\)/ contains=ALLBUT,@Spell
