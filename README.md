@@ -282,6 +282,7 @@ See the documentation of the [:highlight] [highlight] command for more informati
  * `notesTodo` - `TODO` markers
  * `notesXXX` - `XXX` markers
  * `notesFixMe` - `FIXME` markers
+ * `notesInProgress` - `CURRENT`, `INPROGRESS`, `STARTED` and `WIP` markers
  * `notesDoneItem` - lines containing the marker `DONE`, usually highlighted as a comment
  * `notesDoneMarker` - `DONE` markers
  * `notesVimCmd` - Vim commands, words preceded by an `:` character

@@ -577,6 +577,7 @@ are the names of the syntax items defined by the notes syntax mode:
 - 'notesTodo' - 'TODO' markers
 - 'notesXXX' - 'XXX' markers
 - 'notesFixMe' - 'FIXME' markers
+- 'notesInProgress' - 'CURRENT', 'INPROGRESS', 'STARTED' and 'WIP' markers
 - 'notesDoneItem' - lines containing the marker 'DONE', usually highlighted
   as a comment
 - 'notesDoneMarker' - 'DONE' markers
