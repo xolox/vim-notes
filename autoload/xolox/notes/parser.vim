@@ -1,6 +1,6 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 23, 2013
+" Last Change: July 18, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 function! xolox#notes#parser#parse_note(text) " {{{1
@@ -256,16 +256,22 @@ function! s:parse_paragraph(context) " {{{1
   " Parse the upcoming paragraph in the input stream.
   let lines = []
   while a:context.has_more()
-    let line = s:match_line(a:context)
-    call add(lines, line)
-    if line =~ '^\_s*$'
-      " An empty line marks the end of the paragraph.
+    if !empty(s:match_bullet_or_divider(a:context, 0))
+      " If the next line starts with a list bullet it shouldn't
+      " be included in the paragraph we're currently parsing.
       break
-    elseif line[-1:] != "\n"
-      " XXX When match_line() returns a line that doesn't end in a newline
-      " character, it means either we hit the end of the input or the current
-      " line continues in a code block (which is not ours to parse :-).
-      break
+    else
+      let line = s:match_line(a:context)
+      call add(lines, line)
+      if line =~ '^\_s*$'
+        " An empty line marks the end of the paragraph.
+        break
+      elseif line[-1:] != "\n"
+        " XXX When match_line() returns a line that doesn't end in a newline
+        " character, it means either we hit the end of the input or the current
+        " line continues in a code block (which is not ours to parse :-).
+        break
+      endif
     endif
   endwhile
   " Don't include empty paragraphs in the output.
