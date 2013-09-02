@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: August 19, 2013
+" Last Change: September 2, 2013
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.23.2'
+let g:xolox#notes#version = '0.23.3'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -649,10 +649,6 @@ function! s:internal_search(bang, pattern, keywords, phase2) " {{{2
   let notes = []
   let phase2_needed = 1
   if a:keywords != '' && s:run_scanner(a:keywords, notes)
-    if notes == []
-      call xolox#misc#msg#warn("notes.vim %s: No matches", g:xolox#notes#version)
-      return
-    endif
     if a:phase2 != ''
       let pattern = a:phase2
     endif
@@ -664,6 +660,10 @@ function! s:internal_search(bang, pattern, keywords, phase2) " {{{2
     else
       let phase2_needed = 0
     endif
+  endif
+  if empty(notes)
+    call xolox#misc#msg#warn("notes.vim %s: No matches", g:xolox#notes#version)
+    return
   endif
   " If we performed a keyword search using the scanner.py script we need to
   " run :vimgrep to populate the quick-fix list. If we're emulating keyword
@@ -713,27 +713,28 @@ endfunction
 function! s:run_scanner(keywords, matches) " {{{2
   " Try to run scanner.py script to find notes matching {keywords}.
   call xolox#misc#msg#info("notes.vim %s: Searching notes using keyword index ..", g:xolox#notes#version)
-  let lines = s:python_command(a:keywords)
-  if type(lines) == type([])
-    call xolox#misc#msg#debug("notes.vim %s: Search script reported %i matching note%s.", g:xolox#notes#version, len(lines), len(lines) == 1 ? '' : 's')
-    call extend(a:matches, lines)
+  let [success, notes] = s:python_command(a:keywords)
+  if success
+    call xolox#misc#msg#debug("notes.vim %s: Search script reported %i matching note%s.", g:xolox#notes#version, len(notes), len(notes) == 1 ? '' : 's')
+    call extend(a:matches, notes)
     return 1
   endif
 endfunction
 
 function! xolox#notes#keyword_complete(arglead, cmdline, cursorpos) " {{{2
   " Search keyword completion for the :SearchNotes command.
-  let first_run = !filereadable(g:notes_indexfile)
-  if first_run | call inputsave() | endif
-  let keywords = s:python_command('--list=' . a:arglead)
-  if first_run | call inputrestore() | endif
-  return type(keywords) == type([]) ? keywords : []
+  call inputsave()
+  let [success, keywords] = s:python_command('--list=' . a:arglead)
+  call inputrestore()
+  return keywords
 endfunction
 
 function! s:python_command(...) " {{{2
   " Vim function to interface with the "search-notes.py" script.
   let script = xolox#misc#path#absolute(g:notes_indexscript)
   let python = executable('python2') ? 'python2' : 'python'
+  let output = []
+  let success = 0
   if !(executable(python) && filereadable(script))
     call xolox#misc#msg#debug("notes.vim %s: We can't execute the %s script!", g:xolox#notes#version, script)
   else
@@ -752,16 +753,20 @@ function! s:python_command(...) " {{{2
     endif
     let result = xolox#misc#os#exec({'command': command, 'check': 0})
     if result['exit_code'] != 0
-      call xolox#misc#msg#warn("notes.vim %s: Search script failed!", g:xolox#notes#version)
+      call xolox#misc#msg#warn("notes.vim %s: Search script failed! Context: %s", g:xolox#notes#version, string(result))
     else
       let lines = result['stdout']
-      call xolox#misc#msg#debug("notes.vim %s: Search script output: %s", g:xolox#notes#version, string(lines))
+      call xolox#misc#msg#debug("notes.vim %s: Search script output (raw): %s", g:xolox#notes#version, string(lines))
       if !empty(lines) && lines[0] == 'Python works fine!'
-        return lines[1:]
+        let output = lines[1:]
+        let success = 1
+        call xolox#misc#msg#debug("notes.vim %s: Search script output (processed): %s", g:xolox#notes#version, string(output))
+      else
+        call xolox#misc#msg#warn("notes.vim %s: Search script returned invalid output :-(", g:xolox#notes#version)
       endif
-      call xolox#misc#msg#warn("notes.vim %s: Search script returned invalid output :-(", g:xolox#notes#version)
     endif
   endif
+  return [success, output]
 endfunction
 
 " Getters for filenames & titles of existing notes. {{{2
