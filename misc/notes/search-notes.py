@@ -3,7 +3,7 @@
 # Python script for fast text file searching using keyword index on disk.
 #
 # Author: Peter Odding <peter@peterodding.com>
-# Last Change: May 12, 2013
+# Last Change: September 2, 2013
 # URL: http://peterodding.com/code/vim/notes/
 # License: MIT
 #
@@ -56,11 +56,17 @@ try:
 except ImportError:
   import pickle
 
+# Try to import the Levenshtein module, don't error out if it's not installed.
 try:
   import Levenshtein
   levenshtein_supported = True
 except ImportError:
   levenshtein_supported = False
+
+# The version of the index format that's supported by this revision of the
+# `search-notes.py' script; if an existing index file is found with an
+# unsupported version, the script knows that it should rebuild the index.
+INDEX_VERSION = 2
 
 class NotesIndex:
 
@@ -79,7 +85,8 @@ class NotesIndex:
       self.logger.debug("Finished listing keywords in %s", global_timer)
     else:
       matches = self.search_index(keywords)
-      print '\n'.join(sorted(matches))
+      if matches:
+        print '\n'.join(sorted(matches))
       self.logger.debug("Finished searching index in %s", global_timer)
 
   def init_logging(self):
@@ -147,7 +154,7 @@ class NotesIndex:
       with open(self.database_file) as handle:
         self.index = pickle.load(handle)
         self.logger.debug("Format version of index loaded from disk: %i", self.index['version'])
-        assert self.index['version'] == 2, "Incompatible index format detected!"
+        assert self.index['version'] == INDEX_VERSION, "Incompatible index format detected!"
         self.first_use = False
         self.dirty = False
         self.logger.debug("Loaded %i notes from index in %s", len(self.index['files']), load_timer)
@@ -155,7 +162,7 @@ class NotesIndex:
       self.logger.warn("Failed to load index from file: %s", e)
       self.first_use = True
       self.dirty = True
-      self.index = {'keywords': {}, 'files': {}, 'version': 2}
+      self.index = {'keywords': {}, 'files': {}, 'version': INDEX_VERSION}
 
   def save_index(self):
     ''' Save the keyword index to disk. '''
@@ -252,7 +259,7 @@ class NotesIndex:
           decorated.append((-len(filenames), kw))
     decorated.sort()
     selection = [d[-1] for d in decorated[:limit]]
-    print u'\n'.join(selection)
+    print self.encode(u'\n'.join(selection))
 
   def tokenize(self, text):
     ''' Tokenize a string into a list of normalized, unique keywords. '''
