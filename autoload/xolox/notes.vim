@@ -70,6 +70,10 @@ function! xolox#notes#init() " {{{1
     " Valid values are "no", "change_title", "rename_file" and "prompt".
     let g:notes_title_sync = 'prompt'
   endif
+  " Unicode is enabled by default if file encoding is UTF-8.
+  if !exists('g:notes_unicode_enabled')
+    let g:notes_unicode_enabled = 1
+  endif
   " Smart quotes and such are enabled by default.
   if !exists('g:notes_smart_quotes')
     let g:notes_smart_quotes = 1
@@ -254,7 +258,7 @@ function! xolox#notes#edit_shadow() " {{{1
 endfunction
 
 function! xolox#notes#unicode_enabled()
-  return &encoding == 'utf-8'
+  return g:notes_unicode_enabled && &encoding == 'utf-8'
 endfunction
 
 function! s:transcode_utf8_latin1()
