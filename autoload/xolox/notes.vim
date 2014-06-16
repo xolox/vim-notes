@@ -899,12 +899,8 @@ function! xolox#notes#cache_add(filename, title) " {{{3
   let filename = xolox#misc#path#absolute(a:filename)
   if index(s:cached_fnames, filename) == -1
     call add(s:cached_fnames, filename)
-    if !empty(s:cached_titles)
-      call add(s:cached_titles, a:title)
-    endif
-    if !empty(s:cached_pairs)
-      let s:cached_pairs[filename] = a:title
-    endif
+    call add(s:cached_titles, a:title)
+    let s:cached_pairs[filename] = a:title
     let s:cache_mtime = localtime()
   endif
 endfunction
