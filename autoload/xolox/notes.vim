@@ -1067,7 +1067,7 @@ function! xolox#notes#highlight_names(force) " {{{3
     if hlexists('notesName')
       syntax clear notesName
     endif
-    execute 'syntax match notesName /\c\%>1l\%(' . escape(join(titles, '\|'), '/') . '\)/'
+    execute 'syntax match notesName /\c\%>1l\<\%(' . escape(join(titles, '\|'), '/') . '\)\>/'
     let b:notes_names_last_highlighted = localtime()
     call xolox#misc#timer#stop("notes.vim %s: Highlighted note names in %s.", g:xolox#notes#version, starttime)
   endif
