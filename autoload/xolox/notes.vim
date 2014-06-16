@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: September 2, 2013
+" Last Change: June 16, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.23.4'
+let g:xolox#notes#version = '0.23.5'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -95,6 +95,10 @@ function! xolox#notes#init() " {{{1
     else
       let g:notes_list_bullets = g:notes_ascii_bullets
     endif
+  endif
+  " Should note titles only match (be highlighted) on word boundaries?
+  if !exists('g:notes_word_boundaries')
+    let g:notes_word_boundaries = 0
   endif
 endfunction
 
@@ -1067,7 +1071,11 @@ function! xolox#notes#highlight_names(force) " {{{3
     if hlexists('notesName')
       syntax clear notesName
     endif
-    execute 'syntax match notesName /\c\%>1l\%(' . escape(join(titles, '\|'), '/') . '\)/'
+    let pattern = '\%(' . escape(join(titles, '\|'), '/') . '\)'
+    if g:notes_word_boundaries
+      let pattern = '\<' . pattern . '\>'
+    endif
+    execute 'syntax match notesName /\c\%>1l' . pattern . '/'
     let b:notes_names_last_highlighted = localtime()
     call xolox#misc#timer#stop("notes.vim %s: Highlighted note names in %s.", g:xolox#notes#version, starttime)
   endif
