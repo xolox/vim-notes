@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 17, 2014
+" Last Change: June 18, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.23.7'
+let g:xolox#notes#version = '0.23.8'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -1134,6 +1134,9 @@ function! s:syntax_include(filetype)
   try
     execute 'syntax include' grouplistname 'syntax/' . a:filetype . '.vim'
     execute 'syntax include' grouplistname 'after/syntax/' . a:filetype . '.vim'
+  catch /E403/
+    " Ignore errors about syntax scripts that can't be loaded more than once.
+    " See also: https://github.com/xolox/vim-notes/issues/68
   catch /E484/
     " Ignore missing scripts.
   endtry
