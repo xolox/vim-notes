@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: May 16, 2013
+" Last Change: June 18, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -73,6 +73,7 @@ endif
 if g:notes_smart_quotes && xolox#notes#unicode_enabled()
   inoremap <buffer> -> →
   inoremap <buffer> <- ←
+  inoremap <buffer> <-> ↔
   let b:undo_ftplugin .= ' | execute "iunmap <buffer> ->"'
   let b:undo_ftplugin .= ' | execute "iunmap <buffer> <-"'
 endif
