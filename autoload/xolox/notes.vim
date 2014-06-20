@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 18, 2014
+" Last Change: June 21, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.23.9'
+let g:xolox#notes#version = '0.23.10'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -469,6 +469,8 @@ function! xolox#notes#search(bang, input) " {{{1
     call xolox#misc#timer#stop("notes.vim %s: Searched notes in %s.", g:xolox#notes#version, starttime)
   catch /^Vim\%((\a\+)\)\=:E480/
     call xolox#misc#msg#warn("notes.vim %s: No matches", g:xolox#notes#version)
+  catch
+    call xolox#misc#msg#warn("notes.vim %s: Encountered error during search: %s (%s)", g:xolox#notes#version, v:exception, v:throwpoint)
   endtry
 endfunction
 
@@ -701,7 +703,9 @@ function! s:vimgrep_wrapper(bang, pattern, files) " {{{2
   try
     let ei_save = &eventignore
     set eventignore=syntax,bufread
-    execute 'vimgrep' . a:bang join(args)
+    let command = printf('vimgrep%s %s', a:bang, join(args))
+    call xolox#misc#msg#debug("notes.vim %s: Populating quick-fix window using command: %s", g:xolox#notes#version, command)
+    execute command
     call xolox#misc#timer#stop("notes.vim %s: Populated quick-fix window in %s.", g:xolox#notes#version, starttime)
   finally
     let &eventignore = ei_save
