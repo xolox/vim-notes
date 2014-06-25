@@ -176,7 +176,7 @@ function! xolox#notes#check_sync_title() " {{{1
     let title = xolox#notes#current_title()
     let name_on_disk = xolox#misc#path#absolute(expand('%:p'))
     let name_from_title = xolox#notes#title_to_fname(title)
-    if !xolox#misc#path#equals(name_on_disk, name_from_title)
+    if !xolox#misc#path#equals(name_on_disk, name_from_title) && match(name_on_disk, g:notes_shadowdir) != 0
       call xolox#misc#msg#debug("notes.vim %s: Filename (%s) doesn't match note title (%s)", g:xolox#notes#version, name_on_disk, name_from_title)
       let action = g:notes_title_sync
       if action == 'prompt' && empty(name_from_title)
