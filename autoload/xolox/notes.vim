@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 21, 2014
+" Last Change: June 29, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.23.10'
+let g:xolox#notes#version = '0.23.11'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -140,7 +140,7 @@ function! xolox#notes#edit(bang, title) abort " {{{1
     if fname != ''
       call xolox#misc#msg#debug("notes.vim %s: Editing existing note: %s", g:xolox#notes#version, fname)
       execute 'edit' . a:bang fnameescape(fname)
-      if !xolox#notes#unicode_enabled() && xolox#misc#path#equals(fnamemodify(fname, ':h'), g:notes_shadowdir)
+      if !xolox#notes#unicode_enabled() && xolox#notes#is_shadow()
         call s:transcode_utf8_latin1()
       endif
       call xolox#notes#set_filetype()
@@ -176,7 +176,7 @@ function! xolox#notes#check_sync_title() " {{{1
     let title = xolox#notes#current_title()
     let name_on_disk = xolox#misc#path#absolute(expand('%:p'))
     let name_from_title = xolox#notes#title_to_fname(title)
-    if !xolox#misc#path#equals(name_on_disk, name_from_title)
+    if !xolox#misc#path#equals(name_on_disk, name_from_title) && !xolox#notes#is_shadow()
       call xolox#misc#msg#debug("notes.vim %s: Filename (%s) doesn't match note title (%s)", g:xolox#notes#version, name_on_disk, name_from_title)
       let action = g:notes_title_sync
       if action == 'prompt' && empty(name_from_title)
@@ -244,6 +244,11 @@ function! s:get_visual_selection()
   let lines[-1] = lines[-1][: col2 - (&selection == 'inclusive' ? 1 : 2)]
   let lines[0] = lines[0][col1 - 1:]
   return join(lines, ' ')
+endfunction
+
+function! xolox#notes#is_shadow() " {{{1
+  " Check if the current note is a shadow note.
+  return xolox#misc#path#equals(expand('%:p:h'), g:notes_shadowdir)
 endfunction
 
 function! xolox#notes#edit_shadow() " {{{1
