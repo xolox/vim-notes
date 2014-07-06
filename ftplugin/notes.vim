@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 18, 2014
+" Last Change: July 7, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -8,6 +8,10 @@ if exists('b:did_ftplugin')
 else
   let b:did_ftplugin = 1
 endif
+
+" Add dash to keyword characters so it can be used in tags. {{{1
+setlocal iskeyword+=-
+let b:undo_ftplugin = 'set iskeyword<'
 
 " Copy indent from previous line. {{{1
 setlocal autoindent
