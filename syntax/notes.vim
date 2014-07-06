@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 16, 2014
+" Last Change: July 6, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -110,7 +110,7 @@ highlight def link notesDoneMarker Question
 highlight def link notesInProgress Directory
 
 " Highlight Vim command names in :this notation. {{{2
-syntax match notesVimCmd /:\w\+\(!\|\>\)/ contains=ALLBUT,@Spell
+syntax match notesVimCmd /\w\@<!:\w\+\(!\|\>\)/ contains=ALLBUT,@Spell
 syntax cluster notesInline add=notesVimCmd
 highlight def link notesVimCmd Special
 
