@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: July 6, 2014
+" Last Change: July 7, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -47,6 +47,16 @@ else
 endif
 highlight def link notesSingleQuoted Special
 highlight def link notesDoubleQuoted String
+
+" Highlight inline code fragments (same as Markdown syntax). {{{2
+if has('conceal')
+  syntax region notesInlineCode matchgroup=notesInlineCodeMarker start=/`/ end=/`/ concealends
+  highlight link notesItalicMarker notesInlineCodeMarker
+else
+  syntax match notesInlineCode /`[^`]*`/
+endif
+syntax cluster notesInline add=notesInlineCode
+highlight def link notesInlineCode Special
 
 " Highlight text emphasized in italic font. {{{2
 if has('conceal')
