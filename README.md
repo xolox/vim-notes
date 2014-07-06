@@ -71,6 +71,12 @@ Old versions of the notes plug-in would highlight note titles without considerin
 
     :let g:notes_word_boundaries = 1
 
+### The `g:notes_unicode_enabled` option
+
+By default the vim-notes plug-in uses Unicode characters (e.g. list bullets, arrows, etc.) when Vim's ['encoding'] [enc] option is set to UTF-8. If you don't want Unicode characters in your notes (regardless of the ['encoding'] [enc] option) you can set this option to false (0):
+
+    :let g:notes_unicode_enabled = 0
+
 ### The `g:notes_smart_quotes` option
 
 By default the notes plug-in automatically performs several substitutions on the text you type in insert mode, for example regular quote marks are replaced with curly quotes. The full list of substitutions can be found below in the documentation on mappings. If you don't want the plug-in to perform these substitutions, you can set this option to zero like this:
@@ -338,6 +344,7 @@ This software is licensed under the [MIT license] [mit].
 [download-misc]: http://peterodding.com/code/vim/downloads/misc.zip
 [download-notes]: http://peterodding.com/code/vim/downloads/notes.zip
 [edit]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:edit
+[enc]: http://vimdoc.sourceforge.net/htmldoc/options.html#'encoding'
 [gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
 [github-misc]: http://github.com/xolox/vim-misc
 [github-notes]: http://github.com/xolox/vim-notes

@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.24'
+let g:xolox#notes#version = '0.25'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -69,6 +69,10 @@ function! xolox#notes#init() " {{{1
   if !exists('g:notes_title_sync')
     " Valid values are "no", "change_title", "rename_file" and "prompt".
     let g:notes_title_sync = 'prompt'
+  endif
+  " Unicode is enabled by default if Vim's encoding is set to UTF-8.
+  if !exists('g:notes_unicode_enabled')
+    let g:notes_unicode_enabled = (&encoding == 'utf-8')
   endif
   " Smart quotes and such are enabled by default.
   if !exists('g:notes_smart_quotes')
@@ -262,10 +266,6 @@ function! xolox#notes#edit_shadow() " {{{1
   call xolox#notes#set_filetype()
 endfunction
 
-function! xolox#notes#unicode_enabled()
-  return &encoding == 'utf-8'
-endfunction
-
 function! s:transcode_utf8_latin1()
   let view = winsaveview()
   silent %s/\%xe2\%x80\%x98/`/eg
@@ -274,6 +274,12 @@ function! s:transcode_utf8_latin1()
   silent %s/\%xe2\%x80\%xa2/\*/eg
   setlocal nomodified
   call winrestview(view)
+endfunction
+
+function! xolox#notes#unicode_enabled() " {{{1
+  " Check if the `g:notes_unicode_enabled` option is set to true (1) and Vim's
+  " encoding is set to UTF-8.
+  return g:notes_unicode_enabled && &encoding == 'utf-8'
 endfunction
 
 function! xolox#notes#select(filter) " {{{1
