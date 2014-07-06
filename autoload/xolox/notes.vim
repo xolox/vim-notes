@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 29, 2014
+" Last Change: July 6, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.23.11'
+let g:xolox#notes#version = '0.24'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -620,10 +620,10 @@ endfunction
 
 function! xolox#notes#buffer_is_note() " {{{2
   " Check whether the current buffer is a note (with the correct file type and path).
-  let bufpath = expand('%:p:h')
+  let buffer_directory = expand('%:p:h')
   if xolox#notes#filetype_is_note(&ft)
     for directory in xolox#notes#find_directories(1)
-      if xolox#misc#path#equals(bufpath, directory)
+      if xolox#misc#path#starts_with(buffer_directory, directory)
         return 1
       endif
     endfor
@@ -804,7 +804,7 @@ function! xolox#notes#get_fnames(include_shadow_notes) " {{{3
   if !s:have_cached_names
     let starttime = xolox#misc#timer#start()
     for directory in xolox#notes#find_directories(0)
-      let pattern = xolox#misc#path#merge(directory, '*')
+      let pattern = xolox#misc#path#merge(directory, '**')
       let listing = glob(xolox#misc#path#absolute(pattern))
       call extend(s:cached_fnames, filter(split(listing, '\n'), 'filereadable(v:val)'))
     endfor
@@ -893,11 +893,11 @@ endfunction
 
 function! xolox#notes#select_directory() " {{{3
   " Pick the best suited directory for creating a new note.
-  let bufdir = expand('%:p:h')
+  let buffer_directory = expand('%:p:h')
   let notes_directories = xolox#notes#find_directories(0)
   for directory in notes_directories
-    if xolox#misc#path#equals(bufdir, directory)
-      return directory
+    if xolox#misc#path#starts_with(buffer_directory, directory)
+      return buffer_directory
     endif
   endfor
   return notes_directories[0]

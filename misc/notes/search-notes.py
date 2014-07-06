@@ -3,7 +3,7 @@
 # Python script for fast text file searching using keyword index on disk.
 #
 # Author: Peter Odding <peter@peterodding.com>
-# Last Change: September 2, 2013
+# Last Change: July 6, 2014
 # URL: http://peterodding.com/code/vim/notes/
 # License: MIT
 #
@@ -67,6 +67,9 @@ except ImportError:
 # `search-notes.py' script; if an existing index file is found with an
 # unsupported version, the script knows that it should rebuild the index.
 INDEX_VERSION = 2
+
+# Filename matching patterns of files to ignore during scans.
+PATTERNS_TO_IGNORE = ('.swp', '.s??', '.*.s??', '*~')
 
 class NotesIndex:
 
@@ -178,12 +181,10 @@ class NotesIndex:
     notes_on_disk = {}
     last_count = 0
     for directory in self.user_directories:
-      for filename in os.listdir(directory):
-        # Vim swap files are ignored.
-        if (filename != '.swp' and not fnmatch.fnmatch(filename, '.s??')
-            and not fnmatch.fnmatch(filename, '.*.s??')):
-          abspath = os.path.join(directory, filename)
-          if os.path.isfile(abspath):
+      for root, dirs, files in os.walk(directory):
+        for filename in files:
+          if not any(fnmatch.fnmatch(filename, pattern) for pattern in PATTERNS_TO_IGNORE):
+            abspath = os.path.join(root, filename)
             notes_on_disk[abspath] = os.path.getmtime(abspath)
       self.logger.info("Found %i notes in %s ..", len(notes_on_disk) - last_count, directory)
       last_count = len(notes_on_disk)
