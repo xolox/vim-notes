@@ -65,6 +65,8 @@ When you rename a file in your notes directory but don't change the title, the p
 
 If you set this option to the string `'no'` this feature will be completely disabled. If you set it to `'change_title'` it will automatically change the title to match the filename. If you set it to `'rename_file'` it will automatically rename the file on disk to match the title.
 
+This option only concerns the behavior of vim-notes when you open an existing note; it does not change the fact that when you change a note's title in Vim and then save the note, the file is renamed (this is a fundamental feature of the vim-notes plug-in).
+
 ### The `g:notes_word_boundaries` option
 
 Old versions of the notes plug-in would highlight note titles without considering word boundaries. This is still the default behavior but the plug-in can now be told to respect word boundaries by changing this option from its default:
