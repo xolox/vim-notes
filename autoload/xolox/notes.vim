@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: July 7, 2014
+" Last Change: August 4, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.26'
+let g:xolox#notes#version = '0.26.1'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -438,7 +438,10 @@ function! xolox#notes#delete(bang, title) " {{{1
       call xolox#misc#msg#warn("notes.vim %s: Failed to delete %s!", g:xolox#notes#version, filename)
     else
       call xolox#notes#cache_del(filename)
-      execute 'bdelete' . a:bang . ' ' . bufnr(filename)
+      let buffer_number = bufnr(filename)
+      if buffer_number >= 0
+        execute 'bdelete' . a:bang . ' ' . buffer_number
+      endif
     endif
   endif
 endfunction
