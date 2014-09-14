@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: August 4, 2014
+" Last Change: September 14, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.26.1'
+let g:xolox#notes#version = '0.27'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -384,6 +384,14 @@ function! xolox#notes#omni_complete(findstart, base) " {{{1
   else
     return sort(keys(xolox#notes#tags#load_index()), 1)
   endif
+endfunction
+
+function! xolox#notes#auto_complete_tags() " {{{1
+  " Automatic completion of tags when the user types "@".
+  if !xolox#notes#currently_inside_snippet()
+    return "@\<C-x>\<C-o>"
+  endif
+  return "@"
 endfunction
 
 function! xolox#notes#save() abort " {{{1
@@ -967,22 +975,47 @@ function! xolox#notes#insert_ruler() " {{{3
   call append(line1, ['', g:notes_ruler_text, ''])
 endfunction
 
-function! xolox#notes#insert_quote(style) " {{{3
+function! xolox#notes#insert_quote(chr) " {{{3
   " XXX When I pass the below string constants as arguments from the file type
   " plug-in the resulting strings contain mojibake (UTF-8 interpreted as
   " latin1?) even if both scripts contain a UTF-8 BOM! Maybe a bug in Vim?!
-  if xolox#notes#unicode_enabled()
-    let [open_quote, close_quote] = a:style == 1 ? ['‘', '’'] : ['“', '”']
-  else
-    let [open_quote, close_quote] = a:style == 1 ? ['`', "'"] : ['"', '"']
+  if g:notes_smart_quotes && !xolox#notes#currently_inside_snippet()
+    if xolox#notes#unicode_enabled()
+      let [open_quote, close_quote] = (a:chr == "'") ? ['‘', '’'] : ['“', '”']
+    else
+      let [open_quote, close_quote] = (a:chr == "'") ? ['`', "'"] : ['"', '"']
+    endif
+    return getline('.')[col('.')-2] =~ '[^\t (]$' ? close_quote : open_quote
   endif
-  return getline('.')[col('.')-2] =~ '[^\t (]$' ? close_quote : open_quote
+  return a:chr
+endfunction
+
+function! xolox#notes#insert_em_dash() " {{{3
+  " Change double-dash (--) to em-dash (—) as it is typed.
+  return (g:notes_smart_quotes && xolox#notes#unicode_enabled() && !xolox#notes#currently_inside_snippet()) ? '—' : '--'
+endfunction
+
+function! xolox#notes#insert_left_arrow() " {{{3
+  " Change ASCII left arrow (<-) to Unicode arrow (←) as it is typed.
+  return (g:notes_smart_quotes && xolox#notes#unicode_enabled() && !xolox#notes#currently_inside_snippet()) ? '←' : "<-"
+endfunction
+
+function! xolox#notes#insert_right_arrow() " {{{3
+  " Change ASCII right arrow (->) to Unicode arrow (→) as it is typed.
+  return (g:notes_smart_quotes && xolox#notes#unicode_enabled() && !xolox#notes#currently_inside_snippet()) ? '→' : '->'
+endfunction
+
+function! xolox#notes#insert_bidi_arrow() " {{{3
+  " Change bidirectional ASCII arrow (->) to Unicode arrow (→) as it is typed.
+  return (g:notes_smart_quotes && xolox#notes#unicode_enabled() && !xolox#notes#currently_inside_snippet()) ? '↔' : "<->"
 endfunction
 
 function! xolox#notes#insert_bullet(chr) " {{{3
   " Insert a UTF-8 list bullet when the user types "*".
-  if getline('.')[0 : max([0, col('.') - 2])] =~ '^\s*$'
-    return xolox#notes#get_bullet(a:chr)
+  if !xolox#notes#currently_inside_snippet()
+    if getline('.')[0 : max([0, col('.') - 2])] =~ '^\s*$'
+      return xolox#notes#get_bullet(a:chr)
+    endif
   endif
   return a:chr
 endfunction
@@ -1209,21 +1242,32 @@ function! xolox#notes#foldexpr() " {{{3
       let retval = '>' . nextlevel
     endif
   endif
-  if retval != '='
-    " Check whether the change in folding introduced by 'rv'
-    " is invalidated because we're inside a code block.
-    let pos_save = getpos('.')
-    try
-      call setpos('.', [0, v:lnum, 1, 0])
-      if search('{{{\|\(}}}\)', 'bnpW') == 1
-        let retval = '='
-      endif
-    finally
-      " Always restore the cursor position!
-      call setpos('.', pos_save)
-    endtry
+  " Check whether the change in folding introduced by 'rv'
+  " is invalidated because we're inside a code block.
+  if retval != '=' && xolox#notes#inside_snippet(v:lnum, 1)
+    let retval = '='
   endif
   return retval
+endfunction
+
+function! xolox#notes#inside_snippet(lnum, col) " {{{3
+  " Check if the given line and column position is inside a snippet (a code
+  " block enclosed by triple curly brackets). This function temporarily
+  " changes the cursor position in the current buffer in order to search
+  " backwards efficiently.
+  let pos_save = getpos('.')
+  try
+    call setpos('.', [0, a:lnum, a:col, 0])
+    return search('{{{\|\(}}}\)', 'bnpW') == 1
+  finally
+    call setpos('.', pos_save)
+  endtry
+endfunction
+
+function! xolox#notes#currently_inside_snippet() " {{{3
+  " Check if the current cursor position is inside a snippet (a code block
+  " enclosed by triple curly brackets).
+  return xolox#notes#inside_snippet(line('.'), col('.'))
 endfunction
 
 function! xolox#notes#foldtext() " {{{3

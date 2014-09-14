@@ -1,6 +1,6 @@
 " Vim file type plug-in
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: July 7, 2014
+" Last Change: September 14, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 if exists('b:did_ftplugin')
@@ -51,8 +51,7 @@ setlocal omnifunc=xolox#notes#omni_complete
 let b:undo_ftplugin .= ' | set omnifunc<'
 
 " Automatic completion of tag names after typing "@". {{{1
-
-inoremap <buffer> <silent> @ @<C-x><C-o>
+inoremap <buffer> <silent> <expr> @ xolox#notes#auto_complete_tags()
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> @"'
 
 " Automatic completion of tag names should not interrupt the flow of typing,
@@ -60,27 +59,22 @@ let b:undo_ftplugin .= ' | execute "iunmap <buffer> @"'
 set completeopt+=longest
 
 " Change double-dash to em-dash as it is typed. {{{1
-if g:notes_smart_quotes && xolox#notes#unicode_enabled()
-  inoremap <buffer> -- —
-  let b:undo_ftplugin .= ' | execute "iunmap <buffer> --"'
-endif
+inoremap <buffer> <expr> -- xolox#notes#insert_em_dash()
+let b:undo_ftplugin .= ' | execute "iunmap <buffer> --"'
 
 " Change plain quotes to curly quotes as they're typed. {{{1
-if g:notes_smart_quotes
-  inoremap <buffer> <expr> ' xolox#notes#insert_quote(1)
-  inoremap <buffer> <expr> " xolox#notes#insert_quote(2)
-  let b:undo_ftplugin .= ' | execute "iunmap <buffer> ''"'
-  let b:undo_ftplugin .= ' | execute ''iunmap <buffer> "'''
-endif
+inoremap <buffer> <expr> ' xolox#notes#insert_quote("'")
+inoremap <buffer> <expr> " xolox#notes#insert_quote('"')
+let b:undo_ftplugin .= ' | execute "iunmap <buffer> ''"'
+let b:undo_ftplugin .= ' | execute ''iunmap <buffer> "'''
 
 " Change ASCII style arrows to Unicode arrows. {{{1
-if g:notes_smart_quotes && xolox#notes#unicode_enabled()
-  inoremap <buffer> -> →
-  inoremap <buffer> <- ←
-  inoremap <buffer> <-> ↔
-  let b:undo_ftplugin .= ' | execute "iunmap <buffer> ->"'
-  let b:undo_ftplugin .= ' | execute "iunmap <buffer> <-"'
-endif
+inoremap <buffer> <expr> <- xolox#notes#insert_left_arrow()
+inoremap <buffer> <expr> -> xolox#notes#insert_right_arrow()
+inoremap <buffer> <expr> <-> xolox#notes#insert_bidi_arrow()
+let b:undo_ftplugin .= ' | execute "iunmap <buffer> ->"'
+let b:undo_ftplugin .= ' | execute "iunmap <buffer> <-"'
+let b:undo_ftplugin .= ' | execute "iunmap <buffer> <->"'
 
 " Convert ASCII list bullets to Unicode bullets. {{{1
 if g:notes_smart_quotes
