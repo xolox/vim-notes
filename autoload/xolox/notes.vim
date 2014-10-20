@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: September 14, 2014
+" Last Change: October 20, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.27'
+let g:xolox#notes#version = '0.28'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -404,6 +404,10 @@ function! xolox#notes#save() abort " {{{1
       echoerr "Invalid note title"
       return
     endif
+    " Trigger the BufWritePre automatic command event because it provides
+    " a very unobtrusive way for users to extend the vim-notes plug-in.
+    execute 'doautocmd BufWritePre' fnameescape(newpath)
+    " Actually save the user's buffer to the file.
     let bang = v:cmdbang ? '!' : ''
     execute 'saveas' . bang fnameescape(newpath)
     " XXX If {oldpath} and {newpath} end up pointing to the same file on disk
@@ -427,6 +431,9 @@ function! xolox#notes#save() abort " {{{1
     " Update in-memory list of all notes.
     call xolox#notes#cache_del(oldpath)
     call xolox#notes#cache_add(newpath, title)
+    " Trigger the BufWritePost automatic command event because it provides
+    " a very unobtrusive way for users to extend the vim-notes plug-in.
+    execute 'doautocmd BufWritePost' fnameescape(newpath)
   endif
 endfunction
 
