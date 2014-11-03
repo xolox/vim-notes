@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: July 7, 2014
+" Last Change: November 3, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -10,6 +10,14 @@
 if exists('b:current_syntax')
   finish
 endif
+
+" Tell Vim to start redrawing by rescanning all previous text. This isn't
+" exactly optimal for performance but it enables accurate syntax highlighting.
+" Ideally we'd find a way to get accurate syntax highlighting without the
+" nasty performance implications, but for now I'll accept the performance
+" impact in order to have accurate highlighting. For more discussion please
+" refer to https://github.com/xolox/vim-notes/issues/2.
+syntax sync fromstart
 
 " Check for spelling errors in all text.
 syntax spell toplevel
