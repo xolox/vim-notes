@@ -120,9 +120,9 @@ syntax match notesFixMe /\<FIXME\>/
 syntax match notesInProgress /\<\(CURRENT\|INPROGRESS\|STARTED\|WIP\)\>/
 syntax match notesDoneItem /^\(\s\+\).*\<DONE\>.*\(\n\1\s.*\)*/ contains=@notesInline
 syntax match notesDoneMarker /\<DONE\>/ containedin=notesDoneItem
-highlight def link notesTodo WarningMsg
+highlight def link notesTodo TODO
 highlight def link notesXXX WarningMsg
-highlight def link notesFixMe WarningMsg
+highlight def link notesFixMe Error
 highlight def link notesDoneItem Comment
 highlight def link notesDoneMarker Question
 highlight def link notesInProgress Directory
