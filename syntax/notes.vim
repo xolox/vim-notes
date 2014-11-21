@@ -158,6 +158,8 @@ highlight def link notesRule Comment
 
 " Highlight embedded blocks of source code, log file messages, basically anything Vim can highlight. {{{2
 " NB: I've escaped these markers so that Vim doesn't interpret them when editing this file…
+syntax match notesCodeStart /``[`]\w*/
+syntax match notesCodeEnd /``[`]\W/
 syntax match notesCodeStart /{{[{]\w*/
 syntax match notesCodeEnd /}}[}]/
 highlight def link notesCodeStart Ignore

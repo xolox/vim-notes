@@ -1155,7 +1155,7 @@ function! xolox#notes#highlight_sources(force) " {{{3
   " Look for code blocks in the current note.
   let filetypes = {}
   for line in getline(1, '$')
-    let ft = matchstr(line, '{{' . '{\zs\w\+\>')
+    let ft = matchstr(line, '\({{\|``\)' . '\({\|`\)\zs\w\+\>')
     if ft !~ '^\d*$' | let filetypes[ft] = 1 | endif
   endfor
   " Don't refresh the highlighting if nothing has changed.
@@ -1172,6 +1172,8 @@ function! xolox#notes#highlight_sources(force) " {{{3
       let group = 'notesSnippet' . toupper(ft)
       let include = s:syntax_include(ft)
       let command = 'syntax region %s matchgroup=%s start="{{{%s" matchgroup=%s end="}}}" keepend contains=%s%s'
+      execute printf(command, group, startgroup, ft, endgroup, include, has('conceal') ? ' concealends' : '')
+      let command = 'syntax region %s matchgroup=%s start="```%s" matchgroup=%s end="```" keepend contains=%s%s'
       execute printf(command, group, startgroup, ft, endgroup, include, has('conceal') ? ' concealends' : '')
     endfor
     if &vbs >= 1
