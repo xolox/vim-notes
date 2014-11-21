@@ -134,6 +134,16 @@ function! s:match_line(context) " {{{1
       " The marker above contains back slashes so that Vim doesn't apply
       " folding because of the marker :-).
       return line
+    elseif chr == '`' && a:context.peek(4) =~ '```\w'
+      let line .= a:context.next(3)
+      while a:context.peek(1) =~ '\w'
+        call a:context.next(1)
+      endwhile
+      " Skip the whitespace separating the start marker and/or language name from
+      " the text.
+      while a:context.peek(1) =~ '[ \t]'
+        call a:context.next(1)
+      endwhile
     elseif chr == "\n"
       call a:context.next(1)
       return line . "\n"
