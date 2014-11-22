@@ -5,8 +5,10 @@
 
 if exists('b:did_ftplugin')
   finish
-else
-  let b:did_ftplugin = 1
+endif
+
+if !exists('g:notes_tabwidth')
+  let g:notes_tabwidth = 8
 endif
 
 " Add dash to keyword characters so it can be used in tags. {{{1
@@ -18,7 +20,7 @@ setlocal autoindent
 let b:undo_ftplugin = 'set autoindent<'
 
 " Set &tabstop and &shiftwidth options for bulleted lists. {{{1
-setlocal tabstop=3 shiftwidth=3 expandtab
+execute "setlocal tabstop=".g:notes_tabwidth." shiftwidth=".g:notes_tabwidth." expandtab"
 let b:undo_ftplugin .= ' | set tabstop< shiftwidth< expandtab<'
 
 " Automatic formatting for bulleted lists. {{{1
