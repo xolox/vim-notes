@@ -1173,7 +1173,7 @@ function! xolox#notes#highlight_sources(force) " {{{3
       let include = s:syntax_include(ft)
       let command = 'syntax region %s matchgroup=%s start="{{{%s" matchgroup=%s end="}}}" keepend contains=%s%s'
       execute printf(command, group, startgroup, ft, endgroup, include, has('conceal') ? ' concealends' : '')
-      let command = 'syntax region %s matchgroup=%s start="```%s" matchgroup=%s end="```" keepend contains=%s%s'
+      let command = 'syntax region %s matchgroup=%s start="```%s\ ?" matchgroup=%s end="```" keepend contains=%s%s'
       execute printf(command, group, startgroup, ft, endgroup, include, has('conceal') ? ' concealends' : '')
     endfor
     if &vbs >= 1
