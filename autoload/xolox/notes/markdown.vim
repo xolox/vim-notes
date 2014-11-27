@@ -1,6 +1,6 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: June 23, 2013
+" Last Change: November 27, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 function! xolox#notes#markdown#view() " {{{1
@@ -44,7 +44,7 @@ function! xolox#notes#markdown#convert_block(block) " {{{1
     let text = xolox#misc#str#indent(xolox#misc#str#dedent(a:block.text), 4)
     return join([comment, text], "\n\n")
   elseif a:block.type == 'divider'
-    return '* * *'
+    return '---'
   elseif a:block.type == 'list'
     let items = []
     if a:block.ordered
