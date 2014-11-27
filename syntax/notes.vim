@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 3, 2014
+" Last Change: November 27, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -158,6 +158,8 @@ highlight def link notesRule Comment
 
 " Highlight embedded blocks of source code, log file messages, basically anything Vim can highlight. {{{2
 " NB: I've escaped these markers so that Vim doesn't interpret them when editing this file…
+syntax match notesCodeStart /```\w*/
+syntax match notesCodeEnd /```\W/
 syntax match notesCodeStart /{{[{]\w*/
 syntax match notesCodeEnd /}}[}]/
 highlight def link notesCodeStart Ignore

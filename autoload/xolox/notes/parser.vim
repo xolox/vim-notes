@@ -1,6 +1,6 @@
 " Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: July 18, 2013
+" Last Change: November 27, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 function! xolox#notes#parser#parse_note(text) " {{{1
@@ -20,7 +20,9 @@ function! xolox#notes#parser#parse_note(text) " {{{1
     elseif chr == '>'
       let block = s:parse_block_quote(context)
     elseif chr == '{' && context.peek(3) == "\{\{\{"
-      let block = s:parse_code_block(context)
+      let block = s:parse_code_block(context, 1)
+    elseif chr == '`' && context.peek(3) == "```"
+      let block = s:parse_code_block(context, 2)
     else
       let lookahead = s:match_bullet_or_divider(context, 0)
       if !empty(lookahead)
@@ -134,6 +136,9 @@ function! s:match_line(context) " {{{1
       " The marker above contains back slashes so that Vim doesn't apply
       " folding because of the marker :-).
       return line
+    elseif chr == '`' && a:context.peek(3) =~ '```'
+      " A second form of code blocks.
+      return line
     elseif chr == "\n"
       call a:context.next(1)
       return line . "\n"
@@ -171,7 +176,7 @@ function! s:parse_block_quote(context) " {{{1
   return {'type': 'block-quote', 'lines': lines}
 endfunction
 
-function! s:parse_code_block(context) " {{{1
+function! s:parse_code_block(context, style) " {{{1
   " Parse the upcoming code block in the input stream.
   let language = ''
   let text = ''
@@ -189,7 +194,7 @@ function! s:parse_code_block(context) " {{{1
   " Get the text inside the code block.
   while a:context.has_more()
     let chr = a:context.next(1)
-    if chr == '}' && a:context.peek(2) == '}}'
+    if (a:style == 1 && chr == '}' && a:context.peek(2) == '}}') || (a:style == 2 && chr == '`' && a:context.peek(2) == '``')
       call a:context.next(2)
       break
     endif
