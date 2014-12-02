@@ -17,7 +17,7 @@ The vim-notes plug-in for the [Vim text editor] [vim] makes it easy to manage yo
    * The `:RecentNotes` command lists your notes by modification date, starting with the most recently edited note
  * **Navigating between notes:** The included syntax script highlights note names as hyper links and the file type plug-in redefines [gf] [gf] to jump between notes (the [Control-w f] [ctrlwf] mapping to jump to a note in a split window and the [Control-w gf] [ctrlwgf] mapping to jump to a note in a new tab page also work)
  * **Writing aids:** The included file type plug-in contains mappings for automatic curly quotes, arrows and list bullets and supports completion of note titles using Control-X Control-U and completion of tags using Control-X Control-O
- * **Embedded file types:** The included syntax script supports embedded highlighting using blocks marked with `{{{type … }}}` which allows you to embed highlighted code and configuration snippets in your notes
+ * **Embedded file types:** The included syntax script supports embedded highlighting using blocks marked with `{{{type … }}}` (triple back ticks ala [GFM] [gfm] are also supported) which allows you to embed highlighted code and configuration snippets in your notes
 
 Here's a screen shot of the syntax mode using the [Slate] [slate] color scheme and the font [Monaco] [monaco]:
 
@@ -352,6 +352,7 @@ This software is licensed under the [MIT license] [mit].
 [edit]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:edit
 [enc]: http://vimdoc.sourceforge.net/htmldoc/options.html#'encoding'
 [gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
+[gfm]: https://help.github.com/articles/github-flavored-markdown/
 [github-misc]: http://github.com/xolox/vim-misc
 [github-notes]: http://github.com/xolox/vim-notes
 [highlight]: http://vimdoc.sourceforge.net/htmldoc/syntax.html#:highlight

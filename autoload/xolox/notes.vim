@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 3, 2014
+" Last Change: November 27, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.28.1'
+let g:xolox#notes#version = '0.29'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -1155,7 +1155,7 @@ function! xolox#notes#highlight_sources(force) " {{{3
   " Look for code blocks in the current note.
   let filetypes = {}
   for line in getline(1, '$')
-    let ft = matchstr(line, '{{' . '{\zs\w\+\>')
+    let ft = matchstr(line, '\({{[{]\|```\)\zs\w\+\>')
     if ft !~ '^\d*$' | let filetypes[ft] = 1 | endif
   endfor
   " Don't refresh the highlighting if nothing has changed.
@@ -1171,8 +1171,10 @@ function! xolox#notes#highlight_sources(force) " {{{3
     for ft in keys(filetypes)
       let group = 'notesSnippet' . toupper(ft)
       let include = s:syntax_include(ft)
-      let command = 'syntax region %s matchgroup=%s start="{{{%s" matchgroup=%s end="}}}" keepend contains=%s%s'
-      execute printf(command, group, startgroup, ft, endgroup, include, has('conceal') ? ' concealends' : '')
+      for [startmarker, endmarker] in [['{{{', '}}}'], ['```', '```']]
+        let command = 'syntax region %s matchgroup=%s start="%s%s \?" matchgroup=%s end="%s" keepend contains=%s%s'
+        execute printf(command, group, startgroup, startmarker, ft, endgroup, endmarker, include, has('conceal') ? ' concealends' : '')
+      endfor
     endfor
     if &vbs >= 1
       call xolox#misc#timer#stop("notes.vim %s: Highlighted embedded %s sources in %s.", g:xolox#notes#version, join(sort(keys(filetypes)), '/'), starttime)
@@ -1259,13 +1261,14 @@ endfunction
 
 function! xolox#notes#inside_snippet(lnum, col) " {{{3
   " Check if the given line and column position is inside a snippet (a code
-  " block enclosed by triple curly brackets). This function temporarily
-  " changes the cursor position in the current buffer in order to search
-  " backwards efficiently.
+  " block enclosed by triple curly brackets or triple back ticks). This
+  " function temporarily changes the cursor position in the current buffer in
+  " order to search backwards efficiently.
   let pos_save = getpos('.')
   try
     call setpos('.', [0, a:lnum, a:col, 0])
-    return search('{{{\|\(}}}\)', 'bnpW') == 1
+    let matching_subpattern = search('{{{\|\(}}}\)\|```\w\|\(```\)', 'bnpW')
+    return matching_subpattern >= 1
   finally
     call setpos('.', pos_save)
   endtry
