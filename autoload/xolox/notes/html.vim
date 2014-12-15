@@ -7,7 +7,7 @@ if !exists('g:notes_markdown_program')
   let g:notes_markdown_program = 'markdown'
 endif
 
-function! xolox#notes#html#view() " {{{1
+function! xolox#notes#html#view(open_in) " {{{1
   " Convert the current note to a web page and show the web page in a browser.
   " Requires [Markdown] [markdown] to be installed; you'll get a warning if it
   " isn't.
@@ -32,9 +32,15 @@ function! xolox#notes#html#view() " {{{1
     if writefile(split(styled_html, "\n"), filename) != 0
       throw printf("Failed to write HTML file! (%s)", filename)
     endif
+
     " Open the generated HTML in a web browser.
-    call xolox#misc#open#url('file://' . filename)
-    call xolox#misc#timer#stop("notes.vim %s: Rendered HTML preview in %s.", g:xolox#notes#version, starttime)
+    if a:open_in == "split"
+      vnew
+      call setline(1, split(styled_html, "\n"))
+    else
+      call xolox#misc#open#url('file://' . filename)
+      call xolox#misc#timer#stop("notes.vim %s: Rendered HTML preview in %s.", g:xolox#notes#version, starttime)
+    endif
   catch
     call xolox#misc#msg#warn("notes.vim %s: %s at %s", g:xolox#notes#version, v:exception, v:throwpoint)
   endtry
