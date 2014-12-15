@@ -37,6 +37,7 @@ command! -bar -bang MostRecentNote call xolox#notes#recent#edit(<q-bang>)
 command! -bar -count=1 ShowTaggedNotes call xolox#notes#tags#show_tags(<count>)
 command! -bar IndexTaggedNotes call xolox#notes#tags#create_index()
 command! -bar NoteToMarkdown call xolox#notes#markdown#view()
+command! -bar NoteToMediawiki call xolox#notes#mediawiki#view()
 command! -bar -nargs=? NoteToHtml call xolox#notes#html#view(<q-args>)
 
 " TODO Generalize this so we have one command + modifiers (like :tab)?
