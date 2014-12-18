@@ -232,6 +232,14 @@ If for any reason you want to recreate the list of tags you can execute the `:In
 
 This command converts the current note to HTML. It works by first converting the current note to [Markdown] [markdown] and then using the `markdown` program to convert that to HTML. It requires an external program to convert Markdown to HTML. By default the program `markdown` is used, but you can change the name of the program using the `g:notes_markdown_program` option.
 
+To convert your note to html and open it in a browser, you can run:
+
+    :NoteToHtml
+
+Alternatively, to convert your note to html and display it in a new split in vim, you can run:
+
+    :NoteToHtml split
+
 Note that this command can be a bit slow, because the parser for the note taking syntax is written in Vim script (for portability) and has not been optimized for speed (yet).
 
 ### The `:NoteToMarkdown` command
@@ -245,6 +253,16 @@ Convert the current note to a [Markdown document] [markdown]. The vim-notes synt
  * The markers and indentation of list items differ between notes and Markdown (dumb bullets vs Unicode bullets and 3 vs 4 spaces).
 
 Note that this command can be a bit slow, because the parser for the note taking syntax is written in Vim script (for portability) and has not been optimized for speed (yet).
+
+### The `:NoteToMediawiki` command
+
+Convert the current note to a [Mediawiki document] [mediawiki]. This is similar to the `:NoteToMarkdown` command, but it produces wiki text that can be displayed on a Mediawiki site. That being said, the subset of wiki markup that vim-notes actually produces will probably work on other wiki sites. These are the notable transforations:
+
+ * The first line of the note is a title, but it isn't used in the Mediawiki syntax. It could have been put into a `= Title =` tag, but it doesn't really make sense in the context of a wiki. It would make the table of contents nest under the title for every document you create.
+
+ * Preformatted blocks are output into `<syntaxhighlight lang="..">` tags. This functionality is enabled on Mediawiki through the [SyntaxHighlight GeSHi extention] [geshi]. It is also supported on Wikipedia.
+ 
+ * Currently, the `***` divider isn't translated into anything.
 
 ## Mappings
 
@@ -360,6 +378,8 @@ This software is licensed under the [MIT license] [mit].
 [levenshtein]: http://en.wikipedia.org/wiki/Levenshtein_distance
 [mapleader]: http://vimdoc.sourceforge.net/htmldoc/map.html#mapleader
 [markdown]: http://en.wikipedia.org/wiki/Markdown
+[mediawiki]: https://www.mediawiki.org/wiki/MediaWiki
+[geshi]: http://www.mediawiki.org/wiki/Extension:SyntaxHighlight_GeSHi
 [mit]: http://en.wikipedia.org/wiki/MIT_License
 [modeline]: http://vimdoc.sourceforge.net/htmldoc/options.html#modeline
 [monaco]: http://en.wikipedia.org/wiki/Monaco_(typeface)

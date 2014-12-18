@@ -40,7 +40,7 @@ function! xolox#notes#mediawiki#convert_block(block) " {{{1
     let text = s:make_urls_explicit(a:block.text)
     return printf("%s %s %s", marker, text, marker)
   elseif a:block.type == 'code'
-    return printf('<source lang="%s">%s</source>', a:block.language, a:block.text)
+    return printf('<syntaxhighlight lang="%s">%s</syntaxhighlight>', a:block.language, a:block.text)
   elseif a:block.type == 'divider'
     "TODO is there an equivelant here for mediawiki?
     return ''
