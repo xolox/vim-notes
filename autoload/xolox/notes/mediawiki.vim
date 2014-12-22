@@ -93,10 +93,12 @@ function! xolox#notes#mediawiki#convert_block(block) " {{{1
 endfunction
 
 function! s:hilight_tasks(text)
+    " Make case sensitive matches of DONE, XXX, and TODO so that we can color
+    " them in the output the same way they are colored in vim-notes
     let hilighted = a:text
-    let hilighted = substitute(hilighted, "DONE", '<span style="color:green">DONE</span>', "")
-    let hilighted = substitute(hilighted, "XXX", '<span style="color:red">XXX</span>', "")
-    let hilighted = substitute(hilighted, "TODO", '<span style="color:red">TODO</span>', "")
+    let hilighted = substitute(hilighted, "DONE\\C", '<span style="color:green">DONE</span>', "")
+    let hilighted = substitute(hilighted, "XXX\\C", '<span style="color:red">XXX</span>', "")
+    let hilighted = substitute(hilighted, "TODO\\C", '<span style="color:red">TODO</span>', "")
     return hilighted
 endfunction
 
