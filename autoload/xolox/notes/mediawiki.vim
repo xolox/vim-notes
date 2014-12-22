@@ -34,7 +34,7 @@ function! xolox#notes#mediawiki#convert_block(block) " {{{1
   " format] [mediawiki]. Returns a string.
   if a:block.type == 'title'
     let text = s:make_urls_explicit(a:block.text)
-    return printf("= %s =", text)
+    return ""
   elseif a:block.type == 'heading'
     let marker = repeat('=', 1 + a:block.level)
     let text = s:make_urls_explicit(a:block.text)
@@ -51,8 +51,9 @@ function! xolox#notes#mediawiki#convert_block(block) " {{{1
       for item in a:block.items
         let indent = repeat('#', item.indent + 1)
         let text = s:make_urls_explicit(item.text)
-        if text =~ "DONE"
-            call add(items, printf("%s ~~%s~~", indent, text))
+        let text = s:hilight_tasks(text)
+        if text =~# "DONE"
+            call add(items, printf("%s <del>%s</del>", indent, text))
         else
             call add(items, printf("%s %s", indent, text))
         endif
@@ -62,8 +63,9 @@ function! xolox#notes#mediawiki#convert_block(block) " {{{1
       for item in a:block.items
         let indent = repeat('*', item.indent + 1)
         let text = s:make_urls_explicit(item.text)
-        if text =~ "DONE"
-            call add(items, printf("%s ~~%s~~", indent, text))
+        let text = s:hilight_tasks(text)
+        if text =~# "DONE"
+            call add(items, printf("%s <del>%s</del>", indent, text))
         else
             call add(items, printf("%s %s", indent, text))
         endif
@@ -88,6 +90,14 @@ function! xolox#notes#mediawiki#convert_block(block) " {{{1
     let msg = "Encountered unsupported block: %s!"
     throw printf(msg, string(a:block))
   endif
+endfunction
+
+function! s:hilight_tasks(text)
+    let hilighted = a:text
+    let hilighted = substitute(hilighted, "DONE", '<span style="color:green">DONE</span>', "")
+    let hilighted = substitute(hilighted, "XXX", '<span style="color:red">XXX</span>', "")
+    let hilighted = substitute(hilighted, "TODO", '<span style="color:red">TODO</span>', "")
+    return hilighted
 endfunction
 
 function! s:make_urls_explicit(text) " {{{1
