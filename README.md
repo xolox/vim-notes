@@ -139,7 +139,7 @@ This shortcut also works from the command line:
 
     $ gvim note:todo
 
-When you don't follow *note:* with anything a new note is created like when you execute `:Note` without any arguments.
+When you don't follow *note:* with anything a new note is created like when you execute `:Note` without any arguments. If the *note:* shortcut is used from the command line, the environment variable `$VIM_NOTES_TEMPLATE` can be set to the filename of a template for new notes (this will override the default template).
 
 ### The `:Note` command
 
