@@ -38,6 +38,7 @@ Contents ~
   11. The |:IndexTaggedNotes| command
   12. The |:NoteToHtml| command
   13. The |:NoteToMarkdown| command
+  14. The |:NoteToMediawiki| command
  5. Mappings                                                   |notes-mappings|
   1. Insert mode mappings                          |notes-insert-mode-mappings|
  6. Customizing the syntax highlighting of notes |customizing-syntax-highlighting-of-notes|
@@ -516,8 +517,16 @@ This command converts the current note to HTML. It works by first converting
 the current note to Markdown [13] and then using the 'markdown' program to
 convert that to HTML. It requires an external program to convert Markdown to
 HTML. By default the program 'markdown' is used, but you can change the name of
-the program using the |g:notes_markdown_program| option.
-
+the program using the |g:notes_markdown_program| option. To convert your note
+to HTML and open the generated web page in a browser, you can run:
+>
+  :NoteToHtml
+<
+Alternatively, to convert your note to HTML and display it in a new split
+window in Vim, you can run:
+>
+  :NoteToHtml split
+<
 Note that this command can be a bit slow, because the parser for the note
 taking syntax is written in Vim script (for portability) and has not been
 optimized for speed (yet).
@@ -542,6 +551,24 @@ notable differences, which this command takes care of:
 Note that this command can be a bit slow, because the parser for the note
 taking syntax is written in Vim script (for portability) and has not been
 optimized for speed (yet).
+
+-------------------------------------------------------------------------------
+The *:NoteToMediawiki* command
+
+Convert the current note to a Mediawiki document [14]. This is similar to the
+|:NoteToMarkdown| command, but it produces wiki text that can be displayed on a
+Mediawiki site. That being said, the subset of wiki markup that vim-notes
+actually produces will probably work on other wiki sites. These are the notable
+transforations:
+
+- The first line of the note is a title, but it isn't used in the Mediawiki
+  syntax. It could have been put into a '= Title =' tag, but it doesn't
+  really make sense in the context of a wiki. It would make the table of
+  contents nest under the title for every document you create.
+
+- Preformatted blocks are output into '<syntaxhighlight lang="..">' tags.
+  This functionality is enabled on Mediawiki through the SyntaxHighlight
+  GeSHi extention [15]. It is also supported on Wikipedia.
 
 ===============================================================================
                                                                *notes-mappings*
@@ -630,14 +657,14 @@ Other plug-ins that work well with the notes plug-in ~
                                                                 *notes-utl.vim*
 utl.vim ~
 
-The utl.vim [14] universal text linking plug-in enables links between your
+The utl.vim [16] universal text linking plug-in enables links between your
 notes, other local files and remote resources like web pages.
 
 -------------------------------------------------------------------------------
                                                               *notes-shell.vim*
 shell.vim ~
 
-My shell.vim [15] plug-in also enables easy navigation between your notes and
+My shell.vim [17] plug-in also enables easy navigation between your notes and
 environment like local files and directories, web pages and e-mail addresses by
 providing key mappings and commands to e.g. open the file/URL under the text
 cursor. This plug-in can also change Vim to full screen which can be really
@@ -647,7 +674,7 @@ nice for large notes.
                                                                    *notes-voom*
 VOoM ~
 
-The VOoM [16] outlining plug-in should work well for notes if you use the
+The VOoM [18] outlining plug-in should work well for notes if you use the
 Markdown style headers starting with '#', however it has been reported that
 this combination may not always work so well in practice (sometimes losing
 notes!)
@@ -657,7 +684,7 @@ notes!)
 Txtfmt ~
 
 If the text formatting supported by the notes plug-in is not enough for you,
-consider trying the Txtfmt [17] (The Vim Highlighter) plug-in. To use the two
+consider trying the Txtfmt [19] (The Vim Highlighter) plug-in. To use the two
 plug-ins together, create the file 'after/ftplugin/notes.vim' inside your Vim
 profile with the following contents:
 >
@@ -673,7 +700,7 @@ absolute pathnames that most certainly won't match between e.g. Windows and
 Linux or even Windows and Cygwin. The best you can do is keep separate session
 scripts for different platforms (and I would certainly consider Cygwin a
 separate platform altogether :-). For more information please refer to issue
-#85 [18].
+#85 [20].
 
 ===============================================================================
                                                                 *notes-contact*
@@ -682,13 +709,13 @@ Contact ~
 If you have questions, bug reports, suggestions, etc. the author can be
 contacted at peter@peterodding.com. The latest version is available at
 http://peterodding.com/code/vim/notes/ and http://github.com/xolox/vim-notes.
-If you like the script please vote for it on Vim Online [19].
+If you like the script please vote for it on Vim Online [21].
 
 ===============================================================================
                                                                 *notes-license*
 License ~
 
-This software is licensed under the MIT license [20]. © 2014 Peter Odding
+This software is licensed under the MIT license [22]. © 2014 Peter Odding
 <peter@peterodding.com>.
 
 ===============================================================================
@@ -708,12 +735,14 @@ References ~
 [11] http://github.com/xolox/vim-notes
 [12] http://github.com/xolox/vim-misc
 [13] http://en.wikipedia.org/wiki/Markdown
-[14] http://www.vim.org/scripts/script.php?script_id=293
-[15] http://www.vim.org/scripts/script.php?script_id=3123
-[16] http://www.vim.org/scripts/script.php?script_id=2657
-[17] http://www.vim.org/scripts/script.php?script_id=2208
-[18] https://github.com/xolox/vim-session/issues/85
-[19] http://www.vim.org/scripts/script.php?script_id=3375
-[20] http://en.wikipedia.org/wiki/MIT_License
+[14] https://www.mediawiki.org/wiki/MediaWiki
+[15] http://www.mediawiki.org/wiki/Extension:SyntaxHighlight_GeSHi
+[16] http://www.vim.org/scripts/script.php?script_id=293
+[17] http://www.vim.org/scripts/script.php?script_id=3123
+[18] http://www.vim.org/scripts/script.php?script_id=2657
+[19] http://www.vim.org/scripts/script.php?script_id=2208
+[20] https://github.com/xolox/vim-session/issues/85
+[21] http://www.vim.org/scripts/script.php?script_id=3375
+[22] http://en.wikipedia.org/wiki/MIT_License
 
 vim: ft=help
