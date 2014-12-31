@@ -139,7 +139,7 @@ This shortcut also works from the command line:
 
     $ gvim note:todo
 
-When you don't follow *note:* with anything a new note is created like when you execute `:Note` without any arguments.
+When you don't follow *note:* with anything a new note is created like when you execute `:Note` without any arguments. If the *note:* shortcut is used from the command line, the environment variable `$VIM_NOTES_TEMPLATE` can be set to the filename of a template for new notes (this will override the default template).
 
 ### The `:Note` command
 
@@ -230,7 +230,13 @@ If for any reason you want to recreate the list of tags you can execute the `:In
 
 ### The `:NoteToHtml` command
 
-This command converts the current note to HTML. It works by first converting the current note to [Markdown] [markdown] and then using the `markdown` program to convert that to HTML. It requires an external program to convert Markdown to HTML. By default the program `markdown` is used, but you can change the name of the program using the `g:notes_markdown_program` option.
+This command converts the current note to HTML. It works by first converting the current note to [Markdown] [markdown] and then using the `markdown` program to convert that to HTML. It requires an external program to convert Markdown to HTML. By default the program `markdown` is used, but you can change the name of the program using the `g:notes_markdown_program` option. To convert your note to HTML and open the generated web page in a browser, you can run:
+
+    :NoteToHtml
+
+Alternatively, to convert your note to HTML and display it in a new split window in Vim, you can run:
+
+    :NoteToHtml split
 
 Note that this command can be a bit slow, because the parser for the note taking syntax is written in Vim script (for portability) and has not been optimized for speed (yet).
 
@@ -245,6 +251,14 @@ Convert the current note to a [Markdown document] [markdown]. The vim-notes synt
  * The markers and indentation of list items differ between notes and Markdown (dumb bullets vs Unicode bullets and 3 vs 4 spaces).
 
 Note that this command can be a bit slow, because the parser for the note taking syntax is written in Vim script (for portability) and has not been optimized for speed (yet).
+
+### The `:NoteToMediawiki` command
+
+Convert the current note to a [Mediawiki document] [mediawiki]. This is similar to the `:NoteToMarkdown` command, but it produces wiki text that can be displayed on a Mediawiki site. That being said, the subset of wiki markup that vim-notes actually produces will probably work on other wiki sites. These are the notable transforations:
+
+ * The first line of the note is a title, but it isn't used in the Mediawiki syntax. It could have been put into a `= Title =` tag, but it doesn't really make sense in the context of a wiki. It would make the table of contents nest under the title for every document you create.
+
+ * Preformatted blocks are output into `<syntaxhighlight lang="..">` tags. This functionality is enabled on Mediawiki through the [SyntaxHighlight GeSHi extention] [geshi]. It is also supported on Wikipedia.
 
 ## Mappings
 
@@ -351,6 +365,7 @@ This software is licensed under the [MIT license] [mit].
 [download-notes]: http://peterodding.com/code/vim/downloads/notes.zip
 [edit]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:edit
 [enc]: http://vimdoc.sourceforge.net/htmldoc/options.html#'encoding'
+[geshi]: http://www.mediawiki.org/wiki/Extension:SyntaxHighlight_GeSHi
 [gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
 [gfm]: https://help.github.com/articles/github-flavored-markdown/
 [github-misc]: http://github.com/xolox/vim-misc
@@ -360,6 +375,7 @@ This software is licensed under the [MIT license] [mit].
 [levenshtein]: http://en.wikipedia.org/wiki/Levenshtein_distance
 [mapleader]: http://vimdoc.sourceforge.net/htmldoc/map.html#mapleader
 [markdown]: http://en.wikipedia.org/wiki/Markdown
+[mediawiki]: https://www.mediawiki.org/wiki/MediaWiki
 [mit]: http://en.wikipedia.org/wiki/MIT_License
 [modeline]: http://vimdoc.sourceforge.net/htmldoc/options.html#modeline
 [monaco]: http://en.wikipedia.org/wiki/Monaco_(typeface)

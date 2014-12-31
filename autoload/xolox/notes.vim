@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 27, 2014
+" Last Change: December 29, 2014
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.29'
+let g:xolox#notes#version = '0.31'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -60,6 +60,15 @@ function! xolox#notes#init() " {{{1
   " filename.
   if !exists('g:notes_recentindex')
     let g:notes_recentindex = xolox#misc#path#merge(localdir, 'recent.txt')
+  endif
+  " Define the default location of the template for new notes.
+  if !exists('g:notes_new_note_template')
+    if !empty($VIM_NOTES_TEMPLATE)
+      " Command line override.
+      let g:notes_new_note_template = xolox#misc#path#absolute($VIM_NOTES_TEMPLATE)
+    else
+      let g:notes_new_note_template = xolox#misc#path#merge(g:notes_shadowdir, 'New note')
+    endif
   endif
   " Define the default location of the template for HTML conversion.
   if !exists('g:notes_html_template')
@@ -158,8 +167,7 @@ function! xolox#notes#edit(bang, title) abort " {{{1
   let fname = xolox#notes#title_to_fname(title)
   noautocmd execute 'edit' . a:bang fnameescape(fname)
   if line('$') == 1 && getline(1) == ''
-    let fname = xolox#misc#path#merge(g:notes_shadowdir, 'New note')
-    execute 'silent read' fnameescape(fname)
+    execute 'silent read' fnameescape(g:notes_new_note_template)
     1delete
     if !xolox#notes#unicode_enabled()
       call s:transcode_utf8_latin1()
