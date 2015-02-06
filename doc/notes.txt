@@ -332,6 +332,42 @@ name of this program is assumed to be simply 'markdown'. If you want to use a
 different program for Markdown to HTML conversion, set this option to the name
 of the program.
 
+-------------------------------------------------------------------------------
+The *g:notes_coneal_code* option
+
+Setting this option stops vim-notes from hiding the characters that declare
+blocks of code. In the following example, the brackets would visible in the
+editor.
+
+  {{{javascript
+     console.log("Hello") ;
+  }}}
+
+-------------------------------------------------------------------------------
+The *g:notes_coneal_italics* option
+
+Setting this option stops vim-notes from hiding the characters that declare
+italic text. In the following example, the underscores would visible in the
+editor.
+
+  _Italics text_
+
+-------------------------------------------------------------------------------
+The *g:notes_coneal_bold* option
+
+Setting this option stops vim-notes from hiding the characters that declare bold
+text. In the following example, the asterisks would visible in the editor.
+
+  *Bold text*
+
+-------------------------------------------------------------------------------
+The *g:notes_coneal_url* option
+
+Setting this option stops vim-notes from hiding the protocol in urls. In the
+following example, the "http://" would visible in the editor.
+
+  https://github.com/xolox/vim-notes
+
 ===============================================================================
                                                                *notes-commands*
 Commands ~
