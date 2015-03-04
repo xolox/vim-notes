@@ -356,7 +356,7 @@ If you have questions, bug reports, suggestions, etc. the author can be contacte
 ## License
 
 This software is licensed under the [MIT license] [mit].
-© 2014 Peter Odding &lt;<peter@peterodding.com>&gt;.
+© 2015 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
 
 [ctrlwf]: http://vimdoc.sourceforge.net/htmldoc/windows.html#CTRL-W_f

@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: December 29, 2014
+" Last Change: March 5, 2015
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.31'
+let g:xolox#notes#version = '0.31.1'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -1276,7 +1276,7 @@ function! xolox#notes#inside_snippet(lnum, col) " {{{3
   try
     call setpos('.', [0, a:lnum, a:col, 0])
     let matching_subpattern = search('{{{\|\(}}}\)\|```\w\|\(```\)', 'bnpW')
-    return matching_subpattern >= 1
+    return matching_subpattern == 1
   finally
     call setpos('.', pos_save)
   endtry

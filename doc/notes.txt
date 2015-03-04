@@ -717,7 +717,7 @@ If you like the script please vote for it on Vim Online [21].
                                                                 *notes-license*
 License ~
 
-This software is licensed under the MIT license [22]. © 2014 Peter Odding
+This software is licensed under the MIT license [22]. © 2015 Peter Odding
 <peter@peterodding.com>.
 
 ===============================================================================
