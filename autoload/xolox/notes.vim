@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: March 5, 2015
+" Last Change: March 15, 2015
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.31.1'
+let g:xolox#notes#version = '0.32'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 

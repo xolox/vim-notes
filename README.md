@@ -130,6 +130,30 @@ This option defines the pathname of the text file that stores the list of known 
 
 The `:NoteToHtml` command requires the [Markdown] [markdown] program. By default the name of this program is assumed to be simply `markdown`. If you want to use a different program for Markdown to HTML conversion, set this option to the name of the program.
 
+### The `g:notes_conceal_code` option
+
+By default the backticks that mark inline code snippets are hidden when your version of Vim supports concealing of text. By setting this option to zero you stop vim-notes from hiding those backticks. In the following example, the backticks would be visible in the editor when this option is set to zero:
+
+    This is a sentence with an `inline code` fragment.
+
+### The `g:notes_conceal_italic` option
+
+By default the underscores that mark italic text are hidden when your version of Vim supports concealing of text. By setting this option to zero you stop vim-notes from hiding those underscores. In the following example, the underscores would be visible in the editor when this option is set to zero:
+
+    This is a sentence with _italic_ text.
+
+### The `g:notes_conceal_bold` option
+
+By default the stars that mark bold text are hidden when your version of Vim supports concealing of text. By setting this option to zero you stop vim-notes from hiding those stars. In the following example, the stars would be visible in the editor when this option is set to zero:
+
+    This is a sentence with *bold* text.
+
+### The `g:notes_conceal_url` option
+
+By default URL schemes (text fragments like `http://`) are hidden when your version of Vim supports concealing of text. By setting this option to zero you stop vim-notes from hiding URL schemes. In the following example, the `https://` text would be visible in the editor when this option is set to zero:
+
+    You can find the vim-notes plug-in at https://github.com/xolox/vim-notes.
+
 ## Commands
 
 To edit one of your existing notes (or create a new one) you can use Vim commands such as [:edit] [edit], [:split] [split] and [:tabedit] [tabedit] with a filename that starts with *note:* followed by (part of) the title of one of your notes, e.g.:
