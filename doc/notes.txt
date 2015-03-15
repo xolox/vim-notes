@@ -22,6 +22,7 @@ Contents ~
   13. The |g:notes_indexscript| option
   14. The |g:notes_tagsindex| option
   15. The |g:notes_markdown_program| option
+  16. The |g:notes_shoftwidth| option
  4. Commands                                                   |notes-commands|
   1. The |:Note| command
   2. The |:NoteFromSelectedText| command
@@ -337,6 +338,13 @@ The |:NoteToHtml| command requires the Markdown [3] program. By default the
 name of this program is assumed to be simply 'markdown'. If you want to use a
 different program for Markdown to HTML conversion, set this option to the name
 of the program.
+
+-------------------------------------------------------------------------------
+The |g:notes_shoftwidth| option
+
+This option lets you choose the indent for lists within nodes. The shiftwidth
+and the tabstop will be set to this value, By degault the value is set to 3.
+
 
 ===============================================================================
                                                                *notes-commands*
