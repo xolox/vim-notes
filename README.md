@@ -26,11 +26,7 @@ Here's a screen shot of the syntax mode (using the [Slate] [slate] color scheme 
 
 ## Install & usage
 
-*Please note that the vim-notes plug-in requires my vim-misc plug-in which is separately distributed.*
-
-Unzip the most recent ZIP archives of the [vim-notes] [download-notes] and [vim-misc] [download-misc] plug-ins inside your Vim profile directory (usually this is `~/.vim` on UNIX and `%USERPROFILE%\vimfiles` on Windows), restart Vim and execute the command `:helptags ~/.vim/doc` (use `:helptags ~\vimfiles\doc` instead on Windows). To get started execute `:Note` or `:edit note:`, this will start a new note that contains instructions on how to continue from there (and how to use the plug-in in general).
-
-If you prefer you can also use [Pathogen] [pathogen], [Vundle] [vundle] or a similar tool to install & update the [vim-notes] [github-notes] and [vim-misc] [github-misc] plug-ins using a local clone of the git repository.
+Please refer to [the installation instructions] [install-notes] available on GitHub. Once you've installed the plug-in you can get started by executing `:Note` or `:edit note:`, this will start a new note that contains instructions on how to continue from there (and how to use the plug-in in general).
 
 ## Options
 
@@ -380,23 +376,20 @@ If you have questions, bug reports, suggestions, etc. the author can be contacte
 
 ## License
 
-This software is licensed under the [MIT license] [mit].
+This software is licensed under the [MIT license] [mit].  
 © 2015 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
 
 [ctrlwf]: http://vimdoc.sourceforge.net/htmldoc/windows.html#CTRL-W_f
 [ctrlwgf]: http://vimdoc.sourceforge.net/htmldoc/windows.html#CTRL-W_gf
-[download-misc]: http://peterodding.com/code/vim/downloads/misc.zip
-[download-notes]: http://peterodding.com/code/vim/downloads/notes.zip
 [edit]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:edit
 [enc]: http://vimdoc.sourceforge.net/htmldoc/options.html#'encoding'
 [folding]: https://raw.githubusercontent.com/xolox/vim-notes/master/screenshots/folding.png
 [geshi]: http://www.mediawiki.org/wiki/Extension:SyntaxHighlight_GeSHi
 [gf]: http://vimdoc.sourceforge.net/htmldoc/editing.html#gf
 [gfm]: https://help.github.com/articles/github-flavored-markdown/
-[github-misc]: http://github.com/xolox/vim-misc
-[github-notes]: http://github.com/xolox/vim-notes
 [highlight]: http://vimdoc.sourceforge.net/htmldoc/syntax.html#:highlight
+[install-notes]: https://github.com/xolox/vim-notes/blob/master/INSTALL.md
 [issue_85]: https://github.com/xolox/vim-session/issues/85
 [levenshtein]: http://en.wikipedia.org/wiki/Levenshtein_distance
 [mapleader]: http://vimdoc.sourceforge.net/htmldoc/map.html#mapleader
@@ -419,5 +412,4 @@ This software is licensed under the [MIT license] [mit].
 [vimgrep]: http://vimdoc.sourceforge.net/htmldoc/quickfix.html#:vimgrep
 [vimrc]: http://vimdoc.sourceforge.net/htmldoc/starting.html#vimrc
 [voom]: http://www.vim.org/scripts/script.php?script_id=2657
-[vundle]: https://github.com/gmarik/vundle
 [write]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:write
