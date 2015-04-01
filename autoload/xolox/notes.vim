@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: March 15, 2015
+" Last Change: April 1, 2015
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.32'
+let g:xolox#notes#version = '0.33'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -1180,8 +1180,9 @@ function! xolox#notes#highlight_sources(force) " {{{3
       let group = 'notesSnippet' . toupper(ft)
       let include = s:syntax_include(ft)
       for [startmarker, endmarker] in [['{{{', '}}}'], ['```', '```']]
+        let conceal = has('conceal') && xolox#misc#option#get('notes_conceal_code', 1)
         let command = 'syntax region %s matchgroup=%s start="%s%s \?" matchgroup=%s end="%s" keepend contains=%s%s'
-        execute printf(command, group, startgroup, startmarker, ft, endgroup, endmarker, include, has('conceal') ? ' concealends' : '')
+        execute printf(command, group, startgroup, startmarker, ft, endgroup, endmarker, include, conceal ? ' concealends' : '')
       endfor
     endfor
     if &vbs >= 1

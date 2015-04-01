@@ -335,10 +335,11 @@ of the program.
 -------------------------------------------------------------------------------
 The *g:notes_conceal_code* option
 
-By default the backticks that mark inline code snippets are hidden when your
-version of Vim supports concealing of text. By setting this option to zero you
-stop vim-notes from hiding those backticks. In the following example, the
-backticks would be visible in the editor when this option is set to zero:
+By default the backticks that mark inline code snippets and the curly quotes
+that mark code blocks are hidden when your version of Vim supports concealing
+of text. By setting this option to zero you stop vim-notes from hiding these
+markers. For example in the following sentence, the backticks would be visible
+in the editor when this option is set to zero:
 >
   This is a sentence with an `inline code` fragment.
 <
