@@ -1,6 +1,6 @@
 ﻿" Vim syntax script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 27, 2014
+" Last Change: March 15, 2015
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
@@ -57,7 +57,7 @@ highlight def link notesSingleQuoted Special
 highlight def link notesDoubleQuoted String
 
 " Highlight inline code fragments (same as Markdown syntax). {{{2
-if has('conceal')
+if has('conceal') && xolox#misc#option#get('notes_conceal_code', 1)
   syntax region notesInlineCode matchgroup=notesInlineCodeMarker start=/`/ end=/`/ concealends
   highlight link notesItalicMarker notesInlineCodeMarker
 else
@@ -67,7 +67,7 @@ syntax cluster notesInline add=notesInlineCode
 highlight def link notesInlineCode Special
 
 " Highlight text emphasized in italic font. {{{2
-if has('conceal')
+if has('conceal') && xolox#misc#option#get('notes_conceal_italic', 1)
   syntax region notesItalic matchgroup=notesItalicMarker start=/\<_\k\@=/ end=/_\>\|\n/ contains=@Spell concealends
   highlight link notesItalicMarker notesHiddenMarker
 else
@@ -77,7 +77,7 @@ syntax cluster notesInline add=notesItalic
 highlight notesItalic gui=italic cterm=italic
 
 " Highlight text emphasized in bold font. {{{2
-if has('conceal')
+if has('conceal') && xolox#misc#option#get('notes_conceal_bold', 1)
   syntax region notesBold matchgroup=notesBoldMarker start=/\*\k\@=/ end=/\S\@<=\*/ contains=@Spell concealends
   highlight link notesBoldMarker notesHiddenMarker
 else
@@ -103,7 +103,7 @@ highlight def link notesTextURL notesSubtleURL
 execute printf('syntax match notesRealURL @%s@', g:xolox#notes#url_pattern)
 syntax cluster notesInline add=notesRealURL
 highlight def link notesRealURL notesSubtleURL
-if has('conceal')
+if has('conceal') && xolox#misc#option#get('notes_conceal_url', 1)
   syntax match notesUrlScheme @\(mailto:\|javascript:\|\w\{3,}://\)@ contained containedin=notesRealURL conceal
   highlight def link notesUrlScheme notesRealURL
 endif

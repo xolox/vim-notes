@@ -22,6 +22,10 @@ Contents ~
   13. The |g:notes_indexscript| option
   14. The |g:notes_tagsindex| option
   15. The |g:notes_markdown_program| option
+  16. The |g:notes_conceal_code| option
+  17. The |g:notes_conceal_italic| option
+  18. The |g:notes_conceal_bold| option
+  19. The |g:notes_conceal_url| option
  4. Commands                                                   |notes-commands|
   1. The |:Note| command
   2. The |:NoteFromSelectedText| command
@@ -137,20 +141,10 @@ the Monaco [7] font):
                                                           *notes-install-usage*
 Install & usage ~
 
-_Please note that the vim-notes plug-in requires my vim-misc plug-in which is
-separately distributed._
-
-Unzip the most recent ZIP archives of the vim-notes [9] and vim-misc [10] plug-
-ins inside your Vim profile directory (usually this is '~/.vim' on UNIX and
-'%USERPROFILE%\vimfiles' on Windows), restart Vim and execute the command
-':helptags ~/.vim/doc' (use ':helptags ~\vimfiles\doc' instead on Windows). To
-get started execute |:Note| or ':edit note:', this will start a new note that
-contains instructions on how to continue from there (and how to use the plug-in
-in general).
-
-If you prefer you can also use Pathogen [11], Vundle [12] or a similar tool to
-install & update the vim-notes [13] and vim-misc [14] plug-ins using a local
-clone of the git repository.
+Please refer to the installation instructions [9] available on GitHub. Once
+you've installed the plug-in you can get started by executing |:Note| or ':edit
+note:', this will start a new note that contains instructions on how to
+continue from there (and how to use the plug-in in general).
 
 ===============================================================================
                                                                 *notes-options*
@@ -176,7 +170,7 @@ circumstances but should work for most people:
 
 - If the profile directory where the plug-in is installed is writable, the
   directory 'misc/notes/user' under the profile directory is used. This is
-  for compatibility with Pathogen [11]; the notes will be stored inside the
+  for compatibility with Pathogen [10]; the notes will be stored inside the
   plug-in's bundle.
 
 - If the above doesn't work out, the default depends on the platform:
@@ -338,6 +332,47 @@ name of this program is assumed to be simply 'markdown'. If you want to use a
 different program for Markdown to HTML conversion, set this option to the name
 of the program.
 
+-------------------------------------------------------------------------------
+The *g:notes_conceal_code* option
+
+By default the backticks that mark inline code snippets and the curly quotes
+that mark code blocks are hidden when your version of Vim supports concealing
+of text. By setting this option to zero you stop vim-notes from hiding these
+markers. For example in the following sentence, the backticks would be visible
+in the editor when this option is set to zero:
+>
+  This is a sentence with an `inline code` fragment.
+<
+-------------------------------------------------------------------------------
+The *g:notes_conceal_italic* option
+
+By default the underscores that mark italic text are hidden when your version
+of Vim supports concealing of text. By setting this option to zero you stop
+vim-notes from hiding those underscores. In the following example, the
+underscores would be visible in the editor when this option is set to zero:
+>
+  This is a sentence with _italic_ text.
+<
+-------------------------------------------------------------------------------
+The *g:notes_conceal_bold* option
+
+By default the stars that mark bold text are hidden when your version of Vim
+supports concealing of text. By setting this option to zero you stop vim-notes
+from hiding those stars. In the following example, the stars would be visible
+in the editor when this option is set to zero:
+>
+  This is a sentence with *bold* text.
+<
+-------------------------------------------------------------------------------
+The *g:notes_conceal_url* option
+
+By default URL schemes (text fragments like 'http://') are hidden when your
+version of Vim supports concealing of text. By setting this option to zero you
+stop vim-notes from hiding URL schemes. In the following example, the
+'https://' text would be visible in the editor when this option is set to zero:
+>
+  You can find the vim-notes plug-in at https://github.com/xolox/vim-notes.
+<
 ===============================================================================
                                                                *notes-commands*
 Commands ~
@@ -563,7 +598,7 @@ optimized for speed (yet).
 -------------------------------------------------------------------------------
 The *:NoteToMediawiki* command
 
-Convert the current note to a Mediawiki document [15]. This is similar to the
+Convert the current note to a Mediawiki document [11]. This is similar to the
 |:NoteToMarkdown| command, but it produces wiki text that can be displayed on a
 Mediawiki site. That being said, the subset of wiki markup that vim-notes
 actually produces will probably work on other wiki sites. These are the notable
@@ -576,7 +611,7 @@ transforations:
 
 - Preformatted blocks are output into '<syntaxhighlight lang="..">' tags.
   This functionality is enabled on Mediawiki through the SyntaxHighlight
-  GeSHi extention [16]. It is also supported on Wikipedia.
+  GeSHi extention [12]. It is also supported on Wikipedia.
 
 ===============================================================================
                                                                *notes-mappings*
@@ -665,14 +700,14 @@ Other plug-ins that work well with the notes plug-in ~
                                                                 *notes-utl.vim*
 utl.vim ~
 
-The utl.vim [17] universal text linking plug-in enables links between your
+The utl.vim [13] universal text linking plug-in enables links between your
 notes, other local files and remote resources like web pages.
 
 -------------------------------------------------------------------------------
                                                               *notes-shell.vim*
 shell.vim ~
 
-My shell.vim [18] plug-in also enables easy navigation between your notes and
+My shell.vim [14] plug-in also enables easy navigation between your notes and
 environment like local files and directories, web pages and e-mail addresses by
 providing key mappings and commands to e.g. open the file/URL under the text
 cursor. This plug-in can also change Vim to full screen which can be really
@@ -682,7 +717,7 @@ nice for large notes.
                                                                    *notes-voom*
 VOoM ~
 
-The VOoM [19] outlining plug-in should work well for notes if you use the
+The VOoM [15] outlining plug-in should work well for notes if you use the
 Markdown style headers starting with '#', however it has been reported that
 this combination may not always work so well in practice (sometimes losing
 notes!)
@@ -692,7 +727,7 @@ notes!)
 Txtfmt ~
 
 If the text formatting supported by the notes plug-in is not enough for you,
-consider trying the Txtfmt [20] (The Vim Highlighter) plug-in. To use the two
+consider trying the Txtfmt [16] (The Vim Highlighter) plug-in. To use the two
 plug-ins together, create the file 'after/ftplugin/notes.vim' inside your Vim
 profile with the following contents:
 >
@@ -708,7 +743,7 @@ absolute pathnames that most certainly won't match between e.g. Windows and
 Linux or even Windows and Cygwin. The best you can do is keep separate session
 scripts for different platforms (and I would certainly consider Cygwin a
 separate platform altogether :-). For more information please refer to issue
-#85 [21].
+#85 [17].
 
 ===============================================================================
                                                                 *notes-contact*
@@ -717,13 +752,13 @@ Contact ~
 If you have questions, bug reports, suggestions, etc. the author can be
 contacted at peter@peterodding.com. The latest version is available at
 http://peterodding.com/code/vim/notes/ and http://github.com/xolox/vim-notes.
-If you like the script please vote for it on Vim Online [22].
+If you like the script please vote for it on Vim Online [18].
 
 ===============================================================================
                                                                 *notes-license*
 License ~
 
-This software is licensed under the MIT license [23]. © 2015 Peter Odding
+This software is licensed under the MIT license [19]. © 2015 Peter Odding
 <peter@peterodding.com>.
 
 ===============================================================================
@@ -738,20 +773,16 @@ References ~
 [6] http://code.google.com/p/vim/source/browse/runtime/colors/slate.vim
 [7] http://en.wikipedia.org/wiki/Monaco_(typeface)
 [8] http://peterodding.com/code/vim/notes/syntax.png
-[9] http://peterodding.com/code/vim/downloads/notes.zip
-[10] http://peterodding.com/code/vim/downloads/misc.zip
-[11] http://www.vim.org/scripts/script.php?script_id=2332
-[12] https://github.com/gmarik/vundle
-[13] http://github.com/xolox/vim-notes
-[14] http://github.com/xolox/vim-misc
-[15] https://www.mediawiki.org/wiki/MediaWiki
-[16] http://www.mediawiki.org/wiki/Extension:SyntaxHighlight_GeSHi
-[17] http://www.vim.org/scripts/script.php?script_id=293
-[18] http://www.vim.org/scripts/script.php?script_id=3123
-[19] http://www.vim.org/scripts/script.php?script_id=2657
-[20] http://www.vim.org/scripts/script.php?script_id=2208
-[21] https://github.com/xolox/vim-session/issues/85
-[22] http://www.vim.org/scripts/script.php?script_id=3375
-[23] http://en.wikipedia.org/wiki/MIT_License
+[9] https://github.com/xolox/vim-notes/blob/master/INSTALL.md
+[10] http://www.vim.org/scripts/script.php?script_id=2332
+[11] https://www.mediawiki.org/wiki/MediaWiki
+[12] http://www.mediawiki.org/wiki/Extension:SyntaxHighlight_GeSHi
+[13] http://www.vim.org/scripts/script.php?script_id=293
+[14] http://www.vim.org/scripts/script.php?script_id=3123
+[15] http://www.vim.org/scripts/script.php?script_id=2657
+[16] http://www.vim.org/scripts/script.php?script_id=2208
+[17] https://github.com/xolox/vim-session/issues/85
+[18] http://www.vim.org/scripts/script.php?script_id=3375
+[19] http://en.wikipedia.org/wiki/MIT_License
 
 vim: ft=help
