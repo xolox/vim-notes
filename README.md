@@ -28,6 +28,8 @@ Here's a screen shot of the syntax mode (using the [Slate] [slate] color scheme 
 
 Please refer to [the installation instructions] [install-notes] available on GitHub. Once you've installed the plug-in you can get started by executing `:Note` or `:edit note:`, this will start a new note that contains instructions on how to continue from there (and how to use the plug-in in general).
 
+Make sure `filetype plugin on` (or a variant of that command) is included in your [vimrc script] [vimrc], without that things will not work as intended :-).
+
 ## Options
 
 All options have reasonable defaults so if the plug-in works after installation you don't need to change any options. The options are available for people who like to customize how the plug-in works. You can set these options in your [vimrc script] [vimrc] by including a line like this:
