@@ -372,7 +372,7 @@ If the text formatting supported by the notes plug-in is not enough for you, con
 
 If you write your git commit messages in Vim and want to use the notes file type (syntax highlighting and editing mode) to edit your git commit messages you can add the following line to your [vimrc script] [vimrc]:
 
-    au BufNewFile,BufRead *.git/COMMIT_EDITMSG	setf notes
+    autocmd BufNewFile,BufRead */.git/COMMIT_EDITMSG setlocal filetype=notes
 
 This is not a complete solution (there are more types of commit messages that the pattern above won't match) but that is outside the scope of this document. For inspiration you can take a look at the [runtime/filetype.vim] [filetype.vim] file in Vim's Mercurial repository.
 
