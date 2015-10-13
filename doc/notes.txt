@@ -147,6 +147,9 @@ you've installed the plug-in you can get started by executing |:Note| or ':edit
 note:', this will start a new note that contains instructions on how to
 continue from there (and how to use the plug-in in general).
 
+Make sure 'filetype plugin on' (or a variant of that command) is included in
+your |vimrc| script, without that things will not work as intended :-).
+
 ===============================================================================
                                                                 *notes-options*
 Options ~
@@ -743,7 +746,7 @@ If you write your git commit messages in Vim and want to use the notes file
 type (syntax highlighting and editing mode) to edit your git commit messages
 you can add the following line to your |vimrc| script:
 >
-  au BufNewFile,BufRead *.git/COMMIT_EDITMSG  setf notes
+  autocmd BufNewFile,BufRead */.git/COMMIT_EDITMSG setlocal filetype=notes
 <
 This is not a complete solution (there are more types of commit messages that
 the pattern above won't match) but that is outside the scope of this document.
