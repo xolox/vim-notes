@@ -41,6 +41,7 @@ For more information see http://peterodding.com/code/vim/notes/
 """
 
 # Standard library modules.
+import codecs
 import fnmatch
 import getopt
 import logging
@@ -56,12 +57,22 @@ try:
 except ImportError:
     import pickle
 
+# Compatibility between Python 2 and 3.
+try:
+    # Python 2.
+    unicode_string = unicode
+    byte_string = str
+except NameError:
+    # Python 3.
+    unicode_string = str
+    byte_string = bytes
+
 # Try to import the Levenshtein module, don't error out if it's not installed.
 try:
     import Levenshtein
-    levenshtein_supported = True
+    LEVENSHTEIN_SUPPORTED = True
 except ImportError:
-    levenshtein_supported = False
+    LEVENSHTEIN_SUPPORTED = False
 
 # The version of the index format that's supported by this revision of the
 # `search-notes.py' script; if an existing index file is found with an
@@ -72,7 +83,7 @@ INDEX_VERSION = 2
 PATTERNS_TO_IGNORE = ('.swp', '.s??', '.*.s??', '*~')
 
 
-class NotesIndex:
+class NotesIndex(object):
 
     def __init__(self):
         """Entry point to the notes search."""
@@ -83,14 +94,14 @@ class NotesIndex:
         self.update_index()
         if self.dirty:
             self.save_index()
-        print "Python works fine!"
+        print("Python works fine!")
         if self.keyword_filter is not None:
             self.list_keywords(self.keyword_filter)
             self.logger.debug("Finished listing keywords in %s", global_timer)
         else:
             matches = self.search_index(keywords)
             if matches:
-                print '\n'.join(sorted(matches))
+                print('\n'.join(sorted(matches)))
             self.logger.debug("Finished searching index in %s", global_timer)
 
     def init_logging(self):
@@ -107,8 +118,8 @@ class NotesIndex:
                 'ignore-case', 'list=', 'database=', 'notes=', 'encoding=',
                 'verbose', 'help',
             ])
-        except getopt.GetoptError, error:
-            print str(error)
+        except getopt.GetoptError as error:
+            print(str(error))
             self.usage()
             sys.exit(2)
         # Define the command line option defaults.
@@ -157,15 +168,15 @@ class NotesIndex:
         try:
             load_timer = Timer()
             self.logger.debug("Loading index from %s ..", self.database_file)
-            with open(self.database_file) as handle:
+            with open(self.database_file, 'rb') as handle:
                 self.index = pickle.load(handle)
                 self.logger.debug("Format version of index loaded from disk: %i", self.index['version'])
                 assert self.index['version'] == INDEX_VERSION, "Incompatible index format detected!"
                 self.first_use = False
                 self.dirty = False
                 self.logger.debug("Loaded %i notes from index in %s", len(self.index['files']), load_timer)
-        except Exception, e:
-            self.logger.warn("Failed to load index from file: %s", e)
+        except Exception:
+            self.logger.warn("Failed to load index from file!", exc_info=True)
             self.first_use = True
             self.dirty = True
             self.index = {'keywords': {}, 'files': {}, 'version': INDEX_VERSION}
@@ -173,7 +184,7 @@ class NotesIndex:
     def save_index(self):
         """Save the keyword index to disk."""
         save_timer = Timer()
-        with open(self.database_file, 'w') as handle:
+        with open(self.database_file, 'wb') as handle:
             pickle.dump(self.index, handle)
         self.logger.debug("Saved index to disk in %s", save_timer)
 
@@ -191,6 +202,7 @@ class NotesIndex:
                         notes_on_disk[abspath] = os.path.getmtime(abspath)
             self.logger.info("Found %i notes in %s ..", len(notes_on_disk) - last_count, directory)
             last_count = len(notes_on_disk)
+        self.logger.info("Found a total of %i notes ..", len(notes_on_disk))
         # Check for updated and/or deleted notes since the last run?
         if not self.first_use:
             for filename in self.index['files'].keys():
@@ -207,7 +219,7 @@ class NotesIndex:
                     # Already checked this note, we can forget about it.
                     del notes_on_disk[filename]
         # Add new notes to index.
-        for filename, last_modified in notes_on_disk.iteritems():
+        for filename, last_modified in notes_on_disk.items():
             self.add_note(filename, last_modified)
         self.logger.debug("Updated index in %s", update_timer)
 
@@ -254,16 +266,16 @@ class NotesIndex:
         """Print all (matching) keywords to standard output."""
         decorated = []
         substring = self.normalize(substring)
-        for kw, filenames in self.index['keywords'].iteritems():
+        for kw, filenames in self.index['keywords'].items():
             normalized_kw = self.normalize(kw)
             if substring in normalized_kw:
-                if levenshtein_supported:
+                if LEVENSHTEIN_SUPPORTED:
                     decorated.append((Levenshtein.distance(normalized_kw, substring), -len(filenames), kw))
                 else:
                     decorated.append((-len(filenames), kw))
         decorated.sort()
         selection = [d[-1] for d in decorated[:limit]]
-        print self.encode(u'\n'.join(selection))
+        print(self.encode(u'\n'.join(selection)))
 
     def tokenize(self, text):
         """Tokenize a string into a list of normalized, unique keywords."""
@@ -281,36 +293,38 @@ class NotesIndex:
 
     def encode(self, text):
         """Encode a string in the user's preferred character encoding."""
-        return text.encode(self.character_encoding, 'ignore')
+        if isinstance(text, unicode_string):
+            text = codecs.encode(text, self.character_encoding, 'ignore')
+        return text
 
     def decode(self, text):
         """Decode a string in the user's preferred character encoding."""
-        return text.decode(self.character_encoding, 'ignore')
+        if isinstance(text, byte_string):
+            text = codecs.decode(text, self.character_encoding, 'ignore')
+        return text
 
     def munge_path(self, path):
         """Canonicalize user-defined path, making it absolute."""
         return os.path.abspath(os.path.expanduser(path))
 
     def usage(self):
-        print __doc__.strip()
+        print(__doc__.strip())
 
 
-class Timer:
+class Timer(object):
 
-        """Easy to use timer to keep track of long during operations."""
+    """Easy to use timer to keep track of long during operations."""
 
-        def __init__(self):
-                self.start_time = time.time()
+    def __init__(self):
+        self.start_time = time.time()
 
-        def __str__(self):
-                return "%.2f seconds" % self.elapsed_time
+    def __str__(self):
+        return "%.2f seconds" % self.elapsed_time
 
-        @property
-        def elapsed_time(self):
-                return time.time() - self.start_time
+    @property
+    def elapsed_time(self):
+        return time.time() - self.start_time
 
 
 if __name__ == '__main__':
     NotesIndex()
-
-# vim: ts=2 sw=2 et
