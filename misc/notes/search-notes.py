@@ -67,6 +67,24 @@ except NameError:
     unicode_string = str
     byte_string = bytes
 
+# Compatibility with Python 2.6 which doesn't have logging.NullHandler.
+try:
+    from logging import NullHandler
+except ImportError:
+
+    # This class was copied from the Python standard library, specifically
+    # https://hg.python.org/cpython/file/771f28686022/Lib/logging/__init__.py#l1670
+    class NullHandler(logging.Handler):
+
+        def handle(self, record):
+            pass
+
+        def emit(self, record):
+            pass
+
+        def createLock(self):
+            self.lock = None
+
 # Try to import the Levenshtein module, don't error out if it's not installed.
 try:
     import Levenshtein
@@ -110,6 +128,8 @@ class NotesIndex(object):
         self.logger.setLevel(logging.INFO)
         if all(map(os.isatty, (0, 1, 2))):
             self.logger.addHandler(logging.StreamHandler(sys.stderr))
+        else:
+            self.logger.addHandler(NullHandler())
 
     def parse_args(self):
         """Parse the command line arguments."""
