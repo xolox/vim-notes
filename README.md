@@ -353,9 +353,9 @@ See the documentation of the [:highlight] [highlight] command for more informati
 
 The [utl.vim] [utl] universal text linking plug-in enables links between your notes, other local files and remote resources like web pages.
 
-### shell.vim
+### vim-shell
 
-My [shell.vim] [shell] plug-in also enables easy navigation between your notes and environment like local files and directories, web pages and e-mail addresses by providing key mappings and commands to e.g. open the file/URL under the text cursor. This plug-in can also change Vim to full screen which can be really nice for large notes.
+My [vim-shell] [shell] plug-in also enables easy navigation between your notes and environment like local files and directories, web pages and e-mail addresses by providing key mappings and commands to e.g. open the file/URL under the text cursor. This plug-in can also change Vim to full screen which can be really nice for large notes.
 
 ### VOoM
 
@@ -376,6 +376,12 @@ If you write your git commit messages in Vim and want to use the notes file type
 
 This is not a complete solution (there are more types of commit messages that the pattern above won't match) but that is outside the scope of this document. For inspiration you can take a look at the [runtime/filetype.vim] [filetype.vim] file in Vim's Mercurial repository.
 
+## Troubleshooting
+
+### Searching notes does not work
+
+There is a known problem where keyword searching of notes is broken when my [vim-shell plug-in] [shell] is not installed (even though vim-shell is supposed to be an optional dependency). The easiest way to work around this is to simply install the vim-shell plug-in, if that is an option for you. Alternatively you can help me debug the problem discussed in [issue 85] [85] :-).
+
 ## Contact
 
 If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/notes/> and <http://github.com/xolox/vim-notes>. If you like the script please vote for it on [Vim Online] [vim_online].
@@ -386,6 +392,7 @@ This software is licensed under the [MIT license] [mit].
 © 2015 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
 
+[85]: https://github.com/xolox/vim-session/issues/85
 [ctrlwf]: http://vimdoc.sourceforge.net/htmldoc/windows.html#CTRL-W_f
 [ctrlwgf]: http://vimdoc.sourceforge.net/htmldoc/windows.html#CTRL-W_gf
 [edit]: http://vimdoc.sourceforge.net/htmldoc/editing.html#:edit
