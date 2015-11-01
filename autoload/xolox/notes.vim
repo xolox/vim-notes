@@ -6,7 +6,7 @@
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.33.2'
+let g:xolox#notes#version = '0.33.3'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -482,12 +482,14 @@ function! xolox#notes#search(bang, input) " {{{1
       endif
     endif
     if input =~ '^/.\+/$'
+      call xolox#misc#msg#debug("notes.vim %s: Performing pattern search (%s) ..", g:xolox#notes#version, input)
       call s:internal_search(a:bang, input, '', '')
       call s:set_quickfix_title([], input)
     else
       let keywords = split(input)
       let all_keywords = s:match_all_keywords(keywords)
       let any_keyword = s:match_any_keyword(keywords)
+      call xolox#misc#msg#debug("notes.vim %s: Performing keyword search (%s) ..", g:xolox#notes#version, input)
       call s:internal_search(a:bang, all_keywords, input, any_keyword)
       if &buftype == 'quickfix'
         " Enable line wrapping in the quick-fix window.
@@ -696,10 +698,12 @@ function! s:internal_search(bang, pattern, keywords, phase2) " {{{2
   let notes = []
   let phase2_needed = 1
   if a:keywords != '' && s:run_scanner(a:keywords, notes)
+    call xolox#misc#msg#debug("notes.vim %s: Skipping phase 1 search (performed using Python script) ..", g:xolox#notes#version)
     if a:phase2 != ''
       let pattern = a:phase2
     endif
   else
+    call xolox#misc#msg#debug("notes.vim %s: Performing phase 1 search to gather matching notes ..", g:xolox#notes#version)
     call s:vimgrep_wrapper(a:bang, a:pattern, xolox#notes#get_fnames(0))
     let notes = s:qflist_to_filenames()
     if a:phase2 != ''
@@ -717,7 +721,12 @@ function! s:internal_search(bang, pattern, keywords, phase2) " {{{2
   " search using :vimgrep we need to run :vimgrep another time to get the
   " quick-fix list in the right format :-|
   if phase2_needed
+    call setqflist([])
+    call xolox#misc#msg#debug("notes.vim %s: Performing phase 2 search to populate quick-fix window ..", g:xolox#notes#version)
     call s:vimgrep_wrapper(a:bang, pattern, notes)
+    if !empty(notes) && empty(getqflist())
+      throw "Failed to populate quick-fix window! Looks like you're being bitten by this bug: https://github.com/xolox/vim-notes/issues/53"
+    endif
   endif
   if a:bang == '' && bufnr('%') != bufnr_save
     " If :vimgrep opens the first matching file while &eventignore is still
@@ -737,8 +746,8 @@ function! s:vimgrep_wrapper(bang, pattern, files) " {{{2
   let args = map(copy(a:files), 'fnameescape(v:val)')
   call insert(args, a:pattern . 'j')
   let s:swaphack_enabled = 1
+  let ei_save = &eventignore
   try
-    let ei_save = &eventignore
     set eventignore=syntax,bufread
     let command = printf('vimgrep%s %s', a:bang, join(args))
     call xolox#misc#msg#debug("notes.vim %s: Populating quick-fix window using command: %s", g:xolox#notes#version, command)
