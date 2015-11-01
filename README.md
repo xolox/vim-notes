@@ -376,10 +376,6 @@ If you write your git commit messages in Vim and want to use the notes file type
 
 This is not a complete solution (there are more types of commit messages that the pattern above won't match) but that is outside the scope of this document. For inspiration you can take a look at the [runtime/filetype.vim] [filetype.vim] file in Vim's Mercurial repository.
 
-## Using multiple platforms (multi boot, Cygwin, etc.)
-
-Session scripts cannot be shared between platforms because they contain absolute pathnames that most certainly won't match between e.g. Windows and Linux or even Windows and Cygwin. The best you can do is keep separate session scripts for different platforms (and I would certainly consider Cygwin a separate platform altogether :-). For more information please refer to [issue #85] [issue_85].
-
 ## Contact
 
 If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/notes/> and <http://github.com/xolox/vim-notes>. If you like the script please vote for it on [Vim Online] [vim_online].
@@ -401,7 +397,6 @@ This software is licensed under the [MIT license] [mit].
 [gfm]: https://help.github.com/articles/github-flavored-markdown/
 [highlight]: http://vimdoc.sourceforge.net/htmldoc/syntax.html#:highlight
 [install-notes]: https://github.com/xolox/vim-notes/blob/master/INSTALL.md
-[issue_85]: https://github.com/xolox/vim-session/issues/85
 [levenshtein]: http://en.wikipedia.org/wiki/Levenshtein_distance
 [mapleader]: http://vimdoc.sourceforge.net/htmldoc/map.html#mapleader
 [markdown]: http://en.wikipedia.org/wiki/Markdown
