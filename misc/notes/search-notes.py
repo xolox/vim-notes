@@ -107,9 +107,9 @@ class NotesIndex(object):
     def init_logging(self):
         """Initialize the logging subsystem."""
         self.logger = logging.getLogger('search-notes')
-        self.logger.addHandler(logging.StreamHandler(sys.stderr))
-        if os.isatty(0):
-            self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.INFO)
+        if all(map(os.isatty, (0, 1, 2))):
+            self.logger.addHandler(logging.StreamHandler(sys.stderr))
 
     def parse_args(self):
         """Parse the command line arguments."""
