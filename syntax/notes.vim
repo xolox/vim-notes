@@ -86,6 +86,12 @@ endif
 syntax cluster notesInline add=notesBold
 highlight notesBold gui=bold cterm=bold
 
+let s:concealends = has('conceal') ? ' concealends' : ''
+execute 'syntax region notesBoldItalic matchgroup=notesBoldItalicDelimiter start="_\*\k\@=" end="\S\@<=\*_" keepend contains=@Spell' . s:concealends
+execute 'syntax region notesBoldItalic matchgroup=notesBoldItalicDelimiter start="\*_\k\@=" end="\S\@<=_\*" keepend contains=@Spell' . s:concealends
+syntax cluster notesInline add=notesBoldItalics
+highlight notesBoldItalic term=bold,italic gui=bold,italic cterm=bold,italic
+
 " Highlight domain names, URLs, e-mail addresses and filenames. {{{2
 
 " FIXME This setting is lost once the user switches color scheme!
@@ -120,9 +126,9 @@ syntax match notesFixMe /\<FIXME\>/
 syntax match notesInProgress /\<\(CURRENT\|INPROGRESS\|STARTED\|WIP\)\>/
 syntax match notesDoneItem /^\(\s\+\).*\<DONE\>.*\(\n\1\s.*\)*/ contains=@notesInline
 syntax match notesDoneMarker /\<DONE\>/ containedin=notesDoneItem
-highlight def link notesTodo WarningMsg
+highlight def link notesTodo TODO
 highlight def link notesXXX WarningMsg
-highlight def link notesFixMe WarningMsg
+highlight def link notesFixMe Error
 highlight def link notesDoneItem Comment
 highlight def link notesDoneMarker Question
 highlight def link notesInProgress Directory
