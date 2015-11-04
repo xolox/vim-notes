@@ -1,12 +1,12 @@
 ﻿" Vim auto-load script
 " Author: Peter Odding <peter@peterodding.com>
-" Last Change: November 1, 2015
+" Last Change: November 4, 2015
 " URL: http://peterodding.com/code/vim/notes/
 
 " Note: This file is encoded in UTF-8 including a byte order mark so
 " that Vim loads the script using the right encoding transparently.
 
-let g:xolox#notes#version = '0.33.3'
+let g:xolox#notes#version = '0.33.4'
 let g:xolox#notes#url_pattern = '\<\(mailto:\|javascript:\|\w\{3,}://\)\(\S*\w\)\+/\?'
 let s:scriptdir = expand('<sfile>:p:h')
 
@@ -471,46 +471,40 @@ endfunction
 
 function! xolox#notes#search(bang, input) " {{{1
   " Search all notes for the pattern or keywords {input} (current word if none given).
-  try
-    let starttime = xolox#misc#timer#start()
-    let input = a:input
+  let starttime = xolox#misc#timer#start()
+  let input = a:input
+  if input == ''
+    let input = s:tag_under_cursor()
     if input == ''
-      let input = s:tag_under_cursor()
-      if input == ''
-        call xolox#misc#msg#warn("notes.vim %s: No string under cursor", g:xolox#notes#version)
-        return
-      endif
+      call xolox#misc#msg#warn("notes.vim %s: No string under cursor", g:xolox#notes#version)
+      return
     endif
-    if input =~ '^/.\+/$'
-      call xolox#misc#msg#debug("notes.vim %s: Performing pattern search (%s) ..", g:xolox#notes#version, input)
-      call s:internal_search(a:bang, input, '', '')
-      call s:set_quickfix_title([], input)
-    else
-      let keywords = split(input)
-      let all_keywords = s:match_all_keywords(keywords)
-      let any_keyword = s:match_any_keyword(keywords)
-      call xolox#misc#msg#debug("notes.vim %s: Performing keyword search (%s) ..", g:xolox#notes#version, input)
-      call s:internal_search(a:bang, all_keywords, input, any_keyword)
-      if &buftype == 'quickfix'
-        " Enable line wrapping in the quick-fix window.
-        setlocal wrap
-        " Resize the quick-fix window to 1/3 of the screen height.
-        let max_height = &lines / 3
-        execute 'resize' max_height
-        " Make it smaller if the content doesn't fill the window.
-        normal G$
-        let preferred_height = winline()
-        execute 'resize' min([max_height, preferred_height])
-        normal gg
-        call s:set_quickfix_title(keywords, '')
-      endif
+  endif
+  if input =~ '^/.\+/$'
+    call xolox#misc#msg#debug("notes.vim %s: Performing pattern search (%s) ..", g:xolox#notes#version, input)
+    call s:internal_search(a:bang, input, '', '')
+    call s:set_quickfix_title([], input)
+  else
+    let keywords = split(input)
+    let all_keywords = s:match_all_keywords(keywords)
+    let any_keyword = s:match_any_keyword(keywords)
+    call xolox#misc#msg#debug("notes.vim %s: Performing keyword search (%s) ..", g:xolox#notes#version, input)
+    call s:internal_search(a:bang, all_keywords, input, any_keyword)
+    if &buftype == 'quickfix'
+      " Enable line wrapping in the quick-fix window.
+      setlocal wrap
+      " Resize the quick-fix window to 1/3 of the screen height.
+      let max_height = &lines / 3
+      execute 'resize' max_height
+      " Make it smaller if the content doesn't fill the window.
+      normal G$
+      let preferred_height = winline()
+      execute 'resize' min([max_height, preferred_height])
+      normal gg
+      call s:set_quickfix_title(keywords, '')
     endif
-    call xolox#misc#timer#stop("notes.vim %s: Searched notes in %s.", g:xolox#notes#version, starttime)
-  catch /^Vim\%((\a\+)\)\=:E480/
-    call xolox#misc#msg#warn("notes.vim %s: No matches", g:xolox#notes#version)
-  catch
-    call xolox#misc#msg#warn("notes.vim %s: Encountered error during search: %s (%s)", g:xolox#notes#version, v:exception, v:throwpoint)
-  endtry
+  endif
+  call xolox#misc#timer#stop("notes.vim %s: Searched notes in %s.", g:xolox#notes#version, starttime)
 endfunction
 
 function! s:tag_under_cursor() " {{{2

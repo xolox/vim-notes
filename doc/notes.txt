@@ -52,11 +52,9 @@ Contents ~
   3. VOoM                                                          |notes-voom|
   4. Txtfmt                                                      |notes-txtfmt|
  8. Using the notes file type for git commit messages |using-notes-file-type-for-git-commit-messages|
- 9. Troubleshooting                                     |notes-troubleshooting|
-  1. Searching notes does not work              |searching-notes-does-not-work|
- 10. Contact                                                    |notes-contact|
- 11. License                                                    |notes-license|
- 12. References                                              |notes-references|
+ 9. Contact                                                     |notes-contact|
+ 10. License                                                    |notes-license|
+ 11. References                                              |notes-references|
 
 ===============================================================================
                                                            *notes-introduction*
@@ -755,33 +753,19 @@ For inspiration you can take a look at the runtime/filetype.vim [17] file in
 Vim's Mercurial repository.
 
 ===============================================================================
-                                                        *notes-troubleshooting*
-Troubleshooting ~
-
--------------------------------------------------------------------------------
-                                                *searching-notes-does-not-work*
-Searching notes does not work ~
-
-There is a known problem where keyword searching of notes is broken when my
-vim-shell plug-in [14] is not installed (even though vim-shell is supposed to
-be an optional dependency). The easiest way to work around this is to simply
-install the vim-shell plug-in, if that is an option for you. Alternatively you
-can help me debug the problem discussed in issue 85 [18] :-).
-
-===============================================================================
                                                                 *notes-contact*
 Contact ~
 
 If you have questions, bug reports, suggestions, etc. the author can be
 contacted at peter@peterodding.com. The latest version is available at
 http://peterodding.com/code/vim/notes/ and http://github.com/xolox/vim-notes.
-If you like the script please vote for it on Vim Online [19].
+If you like the script please vote for it on Vim Online [18].
 
 ===============================================================================
                                                                 *notes-license*
 License ~
 
-This software is licensed under the MIT license [20]. © 2015 Peter Odding
+This software is licensed under the MIT license [19]. © 2015 Peter Odding
 <peter@peterodding.com>.
 
 ===============================================================================
@@ -805,8 +789,7 @@ References ~
 [15] http://www.vim.org/scripts/script.php?script_id=2657
 [16] http://www.vim.org/scripts/script.php?script_id=2208
 [17] https://code.google.com/p/vim/source/browse/runtime/filetype.vim?r=fbc1131f0ba5be4ec74fb2ccdfb3559b446a2b1e#778
-[18] https://github.com/xolox/vim-session/issues/85
-[19] http://www.vim.org/scripts/script.php?script_id=3375
-[20] http://en.wikipedia.org/wiki/MIT_License
+[18] http://www.vim.org/scripts/script.php?script_id=3375
+[19] http://en.wikipedia.org/wiki/MIT_License
 
 vim: ft=help
