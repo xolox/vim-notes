@@ -86,6 +86,12 @@ endif
 syntax cluster notesInline add=notesBold
 highlight notesBold gui=bold cterm=bold
 
+let s:concealends = has('conceal') ? ' concealends' : ''
+execute 'syntax region notesBoldItalic matchgroup=notesBoldItalicDelimiter start="_\*\k\@=" end="\S\@<=\*_" keepend contains=@Spell' . s:concealends
+execute 'syntax region notesBoldItalic matchgroup=notesBoldItalicDelimiter start="\*_\k\@=" end="\S\@<=_\*" keepend contains=@Spell' . s:concealends
+syntax cluster notesInline add=notesBoldItalics
+highlight notesBoldItalic term=bold,italic gui=bold,italic cterm=bold,italic
+
 " Highlight domain names, URLs, e-mail addresses and filenames. {{{2
 
 " FIXME This setting is lost once the user switches color scheme!
