@@ -291,18 +291,24 @@ function! xolox#notes#unicode_enabled() " {{{1
 endfunction
 
 function! xolox#notes#select(filter) " {{{1
+  return xolox#notes#select_user_pattern(a:filter, 0)
+endfunction
+
+function! xolox#notes#select_user_pattern(filter, include_shadow_notes) " {{{1
   " Interactively select an existing note whose title contains {filter}.
   let notes = {}
   let filter = xolox#misc#str#trim(a:filter)
-  for [fname, title] in items(xolox#notes#get_fnames_and_titles(1))
+  for [fname, title] in items(xolox#notes#get_fnames_and_titles(a:include_shadow_notes))
     if title ==? filter
       call xolox#misc#msg#debug("notes.vim %s: Filter %s exactly matches note: %s", g:xolox#notes#version, string(filter), title)
       return fname
-    elseif title =~? filter
+    elseif !a:include_shadow_notes && title =~? filter
       let notes[fname] = title
     endif
   endfor
-  if len(notes) == 1
+  if len(notes) == 0 && !a:include_shadow_notes
+    return xolox#notes#select_user_pattern(a:filter, 1)
+  elseif len(notes) == 1
     let fname = keys(notes)[0]
     call xolox#misc#msg#debug("notes.vim %s: Filter %s matched one note: %s", g:xolox#notes#version, string(filter), fname)
     return fname
