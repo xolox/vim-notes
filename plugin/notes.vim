@@ -66,7 +66,7 @@ augroup PluginNotes
 augroup END
 
 augroup filetypedetect
-  let s:template = 'au BufNewFile,BufRead %s if &bt == "" | setl ft=notes | end'
+  let s:template = 'au BufRead %s if &bt == "" | setl ft=notes | end'
   for s:directory in xolox#notes#find_directories(0)
     execute printf(s:template, xolox#notes#autocmd_pattern(s:directory, 1))
   endfor
