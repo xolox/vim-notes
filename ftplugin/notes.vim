@@ -91,27 +91,29 @@ inoremap <buffer> *** <C-o>:call xolox#notes#insert_ruler()<CR>
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> ***"'
 
 " Indent list items using <Tab> and <Shift-Tab>? {{{1
-if g:notes_tab_indents
-  inoremap <buffer> <silent> <Tab> <C-o>:call xolox#notes#indent_list(1, line('.'), line('.'))<CR>
-  snoremap <buffer> <silent> <Tab> <C-o>:<C-u>call xolox#notes#indent_list(1, line("'<"), line("'>"))<CR><C-o>gv
-  let b:undo_ftplugin .= ' | execute "iunmap <buffer> <Tab>"'
-  let b:undo_ftplugin .= ' | execute "sunmap <buffer> <Tab>"'
-  inoremap <buffer> <silent> <S-Tab> <C-o>:call xolox#notes#indent_list(-1, line('.'), line('.'))<CR>
-  snoremap <buffer> <silent> <S-Tab> <C-o>:<C-u>call xolox#notes#indent_list(-1, line("'<"), line("'>"))<CR><C-o>gv
-  let b:undo_ftplugin .= ' | execute "iunmap <buffer> <S-Tab>"'
-  let b:undo_ftplugin .= ' | execute "sunmap <buffer> <S-Tab>"'
+if g:notes_tab_indents && !g:notes_indents
+  let g:notes_indents = 1
+  let g:notes_indents_right = "<Tab>"
+  let g:notes_indents_left = "<S-Tab>"
 endif
 
-" Indent list items using <Alt-Left> and <Alt-Right>? {{{1
-if g:notes_alt_indents
-  inoremap <buffer> <silent> <A-Right> <C-o>:call xolox#notes#indent_list(1, line('.'), line('.'))<CR>
-  snoremap <buffer> <silent> <A-Right> <C-o>:<C-u>call xolox#notes#indent_list(1, line("'<"), line("'>"))<CR><C-o>gv
-  let b:undo_ftplugin .= ' | execute "iunmap <buffer> <A-Right>"'
-  let b:undo_ftplugin .= ' | execute "sunmap <buffer> <A-Right>"'
-  inoremap <buffer> <silent> <A-Left> <C-o>:call xolox#notes#indent_list(-1, line('.'), line('.'))<CR>
-  snoremap <buffer> <silent> <A-Left> <C-o>:<C-u>call xolox#notes#indent_list(-1, line("'<"), line("'>"))<CR><C-o>gv
-  let b:undo_ftplugin .= ' | execute "iunmap <buffer> <A-Left>"'
-  let b:undo_ftplugin .= ' | execute "sunmap <buffer> <A-Left>"'
+" Indent list items using <A-Right> and <A-Left>? {{{1
+if g:notes_alt_indents && !g:notes_indents
+  let g:notes_indents = 1
+  let g:notes_indents_right = "<A-Right>"
+  let g:notes_indents_left = "<A-Left>"
+endif
+
+" Indent list items using specified indent keys? {{{1
+if g:notes_indents
+  execute 'inoremap <buffer> <silent> '.g:notes_indents_right.' <C-o>:call xolox#notes#indent_list(1, line("."), line("."))<CR>'
+  execute 'snoremap <buffer> <silent> '.g:notes_indents_right.' <C-o>:<C-u>call xolox#notes#indent_list(1, line('."'<".'), line('."'>".'))<CR><C-o>gv'
+  let b:undo_ftplugin .= ' | execute "iunmap <buffer> '.g:notes_indents_right.'"'
+  let b:undo_ftplugin .= ' | execute "sunmap <buffer> '.g:notes_indents_right.'"'
+  execute 'inoremap <buffer> <silent> '.g:notes_indents_left.' <C-o>:call xolox#notes#indent_list(-1, line("."), line("."))<CR>'
+  execute 'snoremap <buffer> <silent> '.g:notes_indents_left.' <C-o>:<C-u>call xolox#notes#indent_list(-1, line('."'<".'), line('."'>".'))<CR><C-o>gv'
+  let b:undo_ftplugin .= ' | execute "iunmap <buffer> '.g:notes_indents_left.'"'
+  let b:undo_ftplugin .= ' | execute "sunmap <buffer> '.g:notes_indents_left.'"'
 endif
 
 " Automatically remove empty list items on Enter. {{{1
