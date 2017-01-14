@@ -26,6 +26,8 @@ Contents ~
   17. The |g:notes_conceal_italic| option
   18. The |g:notes_conceal_bold| option
   19. The |g:notes_conceal_url| option
+  20. The |g:notes_conceal_math| option
+  21. The |g:notes_use_math| option
  4. Commands                                                   |notes-commands|
   1. The |:Note| command
   2. The |:NoteFromSelectedText| command
@@ -376,6 +378,35 @@ stop vim-notes from hiding URL schemes. In the following example, the
 >
   You can find the vim-notes plug-in at https://github.com/xolox/vim-notes.
 <
+
+-------------------------------------------------------------------------------
+The *g:notes_conceal_math* option
+
+By default the dollar sign that mark the tex math region are hidden when you
+virsion of Vim support concealing of text. By setting this option to zero you
+stop vim-notes from hidding those math symbols. In the following example, the
+dollar sign will be visible in editor when this option is set to zero.
+>
+
+  We can insert fomula inline like this $E = mc^2$
+  or we could write the fomula with this
+  $$
+  P(A|B) = \frac{P(B|A)P(A)}{P(B)}
+  $$
+
+-------------------------------------------------------------------------------
+The *g:notes_use_math* option
+
+By default the notes highlights the markdown style math. You could disable the
+highlighting of the math regions by setting this option to zero. The following
+are the math that could be highlighted.
+>
+>
+  inline math $x+y$
+  block math $$x+y$$, \[x+y\]
+  region starts with latex begin end \begin{bmatrix}\end{bmatix}
+
+
 ===============================================================================
                                                                *notes-commands*
 Commands ~
@@ -480,7 +511,7 @@ searching for tags even easier you can create key mappings for the
   " Make the C-] combination search for @tags:
   imap <C-]> <C-o>:SearchNotes<CR>
   nmap <C-]> :SearchNotes<CR>
-  
+
   " Make double mouse click search for @tags. This is actually quite a lot of
   " fun if you don't use the mouse for text selections anyway; you can click
   " between notes as if you're in a web browser:
@@ -653,7 +684,7 @@ To do so you can add lines such as the following to your |vimrc| script:
 >
   " Don't highlight single quoted strings.
   highlight link notesSingleQuoted Normal
-  
+
   " Show double quoted strings in italic font.
   highlight notesDoubleQuoted gui=italic
 <
