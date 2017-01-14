@@ -134,6 +134,9 @@ By default the backticks that mark inline code snippets and the curly quotes tha
 
     This is a sentence with an `inline code` fragment.
 
+### The `g:notes_conceal_math` option
+By default the `$` that marks the inline latex math, and the `$$` or `\[\]` that mark the latex math block are hidden when your version of Vim supports concealing of text. By setting this option to zero you stop vim-notes from hiding this markers.
+
 ### The `g:notes_conceal_italic` option
 
 By default the underscores that mark italic text are hidden when your version of Vim supports concealing of text. By setting this option to zero you stop vim-notes from hiding those underscores. In the following example, the underscores would be visible in the editor when this option is set to zero:
@@ -382,7 +385,7 @@ If you have questions, bug reports, suggestions, etc. the author can be contacte
 
 ## License
 
-This software is licensed under the [MIT license] [mit].  
+This software is licensed under the [MIT license] [mit].
 © 2015 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
 

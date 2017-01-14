@@ -65,6 +65,23 @@ else
 endif
 syntax cluster notesInline add=notesInlineCode
 highlight def link notesInlineCode Special
+" Highlight the math segments (same as Markdown syntax). {{{2
+if xolox#misc#option#get('notes_use_math', 1)
+  syntax include @tex syntax/tex.vim
+  if has('conceal') && xolox#misc#option#get('notes_conceal_math', 1)
+    syntax region notesInlineMath matchgroup=notesInlineMathMarker start="\\\@<!\$" end="\$" contains=@tex keepend concealends
+    highlight link  notesInlineMathMarker notesHiddenMarker
+    syntax region notesMath start="\\\@<!\$\$" end="\$\$" contains=@tex keepend concealends
+    syntax region notesMath start="\\\@<!\\\[" end="\\\]" contains=@tex keepend concealends
+  else
+    syntax region notesInlineMath start="\\\@<!\$" end="\$" contains=@tex keepend
+    syntax region notesMath start="\\\@<!\$\$" end="\$\$" contains=@tex keepend
+    syntax region notesMath start="\\\@<!\\\[" end="\\\]" contains=@tex keepend
+  endif
+  syntax region notesMath start="\V\\begin{\z(\w\+\)}" end="\V\\end{\z1}" contains=@tex keepend
+  syntax cluster notesInline add=notesInlineMath
+  highlight def link notesInlineMath Special
+endif
 
 " Highlight text emphasized in italic font. {{{2
 if has('conceal') && xolox#misc#option#get('notes_conceal_italic', 1)
@@ -75,7 +92,6 @@ else
 endif
 syntax cluster notesInline add=notesItalic
 highlight notesItalic gui=italic cterm=italic
-
 " Highlight text emphasized in bold font. {{{2
 if has('conceal') && xolox#misc#option#get('notes_conceal_bold', 1)
   syntax region notesBold matchgroup=notesBoldMarker start=/\*\k\@=/ end=/\S\@<=\*/ contains=@Spell concealends
