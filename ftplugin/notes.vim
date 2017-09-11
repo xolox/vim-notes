@@ -70,6 +70,8 @@ let b:undo_ftplugin .= ' | execute ''iunmap <buffer> "'''
 
 " Change ASCII style arrows to Unicode arrows. {{{1
 inoremap <buffer> <expr> <- xolox#notes#insert_left_arrow()
+inoremap <buffer> <expr> <<- xolox#notes#insert_left_contour_arrow()
+inoremap <buffer> <expr> ->> xolox#notes#insert_right_contour_arrow()
 inoremap <buffer> <expr> -> xolox#notes#insert_right_arrow()
 inoremap <buffer> <expr> <-> xolox#notes#insert_bidi_arrow()
 let b:undo_ftplugin .= ' | execute "iunmap <buffer> ->"'

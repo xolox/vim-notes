@@ -1015,12 +1015,22 @@ endfunction
 
 function! xolox#notes#insert_left_arrow() " {{{3
   " Change ASCII left arrow (<-) to Unicode arrow (←) as it is typed.
-  return (g:notes_smart_quotes && xolox#notes#unicode_enabled() && !xolox#notes#currently_inside_snippet()) ? '←' : "<-"
+  return (g:notes_smart_quotes && xolox#notes#unicode_enabled() && !xolox#notes#currently_inside_snippet()) ? '⟵' : "<-"
+endfunction
+
+function! xolox#notes#insert_left_contour_arrow() " {{{3
+  " Change ASCII left arrow (<<-) to Unicode arrow (⇦ ) as it is typed.
+  return (g:notes_smart_quotes && xolox#notes#unicode_enabled() && !xolox#notes#currently_inside_snippet()) ? '⇦ ' : "<<-"
 endfunction
 
 function! xolox#notes#insert_right_arrow() " {{{3
   " Change ASCII right arrow (->) to Unicode arrow (→) as it is typed.
-  return (g:notes_smart_quotes && xolox#notes#unicode_enabled() && !xolox#notes#currently_inside_snippet()) ? '→' : '->'
+  return (g:notes_smart_quotes && xolox#notes#unicode_enabled() && !xolox#notes#currently_inside_snippet()) ? '⟶' : '->'
+endfunction
+
+function! xolox#notes#insert_right_contour_arrow() " {{{3
+  " Change ASCII right arrow (->>) to Unicode arrow (⇨ ) as it is typed.
+  return (g:notes_smart_quotes && xolox#notes#unicode_enabled() && !xolox#notes#currently_inside_snippet()) ? '⇨ ' : '->>'
 endfunction
 
 function! xolox#notes#insert_bidi_arrow() " {{{3
