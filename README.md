@@ -5,7 +5,7 @@ The vim-notes plug-in for the [Vim text editor] [vim] makes it easy to manage yo
  * **Starting a new note:** Execute the `:Note` command to create a new buffer and load the appropriate file type and syntax
    * You can also start a note with Vim commands like `:edit`, `:tabedit` and `:split` by starting the filename with `note:`, as in `:edit note:todo` (the part after `note:` doesn't have to be the complete note title and if it's empty a new note will be created)
    * You can start a new note with the selected text as title in the current window using the `\en` mapping or `:NoteFromSelectedText` command (there are similar mappings and commands for opening split windows and tab pages)
- * **Saving notes:** Just use Vim's [:write] [write] and [:update] [update] commands, you don't need to provide a filename because it will be set based on the title (first line) of your note (you also don't need to worry about special characters, they'll be escaped)
+ * **Saving notes:** Just use Vim's [:write][write] and [:update][update] commands, you don't need to provide a filename because it will be set based on the title (first line) of your note (you also don't need to worry about special characters, they'll be escaped)
  * **Editing existing notes:** Execute `:Note anything` to edit a note containing `anything` in its title (if no notes are found a new one is created with its title set to `anything`)
    * The `:Note` and `:DeleteNote` commands support tab completion of note titles
  * **Deleting notes:** The `:DeleteNote` command enables you to delete the current note
@@ -13,36 +13,36 @@ The vim-notes plug-in for the [Vim text editor] [vim] makes it easy to manage yo
    * The `:SearchNotes` command supports tab completion of keywords and sorts candidates by relevance ([Levenshtein distance] [levenshtein])
    * **Smart defaults:** Without an argument `:SearchNotes` searches for the word under the cursor (if the word starts with `@` that character will be included in the search, this means you can easily search for *@tagged* notes)
    * **Back-references:** The `:RelatedNotes` command find all notes referencing the current file
-   * A [Python 2] [python] script is included that accelerates keyword searches using a keyword index
+   * A [Python 2][python] script is included that accelerates keyword searches using a keyword index
    * The `:RecentNotes` command lists your notes by modification date, starting with the most recently edited note
- * **Navigating within notes:** The vim-notes syntax uses atx-style headers just like [Markdown] [markdown] (one to six `#` marks at the start of the line) and supports text folding based on these headers. This allows easy navigation within notes that contain large (and possibly nested) sections of text separated by headers. [Here's a screen shot of text folding] [folding].
- * **Navigating between notes:** The included syntax script highlights note names as hyper links and the file type plug-in redefines [gf] [gf] to jump between notes (the [Control-w f] [ctrlwf] mapping to jump to a note in a split window and the [Control-w gf] [ctrlwgf] mapping to jump to a note in a new tab page also work)
+ * **Navigating within notes:** The vim-notes syntax uses atx-style headers just like [Markdown][markdown] (one to six `#` marks at the start of the line) and supports text folding based on these headers. This allows easy navigation within notes that contain large (and possibly nested) sections of text separated by headers. [Here's a screen shot of text folding][folding].
+ * **Navigating between notes:** The included syntax script highlights note names as hyper links and the file type plug-in redefines [gf][gf] to jump between notes (the [Control-w f][ctrlwf] mapping to jump to a note in a split window and the [Control-w gf][ctrlwgf] mapping to jump to a note in a new tab page also work)
  * **Writing aids:** The included file type plug-in contains mappings for automatic curly quotes, arrows and list bullets and supports completion of note titles using Control-X Control-U and completion of tags using Control-X Control-O
- * **Embedded file types:** The included syntax script supports embedded highlighting using blocks marked with `{{{type … }}}` (triple back ticks ala [GFM] [gfm] are also supported) which allows you to embed highlighted code and configuration snippets in your notes
+ * **Embedded file types:** The included syntax script supports embedded highlighting using blocks marked with `{{{type … }}}` (triple back ticks ala [GFM][gfm] are also supported) which allows you to embed highlighted code and configuration snippets in your notes
 
-Here's a screen shot of the syntax mode (using the [Slate] [slate] color scheme and the [Monaco] [monaco] font):
+Here's a screen shot of the syntax mode (using the [Slate][slate] color scheme and the [Monaco][monaco] font):
 
 ![Syntax mode screen shot](http://peterodding.com/code/vim/notes/syntax.png)
 
 ## Install & usage
 
-Please refer to [the installation instructions] [install-notes] available on GitHub. Once you've installed the plug-in you can get started by executing `:Note` or `:edit note:`, this will start a new note that contains instructions on how to continue from there (and how to use the plug-in in general).
+Please refer to [the installation instructions][install-notes] available on GitHub. Once you've installed the plug-in you can get started by executing `:Note` or `:edit note:`, this will start a new note that contains instructions on how to continue from there (and how to use the plug-in in general).
 
-Make sure `filetype plugin on` (or a variant of that command) is included in your [vimrc script] [vimrc], without that things will not work as intended :-).
+Make sure `filetype plugin on` (or a variant of that command) is included in your [vimrc script][vimrc], without that things will not work as intended :-).
 
 ## Options
 
-All options have reasonable defaults so if the plug-in works after installation you don't need to change any options. The options are available for people who like to customize how the plug-in works. You can set these options in your [vimrc script] [vimrc] by including a line like this:
+All options have reasonable defaults so if the plug-in works after installation you don't need to change any options. The options are available for people who like to customize how the plug-in works. You can set these options in your [vimrc script][vimrc] by including a line like this:
 
     :let g:notes_directories = ['~/Documents/Notes', '~/Dropbox/Shared Notes']
 
-Note that after changing an option in your [vimrc script] [vimrc] you have to restart Vim for the changes to take effect.
+Note that after changing an option in your [vimrc script][vimrc] you have to restart Vim for the changes to take effect.
 
 ### The `g:notes_directories` option
 
 Your notes are stored in one or more directories. This option defines where you want to store your notes. Its value should be a list (there's an example above) with one or more pathnames. The default is a single value which depends on circumstances but should work for most people:
 
- * If the profile directory where the plug-in is installed is writable, the directory `misc/notes/user` under the profile directory is used. This is for compatibility with [Pathogen] [pathogen]; the notes will be stored inside the plug-in's bundle.
+ * If the profile directory where the plug-in is installed is writable, the directory `misc/notes/user` under the profile directory is used. This is for compatibility with [Pathogen][pathogen]; the notes will be stored inside the plug-in's bundle.
 
  * If the above doesn't work out, the default depends on the platform: `~/vimfiles/misc/notes/user` on Windows and `~/.vim/misc/notes/user` on other platforms.
 
@@ -74,7 +74,7 @@ Old versions of the notes plug-in would highlight note titles without considerin
 
 ### The `g:notes_unicode_enabled` option
 
-By default the vim-notes plug-in uses Unicode characters (e.g. list bullets, arrows, etc.) when Vim's ['encoding'] [enc] option is set to UTF-8. If you don't want Unicode characters in your notes (regardless of the ['encoding'] [enc] option) you can set this option to false (0):
+By default the vim-notes plug-in uses Unicode characters (e.g. list bullets, arrows, etc.) when Vim's ['encoding'][enc] option is set to UTF-8. If you don't want Unicode characters in your notes (regardless of the ['encoding'][enc] option) you can set this option to false (0):
 
     :let g:notes_unicode_enabled = 0
 
@@ -98,13 +98,13 @@ The first level of list items gets the first bullet point in `g:notes_list_bulle
 
 ### The `g:notes_tab_indents` option
 
-By default `Tab` is mapped to indent list items and `Shift-Tab` is mapped to dedent list items. You can disable these mappings by adding the following to your [vimrc script] [vimrc]:
+By default `Tab` is mapped to indent list items and `Shift-Tab` is mapped to dedent list items. You can disable these mappings by adding the following to your [vimrc script][vimrc]:
 
     :let g:notes_tab_indents = 0
 
 ### The `g:notes_alt_indents` option
 
-By default `Alt-Right` is mapped to indent list items and `Alt-Left` is mapped to dedent list items. You can disable these mappings by adding the following to your [vimrc script] [vimrc]:
+By default `Alt-Right` is mapped to indent list items and `Alt-Left` is mapped to dedent list items. You can disable these mappings by adding the following to your [vimrc script][vimrc]:
 
     :let g:notes_alt_indents = 0
 
@@ -126,7 +126,7 @@ This option defines the pathname of the text file that stores the list of known 
 
 ### The `g:notes_markdown_program` option
 
-The `:NoteToHtml` command requires the [Markdown] [markdown] program. By default the name of this program is assumed to be simply `markdown`. If you want to use a different program for Markdown to HTML conversion, set this option to the name of the program.
+The `:NoteToHtml` command requires the [Markdown][markdown] program. By default the name of this program is assumed to be simply `markdown`. If you want to use a different program for Markdown to HTML conversion, set this option to the name of the program.
 
 ### The `g:notes_conceal_code` option
 
@@ -154,7 +154,7 @@ By default URL schemes (text fragments like `http://`) are hidden when your vers
 
 ## Commands
 
-To edit one of your existing notes (or create a new one) you can use Vim commands such as [:edit] [edit], [:split] [split] and [:tabedit] [tabedit] with a filename that starts with *note:* followed by (part of) the title of one of your notes, e.g.:
+To edit one of your existing notes (or create a new one) you can use Vim commands such as [:edit][edit], [:split][split] and [:tabedit][tabedit] with a filename that starts with *note:* followed by (part of) the title of one of your notes, e.g.:
 
     :edit note:todo
 
@@ -176,7 +176,7 @@ When you are using multiple directories to store your notes and you run `:Note` 
 
 ### The `:NoteFromSelectedText` command
 
-Start a new note in the current window with the selected text as the title of the note. The name of this command isn't very well suited to daily use, that's because it's intended to be executed from a mapping. The default mapping for this command is `\en` (the backslash is actually the character defined by the [mapleader] [mapleader] variable).
+Start a new note in the current window with the selected text as the title of the note. The name of this command isn't very well suited to daily use, that's because it's intended to be executed from a mapping. The default mapping for this command is `\en` (the backslash is actually the character defined by the [mapleader][mapleader] variable).
 
 When you are using multiple directories to store your notes and you run `:NoteFromSelectedText` while editing an existing note, the new note will inherit the directory of the note from which it was created.
 
@@ -194,7 +194,7 @@ The `:DeleteNote` command deletes a note file, destroys the buffer and removes t
 
 ### The `:SearchNotes` command
 
-This command wraps [:vimgrep] [vimgrep] and enables you to search through your notes using one or more keywords or a regular expression pattern. To search for a pattern you pass a single argument that starts/ends with a slash:
+This command wraps [:vimgrep][vimgrep] and enables you to search through your notes using one or more keywords or a regular expression pattern. To search for a pattern you pass a single argument that starts/ends with a slash:
 
     :SearchNotes /TODO\|FIXME\|XXX/
 
@@ -253,7 +253,7 @@ If for any reason you want to recreate the list of tags you can execute the `:In
 
 ### The `:NoteToHtml` command
 
-This command converts the current note to HTML. It works by first converting the current note to [Markdown] [markdown] and then using the `markdown` program to convert that to HTML. It requires an external program to convert Markdown to HTML. By default the program `markdown` is used, but you can change the name of the program using the `g:notes_markdown_program` option. To convert your note to HTML and open the generated web page in a browser, you can run:
+This command converts the current note to HTML. It works by first converting the current note to [Markdown][markdown] and then using the `markdown` program to convert that to HTML. It requires an external program to convert Markdown to HTML. By default the program `markdown` is used, but you can change the name of the program using the `g:notes_markdown_program` option. To convert your note to HTML and open the generated web page in a browser, you can run:
 
     :NoteToHtml
 
@@ -265,7 +265,7 @@ Note that this command can be a bit slow, because the parser for the note taking
 
 ### The `:NoteToMarkdown` command
 
-Convert the current note to a [Markdown document] [markdown]. The vim-notes syntax shares a lot of similarities with the Markdown text format, but there are some notable differences, which this command takes care of:
+Convert the current note to a [Markdown document][markdown]. The vim-notes syntax shares a lot of similarities with the Markdown text format, but there are some notable differences, which this command takes care of:
 
  * The first line of a note is an implicit document title. In Markdown format it has to be marked with `#`. This also implies that the remaining headings should be shifted by one level.
 
@@ -277,11 +277,11 @@ Note that this command can be a bit slow, because the parser for the note taking
 
 ### The `:NoteToMediawiki` command
 
-Convert the current note to a [Mediawiki document] [mediawiki]. This is similar to the `:NoteToMarkdown` command, but it produces wiki text that can be displayed on a Mediawiki site. That being said, the subset of wiki markup that vim-notes actually produces will probably work on other wiki sites. These are the notable transforations:
+Convert the current note to a [Mediawiki document][mediawiki]. This is similar to the `:NoteToMarkdown` command, but it produces wiki text that can be displayed on a Mediawiki site. That being said, the subset of wiki markup that vim-notes actually produces will probably work on other wiki sites. These are the notable transforations:
 
  * The first line of the note is a title, but it isn't used in the Mediawiki syntax. It could have been put into a `= Title =` tag, but it doesn't really make sense in the context of a wiki. It would make the table of contents nest under the title for every document you create.
 
- * Preformatted blocks are output into `<syntaxhighlight lang="..">` tags. This functionality is enabled on Mediawiki through the [SyntaxHighlight GeSHi extention] [geshi]. It is also supported on Wikipedia.
+ * Preformatted blocks are output into `<syntaxhighlight lang="..">` tags. This functionality is enabled on Mediawiki through the [SyntaxHighlight GeSHi extention][geshi]. It is also supported on Wikipedia.
 
 ## Mappings
 
@@ -306,7 +306,7 @@ The following key mappings are defined inside notes.
 
 ## Customizing the syntax highlighting of notes
 
-The syntax mode for notes is written so you can override styles you don't like. To do so you can add lines such as the following to your [vimrc script] [vimrc]:
+The syntax mode for notes is written so you can override styles you don't like. To do so you can add lines such as the following to your [vimrc script][vimrc]:
 
     " Don't highlight single quoted strings.
     highlight link notesSingleQuoted Normal
@@ -351,38 +351,38 @@ See the documentation of the [:highlight] [highlight] command for more informati
 
 ### utl.vim
 
-The [utl.vim] [utl] universal text linking plug-in enables links between your notes, other local files and remote resources like web pages.
+The [utl.vim][utl] universal text linking plug-in enables links between your notes, other local files and remote resources like web pages.
 
 ### vim-shell
 
-My [vim-shell] [shell] plug-in also enables easy navigation between your notes and environment like local files and directories, web pages and e-mail addresses by providing key mappings and commands to e.g. open the file/URL under the text cursor. This plug-in can also change Vim to full screen which can be really nice for large notes.
+My [vim-shell][shell] plug-in also enables easy navigation between your notes and environment like local files and directories, web pages and e-mail addresses by providing key mappings and commands to e.g. open the file/URL under the text cursor. This plug-in can also change Vim to full screen which can be really nice for large notes.
 
 ### VOoM
 
-The [VOoM] [voom] outlining plug-in should work well for notes if you use the Markdown style headers starting with `#`, however it has been reported that this combination may not always work so well in practice (sometimes losing notes!)
+The [VOoM][voom] outlining plug-in should work well for notes if you use the Markdown style headers starting with `#`, however it has been reported that this combination may not always work so well in practice (sometimes losing notes!)
 
 ### Txtfmt
 
-If the text formatting supported by the notes plug-in is not enough for you, consider trying the [Txtfmt] [txtfmt] (The Vim Highlighter) plug-in. To use the two plug-ins together, create the file `after/ftplugin/notes.vim` inside your Vim profile with the following contents:
+If the text formatting supported by the notes plug-in is not enough for you, consider trying the [Txtfmt][txtfmt] (The Vim Highlighter) plug-in. To use the two plug-ins together, create the file `after/ftplugin/notes.vim` inside your Vim profile with the following contents:
 
     " Enable Txtfmt formatting inside notes.
     setlocal filetype=notes.txtfmt
 
 ## Using the notes file type for git commit messages
 
-If you write your git commit messages in Vim and want to use the notes file type (syntax highlighting and editing mode) to edit your git commit messages you can add the following line to your [vimrc script] [vimrc]:
+If you write your git commit messages in Vim and want to use the notes file type (syntax highlighting and editing mode) to edit your git commit messages you can add the following line to your [vimrc script][vimrc]:
 
     autocmd BufNewFile,BufRead */.git/COMMIT_EDITMSG setlocal filetype=notes
 
-This is not a complete solution (there are more types of commit messages that the pattern above won't match) but that is outside the scope of this document. For inspiration you can take a look at the [runtime/filetype.vim] [filetype.vim] file in Vim's Mercurial repository.
+This is not a complete solution (there are more types of commit messages that the pattern above won't match) but that is outside the scope of this document. For inspiration you can take a look at the [runtime/filetype.vim][filetype.vim] file in Vim's Mercurial repository.
 
 ## Contact
 
-If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/notes/> and <http://github.com/xolox/vim-notes>. If you like the script please vote for it on [Vim Online] [vim_online].
+If you have questions, bug reports, suggestions, etc. the author can be contacted at <peter@peterodding.com>. The latest version is available at <http://peterodding.com/code/vim/notes/> and <http://github.com/xolox/vim-notes>. If you like the script please vote for it on [Vim Online][vim_online].
 
 ## License
 
-This software is licensed under the [MIT license] [mit].  
+This software is licensed under the [MIT license][mit].  
 © 2015 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
 
