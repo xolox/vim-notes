@@ -1125,6 +1125,7 @@ function! xolox#notes#refresh_syntax() " {{{3
     let starttime = xolox#misc#timer#start()
     call xolox#notes#highlight_names(0)
     call xolox#notes#highlight_sources(0)
+    call s:toggle_code_snippet_text()
     call xolox#misc#timer#stop("notes.vim %s: Refreshed highlighting in %s.", g:xolox#notes#version, starttime)
   endif
 endfunction
@@ -1161,25 +1162,41 @@ function! s:sort_longest_to_shortest(a, b)
 endfunction
 
 function! xolox#notes#highlight_sources(force) " {{{3
+  let g:filetypes = []
   " Syntax highlight source code embedded in notes.
   let starttime = xolox#misc#timer#start()
   " Look for code blocks in the current note.
-  let filetypes = {}
+  let boundaries = {}
+
+  let line_number = 0
   for line in getline(1, '$')
     let ft = matchstr(line, '\({{[{]\|```\)\zs\w\+\>')
-    if ft !~ '^\d*$' | let filetypes[ft] = 1 | endif
+    if ft !~ '^\d*$'
+      let boundaries['start'] = line_number
+      let boundaries['ft'] = ft
+    endif
+
+    let ending = matchstr(line, '}}}')
+    if ending == '}}}'
+      let boundaries['end'] = line_number
+      call add(g:filetypes, copy(boundaries))
+      let boundaries = {}
+    endif
+
+    let line_number = line_number + 1
   endfor
   " Don't refresh the highlighting if nothing has changed.
-  if !a:force && exists('b:notes_previous_sources') && b:notes_previous_sources == filetypes
+  if !a:force && exists('b:notes_previous_sources') && b:notes_previous_sources == g:filetypes
     return
   else
-    let b:notes_previous_sources = filetypes
+    let b:notes_previous_sources = g:filetypes
   endif
   " Now we're ready to actually highlight the code blocks.
-  if !empty(filetypes)
+  if !empty(g:filetypes)
     let startgroup = 'notesCodeStart'
     let endgroup = 'notesCodeEnd'
-    for ft in keys(filetypes)
+    for boundaries in g:filetypes
+      let ft = boundaries['ft']
       let group = 'notesSnippet' . toupper(ft)
       let include = s:syntax_include(ft)
       for [startmarker, endmarker] in [['{{{', '}}}'], ['```', '```']]
@@ -1191,6 +1208,30 @@ function! xolox#notes#highlight_sources(force) " {{{3
     if &vbs >= 1
       call xolox#misc#timer#stop("notes.vim %s: Highlighted embedded %s sources in %s.", g:xolox#notes#version, join(sort(keys(filetypes)), '/'), starttime)
     endif
+  endif
+endfunction
+
+function! s:toggle_code_snippet_text()
+  let current_line = line('.') - 1
+  if !empty(g:filetypes)
+    for boundaries in g:filetypes
+        let ft = boundaries['ft']
+        if current_line == boundaries['start']
+          call nvim_buf_clear_namespace(0, -1, boundaries['start'], boundaries['start'] + 1)
+        else
+          let start_title = toupper(ft) . " CODE SNIPPET"
+          let fill = repeat(' ', 80 - len(start_title) - 1 - 1)
+          call nvim_buf_set_virtual_text(0, 0, boundaries['start'], [[start_title . fill, "ColorColumn"]], {})
+        endif
+
+        if current_line == boundaries['end']
+          call nvim_buf_clear_namespace(0, -1, boundaries['end'], boundaries['end'] + 1)
+        else
+          let end_title = "END " . toupper(ft) . " CODE SNIPPET"
+          let fill = repeat(' ', 80 - len(end_title) - 1 - 1)
+          call nvim_buf_set_virtual_text(0, 0, boundaries['end'], [[end_title . fill, "ColorColumn"]], {})
+        endif
+    endfor
   endif
 endfunction
 

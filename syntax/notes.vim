@@ -176,6 +176,7 @@ highlight def link notesLastEdited LineNr
 
 " }}}1
 
+highlight CommentWithBackground guibg=black
 " Set the currently loaded syntax mode.
 let b:current_syntax = 'notes'
 
