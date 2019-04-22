@@ -1290,25 +1290,26 @@ function! s:normalize_ws(s)
   return xolox#misc#str#trim(substitute(a:s, '\_s\+', '', 'g'))
 endfunction
 
+
+let s:current_title_level = 0
 function! xolox#notes#foldexpr() " {{{3
-  " Folding expression to fold atx style Markdown headings.
-  let lastlevel = foldlevel(v:lnum - 1)
-  let nextlevel = match(getline(v:lnum), '^#\+\zs')
   let retval = '='
-  if lastlevel <= 0 && nextlevel >= 1
-    let retval = '>' . nextlevel
-  elseif nextlevel >= 1
-    if lastlevel > nextlevel
-      let retval = '<' . nextlevel
-    else
-      let retval = '>' . nextlevel
-    endif
+  let title_level = match(getline(v:lnum), '^#\+\zs')
+  let snippet_start_match = match(getline(v:lnum), '^{{{\zs')
+  let snippet_start_end = match(getline(v:lnum), '^}}}\zs')
+
+  if title_level > 0
+    let retval = '>' . title_level
+    let s:current_title_level = title_level
   endif
-  " Check whether the change in folding introduced by 'rv'
-  " is invalidated because we're inside a code block.
-  if retval != '=' && xolox#notes#inside_snippet(v:lnum, 1)
-    let retval = '='
+
+  if snippet_start_match >= 0
+      return ">" . (s:current_title_level+1)
   endif
+  if snippet_start_end >= 0
+      return "<" . (s:current_title_level+1)
+  endif
+
   return retval
 endfunction
 
@@ -1333,18 +1334,25 @@ function! xolox#notes#currently_inside_snippet() " {{{3
   return xolox#notes#inside_snippet(line('.'), col('.'))
 endfunction
 
+let s:fold_level_prefix = '-'
 function! xolox#notes#foldtext() " {{{3
   " Replace atx style "#" markers with "-" fold marker.
+  let line_count = v:foldend - v:foldstart
   let line = getline(v:foldstart)
   if line == ''
     let line = getline(v:foldstart + 1)
   endif
   let matches = matchlist(line, '^\(#\+\)\s*\(.*\)$')
   if len(matches) >= 3
-    let prefix = repeat('-', len(matches[1]))
-    return prefix . ' ' . matches[2] . ' '
+    let prefix = repeat(s:fold_level_prefix, len(matches[1]))
+    return prefix . ' ' . matches[2] . ' ' . line_count . ' lines'
   else
-    return line
+    let snippet_code_type = matchstr(line, '\({{[{]\|```\)\zs\w\+\>')
+    let fl = foldlevel(v:foldstart)
+    if snippet_code_type !~ '^\d*$'
+      return repeat(s:fold_level_prefix, fl) . ' CODE: ' . toupper(snippet_code_type) . ' ' . (line_count-1) . ' lines'
+    else
+      return line
   endif
 endfunction
 
