@@ -1219,7 +1219,7 @@ function! s:toggle_code_snippet_text()
         if current_line == boundaries['start']
           call nvim_buf_clear_namespace(0, -1, boundaries['start'], boundaries['start'] + 1)
         else
-          let start_title = toupper(ft) . " CODE SNIPPET"
+          let start_title = toupper(ft) . " CODE"
           let fill = repeat(' ', 80 - len(start_title) - 1 - 1)
           call nvim_buf_set_virtual_text(0, 0, boundaries['start'], [[start_title . fill, "ColorColumn"]], {})
         endif
@@ -1227,7 +1227,7 @@ function! s:toggle_code_snippet_text()
         if current_line == boundaries['end']
           call nvim_buf_clear_namespace(0, -1, boundaries['end'], boundaries['end'] + 1)
         else
-          let end_title = "END " . toupper(ft) . " CODE SNIPPET"
+          let end_title = "END " . toupper(ft) . " CODE"
           let fill = repeat(' ', 80 - len(end_title) - 1 - 1)
           call nvim_buf_set_virtual_text(0, 0, boundaries['end'], [[end_title . fill, "ColorColumn"]], {})
         endif
@@ -1350,7 +1350,7 @@ function! xolox#notes#foldtext() " {{{3
     let snippet_code_type = matchstr(line, '\({{[{]\|```\)\zs\w\+\>')
     let fl = foldlevel(v:foldstart)
     if snippet_code_type !~ '^\d*$'
-      return repeat(s:fold_level_prefix, fl) . ' CODE: ' . toupper(snippet_code_type) . ' ' . (line_count-1) . ' lines'
+      return repeat(s:fold_level_prefix, fl) . ' ' . toupper(snippet_code_type) . ' CODE ' . (line_count-1) . ' lines'
     else
       return line
   endif
