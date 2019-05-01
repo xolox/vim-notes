@@ -1,4 +1,16 @@
-# Easy note taking in Vim
+# Easy note taking in Vim (fork from [vim-notes](https://github.com/xolox/vim-notes))
+
+Hi, the original developer stopped to work on this project so I decided to add
+some features by myself. I wanna thank xolox for him awesome work on vim-notes.
+
+My version works only with [neovim](https://github.com/neovim/neovim), beacouse
+it utilizes new nvim features like virtual texts.
+
+New features:
+* Code block markers
+![Code block markers screen shot](./doc/code_blocks.png)
+* Code block folding
+![Code block folding screen shot](./doc/code_blocks_folding.png)
 
 The vim-notes plug-in for the [Vim text editor] [vim] makes it easy to manage your notes in Vim:
 
@@ -382,7 +394,7 @@ If you have questions, bug reports, suggestions, etc. the author can be contacte
 
 ## License
 
-This software is licensed under the [MIT license] [mit].  
+This software is licensed under the [MIT license] [mit].
 © 2015 Peter Odding &lt;<peter@peterodding.com>&gt;.
 
 
