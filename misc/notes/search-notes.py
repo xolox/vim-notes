@@ -176,7 +176,7 @@ class NotesIndex(object):
         # Canonicalize pathnames, check validity.
         self.database_file = self.munge_path(self.database_file)
         self.user_directories = map(self.munge_path, self.user_directories)
-        self.user_directories = filter(os.path.isdir, self.user_directories)
+        self.user_directories = list(filter(os.path.isdir, self.user_directories))
         if not any(os.path.isdir(p) for p in self.user_directories):
             sys.stderr.write("None of the notes directories exist!\n")
             sys.exit(1)
