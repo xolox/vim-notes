@@ -764,7 +764,7 @@ endfunction
 
 function! s:run_scanner(keywords, matches) " {{{2
   " Try to run scanner.py script to find notes matching {keywords}.
-  call xolox#misc#msg#info("notes.vim %s: Searching notes using keyword index ..", g:xolox#notes#version)
+  "call xolox#misc#msg#info("notes.vim %s: Searching notes using keyword index ..", g:xolox#notes#version)
   let [success, notes] = s:python_command(a:keywords)
   if success
     call xolox#misc#msg#debug("notes.vim %s: Search script reported %i matching note%s.", g:xolox#notes#version, len(notes), len(notes) == 1 ? '' : 's')

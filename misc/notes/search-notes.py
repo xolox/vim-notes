@@ -176,7 +176,7 @@ class NotesIndex(object):
         # Canonicalize pathnames, check validity.
         self.database_file = self.munge_path(self.database_file)
         self.user_directories = map(self.munge_path, self.user_directories)
-        self.user_directories = filter(os.path.isdir, self.user_directories)
+        self.user_directories = list(filter(os.path.isdir, self.user_directories))
         if not any(os.path.isdir(p) for p in self.user_directories):
             sys.stderr.write("None of the notes directories exist!\n")
             sys.exit(1)
@@ -220,9 +220,9 @@ class NotesIndex(object):
                     if not any(fnmatch.fnmatch(filename, pattern) for pattern in PATTERNS_TO_IGNORE):
                         abspath = os.path.join(root, filename)
                         notes_on_disk[abspath] = os.path.getmtime(abspath)
-            self.logger.info("Found %i notes in %s ..", len(notes_on_disk) - last_count, directory)
+            self.logger.debug("Found %i notes in %s ..", len(notes_on_disk) - last_count, directory)
             last_count = len(notes_on_disk)
-        self.logger.info("Found a total of %i notes ..", len(notes_on_disk))
+        self.logger.debug("Found a total of %i notes ..", len(notes_on_disk))
         # Check for updated and/or deleted notes since the last run?
         if not self.first_use:
             for filename in self.index['files'].keys():
